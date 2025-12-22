@@ -1,0 +1,270 @@
+---
+description: Enforce module boundaries, shared/components and platform policies, and module scaling rules.
+globs:
+  - "app/**/*.ts"
+  - "app/**/*.tsx"
+alwaysApply: true
+---
+
+ARCHITECTURE BOUNDARIES AND POLICIES
+
+1. MODULE BOUNDARIES
+
+ZERO MODULE-TO-MODULE IMPORTS
+
+- Modules NEVER import from other modules (no exceptions)
+- This is non-negotiable and enforced by tests
+
+ALLOWED IMPORTS FROM WITHIN A MODULE
+
+- Relative imports within the same module subtree
+- app/components/\* (shared UI)
+- app/hooks/\* (generic UI hooks only)
+- app/utils/\* (generic utilities only)
+- app/platform/\* (infrastructure)
+- app/layout/\* (app shell - can import from modules for shell integration)
+- @shoppy/\* (pure logic packages)
+
+FORBIDDEN IMPORTS
+
+- app/modules/<other>/\* (ANY cross-module import)
+- Platform code importing from modules
+- Components/hooks/utils importing from modules
+
+CROSS-MODULE REUSE LADDER (IN ORDER)
+
+1. Duplicate intentionally (for small, unstable pieces < 50 lines)
+2. Promote to app/components/\*\* (for shared UI)
+   - Use primitives/ for domain-agnostic building blocks
+   - Use catalog/ for filter/sort controls
+   - Use commerce/ for shared commerce UI
+   - Use pagination/ for pagination wrappers
+3. Promote to app/hooks/\* (for generic UI hooks only)
+4. Promote to app/utils/\* (for generic utilities only)
+5. Extract pure logic to @shoppy/\* (for reusable business logic)
+6. Create platform utilities (for infrastructure helpers)
+
+2. SHARED FOLDERS POLICY
+
+app/components/\* (Shared UI Components)
+
+STRUCTURE (Subfolders for Organization)
+
+app/components/ is organized into subfolders to prevent it from becoming a junk drawer:
+
+- primitives/ → Pure UI building blocks (domain-agnostic)
+  - Examples: Button, Input, Loading, Price
+  - Must be truly generic, no domain concepts
+
+- catalog/ → Catalog browsing controls (filter/sort UI only)
+  - Examples: CheckboxGroup, RangeInput, SortSelect
+  - Used by Search + Collections (and future catalog surfaces)
+  - NOT "primitives" (encodes filter/sort intent)
+
+- commerce/ → Shared commerce UI (cart, product card)
+  - Examples: ProductCard, CartPanel, CartLineItem, CartSummary
+  - Used across modules/layout
+  - Allowed to accept Shopify fragments (shared commerce surface)
+
+- pagination/ → Shared pagination wrappers
+  - Examples: PaginatedResourceSection
+  - Must remain purely presentational (no schema logic)
+
+ALLOWED
+
+- Shared UI components used across multiple modules or by layout
+- Components can be domain-specific if shared (e.g., ProductCard in commerce/)
+- Shopify types acceptable in commerce/ subfolder (shared commerce surface)
+
+FORBIDDEN
+
+- Components that fetch data or call Storefront API
+- Components specific to a single module
+- Imports from app/modules/\*
+- Loader/session/shopify context in app/components/\*
+
+RULE OF THUMB
+Promote to app/components/\*\* when a component is reused across 2+ modules or by layout, even if domain-specific.
+Use subfolders to keep primitives vs domain-shared controls separate.
+
+app/hooks/\* (Generic UI Hooks)
+
+STRUCTURE
+
+- All hooks organized in subfolders (no root-level hooks)
+  - `app/hooks/primitives/**` = domain-agnostic hooks (truly cross-domain, matches components/primitives/)
+  - `app/hooks/catalog/**` = catalog-specific UI hooks (used by Search + Collections)
+  - Future: `app/hooks/<domain>/**` for other domain-specific shared hooks
+
+ALLOWED
+
+- `primitives/` subfolder: UI-level, domain-agnostic React hooks ONLY
+  - Examples: useDocumentTitle, useDebounce, useMediaQuery, useClickOutside
+  - Must be truly cross-domain and stable
+  - No Shopify/Storefront API types
+  - No business logic
+  - Naming matches `app/components/primitives/` for consistency
+- `<domain>/` subfolders: Domain-specific hooks shared across modules
+  - Example: `catalog/useSearchStateNavigation` (catalog/search-specific but shared)
+  - Used by 2+ modules
+
+FORBIDDEN
+
+- Root-level hooks (must be in subfolders)
+- Hooks that use Shopify/Storefront API types (unless in module)
+- Hooks with business logic (unless in module)
+- Imports from app/modules/\*
+
+RULE OF THUMB
+If it references domain concepts or Shopify types, keep it in the module or use a domain subfolder if shared across modules
+
+app/utils/\* (Generic Utilities)
+
+ALLOWED
+
+- Small cross-module app-level utilities (non-React)
+- May encode business meaning but must be:
+  - Non-React (no React dependencies)
+  - Non-Shopify-API (no Storefront API calls)
+  - Used by 2+ modules
+- Examples: date formatting, string helpers, type guards, filter helpers, sort options
+- Must be < 150-200 LOC per file
+
+FORBIDDEN
+
+- Module-specific utilities (move to `modules/<module>/utils/`)
+- Functions using Shopify/Hydrogen types (unless truly cross-module)
+- Anything that will grow into a library
+- Imports from app/modules/\*
+
+RULE OF THUMB
+If it's reusable logic → promote to @shoppy/\*
+If it's module-specific → move to `modules/<module>/utils/`
+If it's infra glue → move to app/platform/\*
+If it's domain-specific → keep in module
+
+3. KEEP SHARED FOLDERS FLAT
+
+- app/hooks/\* uses subfolders (primitives/, catalog/, etc.)
+  - All hooks must be in subfolders (no root-level hooks)
+  - `primitives/` for domain-agnostic hooks (matches components/primitives/)
+  - `<domain>/` for domain-specific but shared hooks
+- app/utils/\* must be flat (no subfolders)
+- app/components/\* uses subfolders (primitives/, catalog/, commerce/, pagination/)
+  - CSS modules MUST be colocated with components (same subfolder)
+  - Do NOT create additional subfolders within these subfolders
+
+4. PLATFORM POLICY (app/platform)
+
+ALLOWED
+
+- Storefront API client setup
+- session/cookie management
+- caching helpers
+- generic request/response utilities
+- SEO defaults and global metadata helpers
+
+FORBIDDEN
+
+- Business logic that belongs to a domain
+- Feature-specific data shaping and orchestration
+- UI concerns
+- Imports from app/modules/\*
+
+5. MODULE SCALING (START FLAT)
+
+DEFAULT
+
+- Modules start flat: route/view pairs in the module root.
+
+INTRODUCE SUBFOLDERS ONLY WHEN NEEDED
+
+- routes/ when >3 routes or nested routing complexity exists
+- components/ when UI is reused across routes or views become noisy
+- graphql/ when multiple queries/mutations/fragments exist
+- utils/ when non-UI helpers are reused or sizable
+
+GRAPHQL ORGANIZATION (IMPORTANT)
+
+Start Consolidated (Default):
+
+- graphql/queries.ts (all queries)
+- graphql/fragments.ts (only if reusable fragments exist)
+- graphql/mutations.ts (only if mutations exist)
+
+Split into Subfolders ONLY When:
+
+- queries.ts > 250-400 LOC or hard to scan
+- fragments proliferate and ownership unclear
+- multiple routes need different subsets
+
+If Splitting, Use Structure:
+
+- graphql/queries/ folder
+- graphql/mutations/ folder
+- graphql/fragments/ folder
+- NO verbose filenames like add-to-cart.mutation.graphql.ts
+
+Critical Rules:
+
+- Don't over-normalize fragments (only extract if reused or query is huge)
+- Keep documents near domain that owns them
+- NO cross-module GraphQL sharing
+
+STRUCTURE SHOULD FOLLOW REAL COMPLEXITY
+
+- Do not add folders for symmetry.
+- Do not pre-structure modules "for the future".
+- GraphQL files stay consolidated until they hit friction.
+
+6. ROUTE/VIEW SEPARATION
+
+\*.route.tsx MUST
+
+- own loaders/actions and data orchestration
+- own metadata exports and handle exports for layout
+- own redirects, validation, and errors
+- own Storefront API calls and caching decisions
+
+\*.view.tsx MUST
+
+- render UI only
+
+\*.view.tsx MUST NOT
+
+- fetch Storefront API data
+- write sessions/cookies
+- define loader/action/meta/headers
+
+7. STYLING AND CSS
+
+- CSS modules MUST be colocated with their components/views (same directory).
+- CSS module filenames MUST be lowercase/kebab-case (e.g. `button.module.css`, `product-card.module.css`).
+- Global styles MUST live in `app/styles/`.
+- NO `styles/` subfolders - keep flat.
+- Prefer named CSS variables (tokens) over hardcoded values.
+
+Example (correct):
+
+```
+components/
+├── primitives/
+│   ├── Button.tsx
+│   └── button.module.css     ✓ colocated
+├── commerce/
+│   ├── ProductCard.tsx
+│   └── product-card.module.css  ✓ colocated
+└── catalog/
+    ├── SortSelect.tsx
+    └── sort-select.module.css  ✓ colocated
+```
+
+Example (wrong):
+
+```
+components/
+├── primitives/
+│   ├── Button.tsx
+│   └── styles/
+│         └── button.module.css   ✗ no styles/ subfolder
+```

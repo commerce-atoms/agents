@@ -1,0 +1,29 @@
+---
+description: Import policy: React Router packages only; never Remix packages or react-router-dom.
+globs:
+  - "app/**/*.ts"
+  - "app/**/*.tsx"
+alwaysApply: true
+---
+
+IMPORT POLICY (REACT ROUTER)
+
+This Hydrogen project uses React Router packages, not Remix packages.
+
+FORBIDDEN
+
+- Any imports from @remix-run/\*
+- Any imports from react-router-dom
+
+REQUIRED
+
+- Use react-router (and @react-router/\* packages) consistent with the existing codebase.
+
+WHEN COPYING EXTERNAL EXAMPLES
+
+- Translate @remix-run/react usage to the equivalent React Router usage used in this repo.
+- Before introducing a new @react-router/\* package import, verify it is already used in the repo or is required by the current code path.
+
+DEFAULT PRACTICE
+
+- Match import patterns already present in adjacent files.

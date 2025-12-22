@@ -1,0 +1,57 @@
+---
+description: Routing guardrails for app/routes.ts (single explicit route manifest, layout nesting, resource route placement).
+globs:
+  - "app/routes.ts"
+alwaysApply: true
+---
+
+ROUTING MANIFEST RULES (app/routes.ts)
+
+SINGLE SOURCE OF TRUTH
+
+- app/routes.ts is the only routing manifest.
+- Do not add additional route manifest files.
+- Do not add a second routing entrypoint in app/ or server/ that duplicates routing definitions.
+
+NO FILESYSTEM ROUTING
+
+- Do not rely on app/routes/\* filesystem discovery as the routing source of truth.
+- If app/routes/\* exists, it must not be used for route discovery.
+
+EXPLICIT MAPPING
+
+- Each URL pattern must map explicitly to a route module file under app/modules/\*.
+- Avoid abstractions that generate, auto-compose, or implicitly register routes.
+
+LAYOUT NESTING
+
+- UI routes are nested under the layout shell route (owned by app/layout/\*).
+- The layout shell is responsible for global chrome, and renders the Outlet.
+- Feature route modules must not assume they are responsible for header/footer chrome.
+
+RESOURCE ROUTES (OUTSIDE SHELL)
+Resource routes do not render the application shell. They remain outside the layout nesting.
+Examples:
+
+- robots.txt
+- sitemap.xml and sitemap endpoints
+- API-style endpoints (if present)
+
+URL CONVENTIONS (DEFAULTS)
+Use conventional storefront paths unless there is a project-specific reason to deviate:
+
+| Path                   | Purpose           |
+| ---------------------- | ----------------- |
+| `/`                    | home              |
+| `/products/:handle`    | product detail    |
+| `/collections/:handle` | collection detail |
+| `/cart`                | cart              |
+| `/search`              | search            |
+| `/policies/:handle`    | policy pages      |
+| `/account/*`           | account area      |
+| `/blogs/*`             | blogs             |
+
+STABILITY
+
+- Prefer stable URLs; avoid unnecessary churn.
+- If a URL changes, update all internal links and any relevant tests or docs in the same change.
