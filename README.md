@@ -23,41 +23,8 @@
 
 **Agents** = expert personas you invoke for specialized help. Deep domain knowledge.
 
-See [`reference/philosophy.md`](reference/philosophy.md) for details.
-
----
-
-## Structure
-
-```
-agents/
-├── rules/                              # Editor guardrails
-│   ├── cursor/hydrogen/
-│   │   ├── 00-system.mdc
-│   │   ├── 10-imports.mdc
-│   │   ├── 20-routing.mdc
-│   │   └── 30-architecture-boundaries.mdc
-│   └── copilot/hydrogen/
-│       └── copilot-instructions.md
-│
-├── agents/                             # Expert personas
-│   ├── hydrogen/
-│   │   ├── storefront-architect.agent.md
-│   │   └── storefront-performance.agent.md
-│   ├── shopify/
-│   │   └── storefront-api-specialist.agent.md
-│   └── commerce/
-│       ├── catalog-variants.agent.md
-│       └── seo-structured-data.agent.md
-│
-├── reference/
-│   ├── philosophy.md
-│   └── conventions.md
-│
-├── README.md
-├── LICENSE
-└── CHANGELOG.md
-```
+See [`reference/philosophy.md`](reference/philosophy.md) for details.  
+See [`reference/conventions.md`](reference/conventions.md) for file naming and structure patterns.
 
 ---
 
@@ -111,6 +78,7 @@ Or use sync script in consuming repos.
 4. Get specialized assistance
 
 **Agent Guidance:**
+
 - [Prompt Library](PROMPT_LIBRARY.md) — Enforced context and constraints
 - [Run Protocol](RUN_PROTOCOL.md) — Execution steps and escalation rules
 
