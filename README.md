@@ -110,6 +110,10 @@ Or use sync script in consuming repos.
 3. Paste as system prompt in Claude/Cursor/ChatGPT
 4. Get specialized assistance
 
+**Agent Guidance:**
+- [Prompt Library](PROMPT_LIBRARY.md) — Enforced context and constraints
+- [Run Protocol](RUN_PROTOCOL.md) — Execution steps and escalation rules
+
 ---
 
 ## Adding Agents
