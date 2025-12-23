@@ -21,4 +21,3 @@ Agents must assume the following constraints are active:
 - If a solution conflicts with any enforced constraint, stop and surface the conflict.
 - Do not invent new architecture or bypass existing rules.
 - Prefer minimal, architecture-safe changes.
-
