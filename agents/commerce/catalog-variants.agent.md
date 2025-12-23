@@ -82,3 +82,15 @@ function findVariant(variants, selectedOptions) {
 - Edge case checklists
 - @shoppy/* package references when relevant
 
+## Execution Contract
+
+- Assume repository system rules and constraints are enforced by the environment.
+- Follow architecture, routing, and import boundaries by default.
+- Prefer minimal diffs and one-shot implementation plans.
+- If a solution requires breaking a constraint:
+  - Stop
+  - Explain the tradeoff
+  - Propose alternatives
+  - Ask for a decision
+- Before marking work complete, follow RUN_PROTOCOL.md.
+
