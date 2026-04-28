@@ -1,38 +1,24 @@
-# CLAUDE.md
+# CLAUDE.md — `@commerce-atoms/agents` (kit authoring)
 
-> Claude-specific overlay. The canonical AI manifest is [`AGENTS.md`](AGENTS.md) — read it first; this file extends it with Claude Code-native affordances.
+You are working on the **npm package itself**, not a Hydrogen storefront. Read [`AGENTS.md`](AGENTS.md) and then [`CONTRIBUTING.md`](CONTRIBUTING.md) before doing anything else.
 
-## Slash commands
+The shipped product lives under [`kit/`](kit/) and has its own [`kit/CLAUDE.md`](kit/CLAUDE.md) — those rules are for AI agents in storefront repos and **do not govern this repo**.
 
-Commands live in [`commands/`](commands/) as plain markdown files. Each command is invokable in Claude Code as `/<name>`:
+## Behavioural defaults for this repo
 
-| Command | File | Purpose |
-|---|---|---|
-| `/init-store` | [`commands/init-store.md`](commands/init-store.md) | Clone & brand a fresh storefront. |
-| `/deploy-setup` | [`commands/deploy-setup.md`](commands/deploy-setup.md) | Wire CI + secrets for a new store. |
-| `/deploy-check` | [`commands/deploy-check.md`](commands/deploy-check.md) | Pre-flight before pushing to `main`. |
-| `/release` | [`commands/release.md`](commands/release.md) | Tag and push; CI deploys. |
-| `/validate-architecture` | [`commands/validate-architecture.md`](commands/validate-architecture.md) | Run the boundary validators. |
-| `/back-port` *(planned)* | [`commands/back-port.md`](commands/back-port.md) | Diff a store against the kit. |
+1. **Edit, don't speculate.** When asked to change behaviour in `src/` or `bin/`, read the file first, then propose a minimal diff. The validators are pure; new tests should accompany behaviour changes.
+2. **TypeScript strict mode is non-negotiable.** Don't suppress type errors with `as any`, `// @ts-expect-error`, or `// @ts-ignore`. Fix the root cause.
+3. **Run `npm run verify` after substantive edits.** It runs `tsc --noEmit`, the INDEX.json linter, and the test suite. If something fails, fix before reporting work as done.
+4. **Don't edit content under `kit/` without reading [`kit/AGENTS.md`](kit/AGENTS.md) first.** Treat that subtree as a separate sub-project.
+5. **Releases happen via tag + CI, not from a workstation.** If asked to publish, push a tag; do not invoke `npm publish` directly.
 
-## Skills
+## Where to look
 
-Claude Code consumes skills as multi-step prompts. The skills folder uses the GitHub Copilot Skills layout (folder per skill, `SKILL.md` + assets); Claude reads them as long-form prompts.
-
-See [`skills/`](skills/) for the full list. Invoke by referencing `skills/<name>/SKILL.md` in your message, or via the matching slash command when one exists.
-
-## Prompts
-
-Reusable task templates live in [`prompts/`](prompts/) (`.prompt.md` extension). Paste or reference these when a task fits the template (PR descriptions, release notes, store-launch checklist, etc.).
-
-## Personas
-
-Domain-expert system prompts in [`personas/`](personas/). Paste a persona's contents into a fresh chat to scope Claude's perspective for a session.
-
-## Behavioural defaults
-
-All `AGENTS.md` rules apply unconditionally. Specifically for Claude Code:
-
-- Prefer minimal diffs and explicit file paths.
-- Run [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md) before marking work complete.
-- Do not invoke `shopify hydrogen deploy` or any other deploy command directly — use `/release` (which pushes a tag and lets GitHub Actions deploy).
+| Question | Answer lives in |
+|---|---|
+| How is content shipped to consumers? | [`src/sync.ts`](src/sync.ts) + [`bin/sync.ts`](bin/sync.ts) |
+| How is a new store initialised? | [`src/init.ts`](src/init.ts) |
+| How are architecture rules enforced in consumer repos? | [`src/validate.ts`](src/validate.ts) + [`src/internal/validators/`](src/internal/validators/) |
+| What lives in the kit? | [`kit/INDEX.json`](kit/INDEX.json) |
+| Why a decision was made? | [`kit/docs/decisions/`](kit/docs/decisions/) |
+| How do I add a rule / skill / command / prompt / persona? | [`CONTRIBUTING.md`](CONTRIBUTING.md) → "Kit content" |

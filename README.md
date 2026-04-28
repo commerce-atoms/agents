@@ -4,88 +4,41 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-This repo is the **single source of truth** for AI behaviour across every storefront forked from `hydrogen-storefront-starter`. Read by Cursor, GitHub Copilot, Claude Code, Codex, and other agentic editors via the universal [`AGENTS.md`](AGENTS.md) manifest.
+This is the npm package that distributes the AI kit consumed by every storefront forked from `hydrogen-storefront-starter`. The shipped product (manifests, rules, primitives, ADRs) lives under [`kit/`](kit/) and is read by Cursor, GitHub Copilot, Claude Code, and Codex via the universal [`kit/AGENTS.md`](kit/AGENTS.md) manifest.
 
 ---
 
-## Layout
-
-```text
-agents/
-├── AGENTS.md                       # ⭐ Universal manifest (read first)
-├── CLAUDE.md                       # Claude-specific overlay
-├── copilot-instructions.md         # Copilot-specific overlay
-├── .cursor/rules/*.mdc             # Cursor-specific overlays
-│
-├── rules/
-│   ├── core/
-│   │   ├── architecture.md         # Module boundaries, route/view split, shared folder policy
-│   │   ├── routing.md              # app/routes.ts manifest rules
-│   │   ├── imports.md              # React Router only, path aliases
-│   │   └── styling.md              # CSS module colocation
-│   ├── packages.md                 # @commerce-atoms/* package authoring (for shoppy)
-│   └── stores.md                   # Per-store fork conventions
-│
-├── skills/                         # Reusable AI capabilities
-│   └── <name>/SKILL.md
-├── commands/                       # Slash commands
-│   └── <name>.md
-├── prompts/                        # Reusable task templates
-│   └── <name>.prompt.md
-│
-├── personas/                       # Domain-expert system prompts
-│   ├── hydrogen/
-│   ├── shopify/
-│   └── commerce/
-│
-├── reference/
-│   ├── philosophy.md
-│   └── conventions.md
-│
-├── docs/
-│   └── decisions/                  # ADRs justifying the architecture of this repo
-│       └── 00X-*.md
-│
-├── INDEX.json                      # Registry walked by the sync CLI
-├── INDEX.schema.json               # Schema for INDEX.json
-├── PROMPT_LIBRARY.md               # Assumed environment context
-└── RUN_PROTOCOL.md                 # Execution steps + escalation rules
-```
-
----
-
-## How consumers use this
-
-Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), this repo is published as `@commerce-atoms/agents` on npm. Each consumer repo (`hydrogen-storefront-starter`, store forks, `shoppy`) pins a version and runs:
+## How consumers use it
 
 ```bash
 npm i -D @commerce-atoms/agents
 npx commerce-atoms-agents sync
 ```
 
-The sync CLI copies canonical content (`AGENTS.md`, `rules/`, …) and **deterministically generates** per-tool overlays in the consumer repo (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`).
+The CLI copies the manifest + per-tool overlays + Cursor rules into the consumer's repo, rewrites repo-relative links to absolute GitHub URLs, and pins the kit version in `agents.config.json`.
 
-> **Status — `0.1.0`:** the CLI ships and copies canonical content into consumer repos. The "deterministic generation" of per-tool overlays from canonical sources (instead of copying hand-maintained overlays) lands in a follow-up. Today's overlays in `.cursor/rules/`, `CLAUDE.md`, and `copilot-instructions.md` are hand-authored mirrors of the canonical sources in `rules/core/`.
+For a guided walkthrough from install to first deploy, see [`kit/QUICKSTART.md`](kit/QUICKSTART.md).
 
 ### CLI commands
 
 ```bash
-commerce-atoms-agents sync             # copy into cwd, write back agents.config.json
+commerce-atoms-agents init <name>      # clone the starter, brand, pin, first commit
+commerce-atoms-agents sync             # copy canonical content into cwd; pin version
 commerce-atoms-agents sync --dry-run   # preview without writing
 commerce-atoms-agents sync --force     # overwrite consumer divergence
 commerce-atoms-agents sync --out <dir> # alternate output directory
-commerce-atoms-agents sync --config <path>  # alternate config file
+commerce-atoms-agents validate-architecture    # run the boundary validators
 commerce-atoms-agents version
 commerce-atoms-agents help
 ```
 
 ### `agents.config.json`
 
-Generated on first `sync` and updated each run with the pinned version. Shape:
+Generated on first `sync`; updated each run with the pinned version.
 
 ```json
 {
-  "agentsVersion": "0.1.0",
+  "agentsVersion": "0.1.2",
   "audience": "store-fork",
   "tools": {"cursor": true, "copilot": true, "claude": true, "codex": true},
   "out": {
@@ -97,70 +50,70 @@ Generated on first `sync` and updated each run with the pinned version. Shape:
 }
 ```
 
-Disable a tool by setting `tools.<name>` to `false` — its files are skipped on sync.
-
-Customise an output path by editing `out.<key>`.
+Disable a tool by setting `tools.<name>` to `false`. Customise an output path by editing `out.<key>`.
 
 ### Conflict handling
 
-If a consumer mutates a synced file, the next `sync` reports it as a `skipped-conflict` and exits non-zero. Resolve with one of:
-
-- Re-import the upstream content: `commerce-atoms-agents sync --force`.
-- Move the divergence into a per-store overlay (e.g. extend `AGENTS.md` in a separate file or maintain a fork-only addendum).
+If a consumer mutates a synced file, the next `sync` reports it as a `skipped-conflict` and exits non-zero. Resolve with `--force` (overwrite) or by maintaining a separate per-store overlay file.
 
 ---
 
-## What lives here
+## Repo layout
 
-| Folder | Purpose | Edited by |
-|---|---|---|
-| [`rules/core/`](rules/core/) | Canonical sources for path-scoped rules. | Humans. The `sync` CLI generates per-tool overlays from these. |
-| [`rules/`](rules/) (packages, stores) | Audience-specific rules for shoppy authors and store forks. | Humans. |
-| [`.cursor/rules/`](.cursor/rules/) | Cursor-specific overlays. **Generated** once the sync CLI ships; hand-maintained until then. | Generator (target). |
-| [`copilot-instructions.md`](copilot-instructions.md), [`CLAUDE.md`](CLAUDE.md) | Per-tool overlays. **Generated** once the sync CLI ships. | Generator (target). |
-| [`skills/`](skills/) | Reusable AI capabilities. | Humans. |
-| [`commands/`](commands/) | Slash commands. | Humans. |
-| [`prompts/`](prompts/) | Task templates. | Humans. |
-| [`personas/`](personas/) | Domain-expert system prompts (paste into chat to scope a session). | Humans. |
-| [`reference/`](reference/) | Philosophy and conventions for contributors to this repo. | Humans. |
-| [`docs/decisions/`](docs/decisions/) | ADRs. Append-only — supersede with a new ADR rather than editing. | Humans. |
+The repo separates the **npm package** from the **shipped product**:
+
+```text
+agents/
+├── package.json, tsconfig.*, LICENSE, CHANGELOG.md, README.md  ← npm package metadata
+├── bin/, src/                                                   ← package source (TypeScript)
+├── .github/workflows/                                           ← publish.yml + verify.yml
+├── CONTRIBUTING.md                                              ← kit-authoring rules
+├── AGENTS.md, CLAUDE.md, .github/copilot-instructions.md,
+│   .cursor/rules/                                               ← root overlays for kit authors
+└── kit/                                                         ← what ships to consumers
+    ├── AGENTS.md, CLAUDE.md, copilot-instructions.md            ← per-tool overlays for storefronts
+    ├── .cursor/rules/                                           ← Cursor overlays for storefronts
+    ├── rules/                                                   ← canonical storefront rules
+    ├── skills/, commands/, prompts/, personas/                  ← the five primitives
+    ├── reference/                                               ← philosophy + conventions
+    ├── docs/decisions/                                          ← ADRs
+    ├── INDEX.json + INDEX.schema.json                           ← registry of shipped artefacts
+    ├── RUN_PROTOCOL.md, QUICKSTART.md
+```
+
+The split is doctrine — root files govern the package; `kit/` files ship to consumers and govern Hydrogen storefronts. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the rationale.
+
+### Where to look
+
+| Question | Answer lives in |
+|---|---|
+| Storefront architecture rules and primitives | [`kit/AGENTS.md`](kit/AGENTS.md), [`kit/rules/core/`](kit/rules/core/) |
+| The five primitives (rule / persona / skill / command / prompt) | [`kit/reference/philosophy.md`](kit/reference/philosophy.md) |
+| Frontmatter and naming conventions | [`kit/reference/conventions.md`](kit/reference/conventions.md) |
+| Why a decision was made | [`kit/docs/decisions/`](kit/docs/decisions/) |
+| How to author or extend the kit | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| CLI source | [`src/sync.ts`](src/sync.ts), [`src/init.ts`](src/init.ts), [`src/validate.ts`](src/validate.ts), [`bin/sync.ts`](bin/sync.ts) |
 
 ---
 
 ## Doctrine
 
-`commerce-atoms` is the **adapter layer** between Shopify upstream (runtime + cookbooks) and a modular, AI-consistent storefront architecture. We **port** Shopify cookbook recipes; we do **not** write competing implementations.
+`commerce-atoms` is the **adapter layer** between Shopify upstream (runtime + cookbooks) and a modular, AI-consistent storefront architecture. The kit **ports** Shopify cookbook recipes; it does **not** write competing implementations.
 
-Full statement in [`AGENTS.md §0`](AGENTS.md). The doctrine is non-negotiable — slipping into "let's write our own version of B2B/Markets/etc." is the kit's biggest risk.
-
----
-
-## Personas
-
-| Domain | Personas |
-|---|---|
-| `personas/hydrogen/` | [Storefront Architect](personas/hydrogen/storefront-architect.agent.md), [Storefront Performance](personas/hydrogen/storefront-performance.agent.md) |
-| `personas/shopify/` | [Storefront API Specialist](personas/shopify/storefront-api-specialist.agent.md) |
-| `personas/commerce/` | [Catalog & Variants](personas/commerce/catalog-variants.agent.md), [SEO & Structured Data](personas/commerce/seo-structured-data.agent.md) |
-
-Paste the contents of any `.agent.md` into a fresh chat to scope the model's perspective for a session. See [`reference/philosophy.md`](reference/philosophy.md) for the rules-vs-personas-vs-skills distinction.
+Full statement in [`kit/AGENTS.md §0`](kit/AGENTS.md).
 
 ---
 
-## Adding new content
+## Status
 
-| Add | Where | Format |
-|---|---|---|
-| A rule | `rules/core/<topic>.md` or `rules/<audience>.md` | Markdown with frontmatter; canonical source for tool-overlay generation. |
-| A skill | `skills/<name>/SKILL.md` | GitHub Copilot Skills layout. See [`skills/README.md`](skills/README.md). |
-| A slash command | `commands/<name>.md` | Claude Code commands layout. See [`commands/README.md`](commands/README.md). |
-| A prompt | `prompts/<name>.prompt.md` | Claude Code prompt layout. See [`prompts/README.md`](prompts/README.md). |
-| A persona | `personas/<scope>/<name>.agent.md` | See [`reference/conventions.md`](reference/conventions.md). |
-| An ADR | `docs/decisions/00X-<slug>.md` | See [`docs/decisions/README.md`](docs/decisions/README.md). |
-
-After adding, register the artefact in [`INDEX.json`](INDEX.json) so the sync CLI picks it up.
+- `0.1.x` — sync CLI, init CLI, validate-architecture skill + slash command, five personas, three prompt templates, manifest + per-tool overlays. Released via Trusted Publishing (OIDC).
+- Per-tool overlays are currently hand-maintained mirrors of the canonical sources in [`kit/rules/core/`](kit/rules/core/). Deterministic generation from canonical sources is on the roadmap.
 
 ---
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for local setup, kit-authoring conventions, and the release workflow.
 
 ## License
 

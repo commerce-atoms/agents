@@ -14,6 +14,7 @@ const packageRoot = await resolvePackageRoot(__dirname);
 
 interface PackageJson {
   version: string;
+  repository?: {url?: string} | string;
 }
 
 async function resolvePackageRoot(start: string): Promise<string> {
@@ -34,10 +35,26 @@ async function resolvePackageRoot(start: string): Promise<string> {
   throw new Error(`Could not locate @commerce-atoms/agents package root from ${start}`);
 }
 
-async function readPackageVersion(): Promise<string> {
+async function readPackageJson(): Promise<PackageJson> {
   const raw = await readFile(resolve(packageRoot, 'package.json'), 'utf8');
-  const pkg = JSON.parse(raw) as PackageJson;
-  return pkg.version;
+  return JSON.parse(raw) as PackageJson;
+}
+
+async function readPackageVersion(): Promise<string> {
+  return (await readPackageJson()).version;
+}
+
+async function resolveRepoUrlBase(): Promise<string | undefined> {
+  const pkg = await readPackageJson();
+  const raw =
+    typeof pkg.repository === 'string'
+      ? pkg.repository
+      : pkg.repository?.url;
+  if (!raw) return undefined;
+  // Normalise `git+https://github.com/owner/repo.git` -> `https://github.com/owner/repo`
+  const cleaned = raw.replace(/^git\+/, '').replace(/\.git$/, '');
+  if (!/^https?:\/\/github\.com\//.test(cleaned)) return undefined;
+  return `${cleaned.replace(/\/+$/, '')}/blob/main`;
 }
 
 function help(): string {
@@ -81,6 +98,7 @@ DEFAULTS (sync, when agents.config.json is absent)
 
 DOCS
   https://github.com/commerce-atoms/agents
+  See QUICKSTART.md for a guided walkthrough from install to first deploy.
 `;
 }
 
@@ -117,6 +135,7 @@ async function main(argv: string[]): Promise<number> {
       dryRun: values['dry-run'],
       force: values.force,
       version: await readPackageVersion(),
+      repoUrlBase: await resolveRepoUrlBase(),
     });
 
     process.stdout.write(`${result.summary}\n`);

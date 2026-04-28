@@ -1,0 +1,158 @@
+{
+  "$schema": "./INDEX.schema.json",
+  "name": "@commerce-atoms/agents",
+  "version": "0.1.2",
+  "description": "Canonical AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
+  "manifest": {
+    "agentsMd": "AGENTS.md",
+    "claudeOverlay": "CLAUDE.md",
+    "copilotOverlay": "copilot-instructions.md",
+    "cursorOverlayDir": ".cursor/rules",
+    "quickstart": "QUICKSTART.md"
+  },
+  "rules": [
+    {
+      "id": "core/architecture",
+      "title": "Architecture boundaries and policies",
+      "path": "rules/core/architecture.md",
+      "appliesTo": ["app/**/*.ts", "app/**/*.tsx"],
+      "generates": [".cursor/rules/30-architecture-boundaries.mdc"]
+    },
+    {
+      "id": "core/routing",
+      "title": "Routing manifest rules",
+      "path": "rules/core/routing.md",
+      "appliesTo": ["app/routes.ts"],
+      "generates": [".cursor/rules/20-routing.mdc"]
+    },
+    {
+      "id": "core/imports",
+      "title": "Import policy",
+      "path": "rules/core/imports.md",
+      "appliesTo": ["app/**/*.ts", "app/**/*.tsx"],
+      "generates": [".cursor/rules/10-imports.mdc"]
+    },
+    {
+      "id": "core/styling",
+      "title": "Styling and CSS",
+      "path": "rules/core/styling.md",
+      "appliesTo": ["app/**/*.tsx", "app/**/*.module.css", "app/styles/**"],
+      "generates": [".cursor/rules/40-styling.mdc"]
+    },
+    {
+      "id": "packages",
+      "title": "Rules for @commerce-atoms/* package authors",
+      "path": "rules/packages.md",
+      "appliesTo": ["packages/*/src/**/*.ts", "packages/*/src/**/*.tsx"],
+      "audience": "shoppy"
+    },
+    {
+      "id": "stores",
+      "title": "Rules for store forks",
+      "path": "rules/stores.md",
+      "appliesTo": ["app/**/*"],
+      "audience": "store-fork"
+    }
+  ],
+  "skills": [
+    {
+      "id": "validate-architecture",
+      "title": "Validate architecture boundaries",
+      "path": "skills/validate-architecture/SKILL.md",
+      "status": "stable"
+    }
+  ],
+  "commands": [
+    {
+      "id": "init-store",
+      "title": "Initialize a new storefront",
+      "path": "commands/init-store.md",
+      "status": "stable"
+    },
+    {
+      "id": "deploy-setup",
+      "title": "Wire CI + secrets",
+      "path": "commands/deploy-setup.md",
+      "status": "stable"
+    },
+    {
+      "id": "deploy-check",
+      "title": "Pre-flight before push",
+      "path": "commands/deploy-check.md",
+      "status": "stable"
+    },
+    {
+      "id": "release",
+      "title": "Tag and push (CI deploys)",
+      "path": "commands/release.md",
+      "status": "stable"
+    },
+    {
+      "id": "validate-architecture",
+      "title": "Run validate-architecture skill",
+      "path": "commands/validate-architecture.md",
+      "status": "stable"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "pr-description",
+      "title": "Generate a PR description from a diff or commit list",
+      "path": "prompts/pr-description.prompt.md"
+    },
+    {
+      "id": "release-notes",
+      "title": "Generate CHANGELOG release notes from commits / PRs",
+      "path": "prompts/release-notes.prompt.md"
+    },
+    {
+      "id": "store-launch-checklist",
+      "title": "Pre-launch sweep before flipping a fork to production",
+      "path": "prompts/store-launch-checklist.prompt.md"
+    }
+  ],
+  "personas": [
+    {
+      "id": "hydrogen/storefront-architect",
+      "title": "Storefront Architect",
+      "path": "personas/hydrogen/storefront-architect.agent.md",
+      "scope": "hydrogen"
+    },
+    {
+      "id": "hydrogen/storefront-performance",
+      "title": "Storefront Performance",
+      "path": "personas/hydrogen/storefront-performance.agent.md",
+      "scope": "hydrogen"
+    },
+    {
+      "id": "shopify/storefront-api-specialist",
+      "title": "Storefront API Specialist",
+      "path": "personas/shopify/storefront-api-specialist.agent.md",
+      "scope": "shopify"
+    },
+    {
+      "id": "commerce/catalog-variants",
+      "title": "Catalog & Variants",
+      "path": "personas/commerce/catalog-variants.agent.md",
+      "scope": "commerce"
+    },
+    {
+      "id": "commerce/seo-structured-data",
+      "title": "SEO & Structured Data",
+      "path": "personas/commerce/seo-structured-data.agent.md",
+      "scope": "commerce"
+    }
+  ],
+  "reference": [
+    {
+      "id": "philosophy",
+      "title": "What rules / personas / skills / commands / prompts are and aren't",
+      "path": "reference/philosophy.md"
+    },
+    {
+      "id": "conventions",
+      "title": "File naming, frontmatter, and structure for every artefact",
+      "path": "reference/conventions.md"
+    }
+  ]
+}

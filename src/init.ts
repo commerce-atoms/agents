@@ -126,14 +126,18 @@ function doneSummary({name, dir, packageVersion}: DoneSummaryParams): string {
     `  ${dir}`,
     '',
     'Next steps:',
-    '  1. cd ' + basename(dir),
+    `  1. cd ${basename(dir)}`,
     '  2. Edit app/config/brand.ts (name, locales, colours, fonts).',
     '  3. Replace app/assets/brand/* with your real assets.',
-    '  4. Set up Shopify Admin (storefront token, products, theme).',
-    '  5. Wire CI: npx @commerce-atoms/agents -- /deploy-setup',
-    '  6. First deploy: git push origin main',
+    '  4. Push to its own private repo:',
+    `       gh repo create commerce-atoms/${name} --private --source=. --push`,
+    '  5. Wire CI (one-time): use the /deploy-setup slash command, or follow',
+    '       https://github.com/commerce-atoms/agents/blob/main/kit/commands/deploy-setup.md',
+    '  6. Daily workflow: npm install && npm run dev',
+    '  7. Pre-flight before push: npx commerce-atoms-agents validate-architecture',
+    '  8. First deploy: git push origin main (CI deploys via .github/workflows/deploy.yml).',
     '',
-    `(@commerce-atoms/agents@${packageVersion} pinned in agents.config.json)`,
+    `(@commerce-atoms/agents@${packageVersion} pinned in agents.config.json — see QUICKSTART.md for the full guide.)`,
   ].join('\n');
 }
 
