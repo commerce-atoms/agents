@@ -6,6 +6,7 @@ import {readFile, stat} from 'node:fs/promises';
 
 import {sync} from '../src/sync.js';
 import {validate, formatReport, formatReportJson} from '../src/validate.js';
+import {init} from '../src/init.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -40,16 +41,23 @@ async function readPackageVersion(): Promise<string> {
 }
 
 function help(): string {
-  return `commerce-atoms-agents — AI manifest sync + architecture validation
+  return `commerce-atoms-agents — AI manifest sync + architecture validation + storefront init
 
 USAGE
   commerce-atoms-agents <command> [options]
 
 COMMANDS
+  init <name>              Clone the starter, brand it, pin agents, first commit.
   sync                     Copy canonical content from this package into the consumer repo.
   validate-architecture    Run architecture boundary validators against a project.
   version                  Print the package version.
   help                     Show this help.
+
+OPTIONS (init)
+  --out <dir>            Parent directory (default: cwd).
+  --starter-repo <url>   Override the starter repo.
+  --starter-ref <ref>    Override the starter branch / tag.
+  --dry-run              Print plan but do not write.
 
 OPTIONS (sync)
   --config <path>   Consumer config file (default: agents.config.json in cwd).
@@ -109,6 +117,39 @@ async function main(argv: string[]): Promise<number> {
       dryRun: values['dry-run'],
       force: values.force,
       version: await readPackageVersion(),
+    });
+
+    process.stdout.write(`${result.summary}\n`);
+    return result.exitCode;
+  }
+
+  if (command === 'init') {
+    const {values, positionals} = parseArgs({
+      args: argv.slice(1),
+      options: {
+        out: {type: 'string'},
+        'starter-repo': {type: 'string'},
+        'starter-ref': {type: 'string'},
+        'dry-run': {type: 'boolean', default: false},
+      },
+      strict: true,
+      allowPositionals: true,
+    });
+
+    const name = positionals[0];
+    if (!name) {
+      process.stderr.write('Error: store name is required.\n\nUsage: commerce-atoms-agents init <store-name>\n');
+      return 2;
+    }
+
+    const result = await init({
+      name,
+      outDir: values.out,
+      starterRepo: values['starter-repo'],
+      starterRef: values['starter-ref'],
+      packageRoot,
+      packageVersion: await readPackageVersion(),
+      dryRun: values['dry-run'],
     });
 
     process.stdout.write(`${result.summary}\n`);

@@ -20,6 +20,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 - **`commerce-atoms-agents` CLI** — `sync`, `validate-architecture`, `version`, `help` commands per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md) and [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md).
 - **`validate-architecture` skill + slash command** — runs the boundary validators and reports cross-module imports, reverse imports, dumping-ground folders, barrel files, Remix imports, and missing/duplicated route manifests. Migrated from the now-archived `mcp-hydrogen-kit`.
 - **`src/internal/path-to-owner.mjs`** — owner-inference primitive (migrated from `mcp-hydrogen-kit/src/tools/architecture.graphql.validatePlacement.ts`).
+- **`init` subcommand + `/init-store` slash command** — clone the canonical starter, brand it, pin `@commerce-atoms/agents`, generate brand-layer placeholders, run `sync`, and create the first commit.
 - **GitHub Actions** — `publish.yml` (on tag push) + `verify.yml` (on PR / push to main).
 
 ### Changed
