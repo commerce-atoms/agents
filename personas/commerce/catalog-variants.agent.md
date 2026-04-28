@@ -80,7 +80,7 @@ function findVariant(variants, selectedOptions) {
 - Framework-agnostic examples
 - Clear data shapes
 - Edge case checklists
-- @shoppy/* package references when relevant
+- @commerce-atoms/* package references when relevant
 
 ## Execution Contract
 

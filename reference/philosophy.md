@@ -1,91 +1,105 @@
 # Philosophy
 
-## Rules vs Agents
+> What this repo is and isn't, and how its primitives relate to each other.
 
-This repository contains two distinct types of AI assistance:
+## Doctrine
 
-### Rules
+`commerce-atoms` is the **adapter layer** between Shopify upstream and a modular, AI-consistent storefront architecture. The kit does **not** write competing implementations of features Shopify already ships. Full statement in [`../AGENTS.md §0`](../AGENTS.md).
 
-**What**: Always-on editor guidance that runs passively.
-
-**Where**: `rules/cursor/`, `rules/copilot/`
-
-**Format**: Tool-specific (`.mdc`, `.md`)
-
-**Purpose**: Enforce architecture, prevent mistakes, maintain consistency.
-
-**Lifecycle**: Committed into repos, active during all editing.
+This is the single most important sentence in the entire ecosystem. Internalise it before editing anything else here.
 
 ---
 
-### Agents
+## Five primitives
 
-**What**: Persona profiles that embody domain expertise.
+This repo ships five distinct kinds of AI assistance. They are not interchangeable.
 
-**Where**: `agents/hydrogen/`, `agents/shopify/`, `agents/commerce/`
+### Rules — guardrails
 
-**Format**: `.agent.md` with frontmatter + personality + mission
+**Where:** [`rules/`](../rules/), generated into `.cursor/rules/`, `copilot-instructions.md`, `CLAUDE.md` overlays.
 
-**Purpose**: Provide deep expertise for specific problem domains.
+**What:** Always-on, passive guidance. Loaded automatically by the editor.
 
-**Lifecycle**: Invoked when you need specialized help.
+**Purpose:** Enforce architecture, prevent mistakes, maintain consistency.
 
----
+**Lifecycle:** Synced into consumer repos via the `commerce-atoms-agents` package. Versioned and pinned.
 
-## Key Distinction
+### Personas — expertise
 
-| Aspect | Rules | Agents |
-|--------|-------|--------|
-| Nature | Guardrails | Personas |
-| Activation | Automatic | On-demand |
-| Scope | All edits | Specific domain |
-| Style | Declarative constraints | Conversational expertise |
-| Output | Inline guidance | Deep assistance |
+**Where:** [`personas/<scope>/<name>.agent.md`](../personas/).
 
----
+**What:** Domain-expert system prompts (Hydrogen architect, Storefront API specialist, etc.).
 
-## What Agents Are
+**Purpose:** Scope the model's perspective for a session that needs deep domain knowledge.
 
-Agents are **capability profiles** — durable personas that help developers think and build in the commerce ecosystem.
+**Lifecycle:** Pasted into a fresh chat. Not editor-loaded; invoked on demand.
 
-Each agent has:
-- **Identity**: Who they are, how they think
-- **Mission**: What they help you accomplish
-- **Knowledge**: What they know deeply
-- **Style**: How they communicate
+### Skills — capabilities
 
----
+**Where:** [`skills/<name>/SKILL.md`](../skills/).
 
-## What Agents Are NOT
+**What:** Reusable AI workflows the agent can invoke (`validate-architecture`, `port-hydrogen-cookbook-recipe`, …).
 
-- ❌ Task scripts ("run lint", "check imports")
-- ❌ CI/CD checklists
-- ❌ One-shot audits
-- ❌ Repo tooling automation
+**Purpose:** Encode multi-step procedures that the agent can run repeatedly with a defined input / output contract.
 
-Those belong in scripts, CI, or CONTRIBUTING docs.
+**Lifecycle:** Native to GitHub Copilot's Skills format; consumed as long-form prompts by Claude Code and Cursor.
 
----
+### Commands — workflows
 
-## Agent Domains
+**Where:** [`commands/<name>.md`](../commands/).
 
-### Hydrogen (`agents/hydrogen/`)
-Storefront engineering: architecture, performance, testing.
+**What:** Short, named workflows (`/init-store`, `/deploy-check`, `/release`).
 
-### Shopify (`agents/shopify/`)
-Platform expertise: Storefront API, Cart, Checkout, Customer APIs.
+**Purpose:** Single-keystroke triggers for routine operations.
 
-### Commerce (`agents/commerce/`)
-Framework-agnostic: variants, pricing, SEO, search, merchandising.
+**Lifecycle:** Native to Claude Code; surfaced as snippets / refs in Cursor and Copilot.
+
+### Prompts — templates
+
+**Where:** [`prompts/<name>.prompt.md`](../prompts/).
+
+**What:** Reusable task templates with placeholders (PR descriptions, release notes, retros).
+
+**Purpose:** Replace one-off "please do X" requests with a versioned, improvable artefact.
+
+**Lifecycle:** Pasted into chat as needed.
 
 ---
 
-## Usage Pattern
+## When to use what
 
-```
-Need architecture help    → Invoke Storefront Architect
-Need API query help       → Invoke Storefront API Specialist
-Need variant logic help   → Invoke Catalog & Variants
-```
+| Need | Primitive |
+|---|---|
+| Stop the model from writing into `app/lib` | Rule |
+| Ask an expert how Shopify variants work | Persona (`commerce/catalog-variants`) |
+| Run the boundary validators against a project | Skill (`validate-architecture`) |
+| Wrap CI deploy preparation behind one keystroke | Command (`/deploy-setup`) |
+| Generate release notes from a changeset | Prompt (`shoppy-release-notes.prompt.md`) |
 
-Agents are system prompts you can paste into any AI chat to get specialized assistance.
+If a primitive starts pulling toward another category — e.g. a rule that grew into a multi-step workflow — split it. Misclassification is the most common smell in this repo.
+
+---
+
+## What this repo is NOT
+
+- ❌ A framework. The Hydrogen runtime and Storefront API are Shopify's; we don't reimplement them.
+- ❌ A theme system. Brand swapping happens in `app/config/brand.ts` of the consumer repo.
+- ❌ A CI/CD platform. GitHub Actions deploys; the agent prepares and validates.
+- ❌ A testing harness. Smoke tests live in the consumer repo (`hydrogen-storefront-starter/app/tests/`).
+- ❌ A persona zoo. Personas are intentional, scoped, and few. If you can't name the gap a new persona fills, write a skill instead.
+
+---
+
+## Domains (for personas)
+
+### `personas/hydrogen/`
+
+Framework-specific: Hydrogen architecture, React Router 7, Oxygen.
+
+### `personas/shopify/`
+
+Platform-specific: Storefront API, Customer Account API, Cart, Checkout.
+
+### `personas/commerce/`
+
+Framework-agnostic: variants, pricing, SEO, search, merchandising — patterns that work in any storefront, not just Hydrogen.

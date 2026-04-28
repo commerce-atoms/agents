@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "@commerce-atoms/agents INDEX.json",
+  "description": "Registry of every artefact this package ships. Walked by the sync CLI to materialise per-tool overlays in consumer repos.",
+  "type": "object",
+  "required": ["name", "version", "manifest", "rules"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "name": {"type": "string"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z-.]+)?$"},
+    "description": {"type": "string"},
+    "manifest": {
+      "type": "object",
+      "required": ["agentsMd"],
+      "properties": {
+        "agentsMd": {"type": "string"},
+        "claudeOverlay": {"type": "string"},
+        "copilotOverlay": {"type": "string"},
+        "cursorOverlayDir": {"type": "string"}
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"},
+          "appliesTo": {"type": "array", "items": {"type": "string"}},
+          "generates": {"type": "array", "items": {"type": "string"}},
+          "audience": {"type": "string", "enum": ["shoppy", "store-fork", "starter"]}
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"},
+          "status": {"type": "string", "enum": ["planned-mvp", "stable", "backlog", "deprecated"]}
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"},
+          "status": {"type": "string", "enum": ["planned-mvp", "stable", "backlog", "deprecated"]}
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"}
+        }
+      }
+    },
+    "personas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"},
+          "scope": {"type": "string", "enum": ["hydrogen", "shopify", "commerce"]}
+        }
+      }
+    }
+  }
+}

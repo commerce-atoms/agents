@@ -1,0 +1,48 @@
+---
+description: Module boundaries, shared folder policies, route/view split. See rules/core/architecture.md.
+globs:
+  - "app/**/*.ts"
+  - "app/**/*.tsx"
+alwaysApply: true
+---
+
+This is a Cursor-specific overlay. **Canonical source: [`rules/core/architecture.md`](../../rules/core/architecture.md).**
+
+## Module boundaries — non-negotiable
+
+- Modules **NEVER** import from other modules.
+- `app/platform/*` MUST NOT import `app/modules/*`.
+- `app/components/*` should remain domain-agnostic and SHOULD NOT import `app/modules/*`.
+
+## Allowed imports from within a module
+
+Relative imports within the same module subtree, plus:
+
+- `app/components/*` (shared UI)
+- `app/hooks/*` (generic UI hooks only)
+- `app/utils/*` (generic utilities only)
+- `app/platform/*` (infrastructure)
+- `app/layout/*` (app shell — can import from modules for shell integration)
+- `@commerce-atoms/*` (pure logic packages)
+
+## Cross-module reuse ladder
+
+1. Duplicate intentionally (< 50 lines).
+2. Promote to `app/components/**` (`primitives/`, `catalog/`, `commerce/`, `pagination/`).
+3. Promote to `app/hooks/*`.
+4. Promote to `app/utils/*`.
+5. Extract pure logic to `@commerce-atoms/*`.
+6. Create platform utilities.
+
+## Forbidden dumping-ground folders
+
+`app/lib`, `app/common`, `app/shared`, `app/ui`.
+
+## Route / view separation
+
+- `*.route.tsx` owns loaders / actions / meta / headers / Storefront API calls.
+- `*.view.tsx` owns rendering only — no API calls, no sessions, no meta exports.
+
+## No barrel files
+
+Never create `index.ts` exports. Always use explicit imports.
