@@ -8,9 +8,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-04-28
+
 ### Fixed
 
 - **Kit docs honesty pass** — removed stale references to `commerce-atoms-agents check`, local `PLAN.md` / “PR S2” placeholders, and `/back-port` as operational. [`kit/rules/stores.md`](kit/rules/stores.md) no longer claims enforced core-file markers or hash smoke tests (manual upstream discipline until tooling exists). Canonical [`kit/rules/core/*.md`](kit/rules/core/) blockquotes now describe **hand-maintained** Cursor overlays, not generated ones. [`kit/skills/validate-architecture/SKILL.md`](kit/skills/validate-architecture/SKILL.md) and [`kit/commands/validate-architecture.md`](kit/commands/validate-architecture.md) drop the fictional multi-skill PR workflow. [`kit/rules/packages.md`](kit/rules/packages.md) drops a brittle per-package version snapshot. Misc: [`kit/reference/philosophy.md`](kit/reference/philosophy.md) prompt filename fix; [`kit/CLAUDE.md`](kit/CLAUDE.md) aligned with the skill edit.
+
+### Migration notes
+
+Consumers upgrade the same way as prior patches:
+
+```bash
+npm i -D @commerce-atoms/agents@0.1.2
+npx commerce-atoms-agents sync
+```
 
 ---
 

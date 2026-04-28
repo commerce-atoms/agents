@@ -1,6 +1,6 @@
 {
   "name": "@commerce-atoms/agents",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Universal AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "type": "module",
   "license": "MIT",

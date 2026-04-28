@@ -1,7 +1,7 @@
 {
   "$schema": "./INDEX.schema.json",
   "name": "@commerce-atoms/agents",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Canonical AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "manifest": {
     "agentsMd": "AGENTS.md",
