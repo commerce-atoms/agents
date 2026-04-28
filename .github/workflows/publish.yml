@@ -21,15 +21,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Upgrade npm for Trusted Publishing
+      - name: Verify npm supports Trusted Publishing
         run: |
-          npm --version
-          npm install -g npm@^11.5.1
-          npm --version
+          NPM_VERSION=$(npm --version)
+          echo "Node $(node --version), npm ${NPM_VERSION}"
+          NPM_MAJOR=${NPM_VERSION%%.*}
+          if [ "$NPM_MAJOR" -lt 11 ]; then
+            echo "::error::npm ${NPM_VERSION} is too old for Trusted Publishing (need >=11.5.1). Bump runner Node version."
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm ci
