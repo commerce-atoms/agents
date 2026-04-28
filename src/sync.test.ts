@@ -62,16 +62,16 @@ void test('sync rewrites repo-relative links in AGENTS.md to absolute GitHub URL
       /\]\(docs\/decisions\/[^)]+\)/,
       'consumer AGENTS.md must not contain raw repo-relative ADR links',
     );
-    // SHOULD contain absolute GitHub blob URLs to the canonical sources
+    // SHOULD contain absolute GitHub blob URLs to the canonical sources under kit/
     assert.match(
       consumerAgentsMd,
-      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/docs\/decisions\//,
-      'consumer AGENTS.md should contain absolute ADR URLs',
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/kit\/docs\/decisions\//,
+      'consumer AGENTS.md should contain absolute ADR URLs (under kit/)',
     );
     assert.match(
       consumerAgentsMd,
-      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/rules\/core\//,
-      'consumer AGENTS.md should contain absolute rules/core URLs',
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/kit\/rules\/core\//,
+      'consumer AGENTS.md should contain absolute kit/rules/core URLs',
     );
   } finally {
     await rm(outDir, {recursive: true, force: true});
@@ -96,8 +96,8 @@ void test('sync rewrites links in nested .cursor/rules/*.mdc relative to their l
     );
     assert.match(
       cursorRule,
-      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/rules\/core\/imports\.md/,
-      'cursor mdc should rewrite to absolute repo URL',
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/kit\/rules\/core\/imports\.md/,
+      'cursor mdc should rewrite to absolute repo URL (under kit/)',
     );
   } finally {
     await rm(outDir, {recursive: true, force: true});
@@ -117,7 +117,7 @@ void test('sync uses custom repoUrlBase when provided', async () => {
     const consumerAgentsMd = await readFile(join(outDir, 'AGENTS.md'), 'utf8');
     assert.match(
       consumerAgentsMd,
-      /https:\/\/example\.com\/my-org\/agents\/blob\/v0\.1\.0\/docs\/decisions\//,
+      /https:\/\/example\.com\/my-org\/agents\/blob\/v0\.1\.0\/kit\/docs\/decisions\//,
     );
   } finally {
     await rm(outDir, {recursive: true, force: true});

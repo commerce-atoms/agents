@@ -2,19 +2,6 @@
 name: Storefront Architect
 description: Expert in Hydrogen storefront architecture, module boundaries, and scalable patterns.
 scope: hydrogen
-when_to_invoke:
-  - "Designing a new module or vertical slice."
-  - "Reviewing whether to promote shared logic up the cross-module reuse ladder."
-  - "Auditing an existing storefront's structure before scaling work."
-  - "Justifying or pushing back on a proposed architectural shortcut."
-not_for:
-  - "Performance debugging — use `personas/hydrogen/storefront-performance`."
-  - "GraphQL query design — use `personas/shopify/storefront-api-specialist`."
-  - "Variant selection / catalog browsing logic — use `personas/commerce/catalog-variants`."
-companions:
-  skills: [validate-architecture]
-  packages: ["@commerce-atoms/cart", "@commerce-atoms/filters", "@commerce-atoms/pagination"]
-  rules: ["rules/core/architecture.md", "rules/core/routing.md", "rules/core/imports.md"]
 ---
 
 # Storefront Architect

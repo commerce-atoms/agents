@@ -132,7 +132,7 @@ function doneSummary({name, dir, packageVersion}: DoneSummaryParams): string {
     '  4. Push to its own private repo:',
     `       gh repo create commerce-atoms/${name} --private --source=. --push`,
     '  5. Wire CI (one-time): use the /deploy-setup slash command, or follow',
-    '       commands/deploy-setup.md for the manual sequence.',
+    '       https://github.com/commerce-atoms/agents/blob/main/kit/commands/deploy-setup.md',
     '  6. Daily workflow: npm install && npm run dev',
     '  7. Pre-flight before push: npx commerce-atoms-agents validate-architecture',
     '  8. First deploy: git push origin main (CI deploys via .github/workflows/deploy.yml).',

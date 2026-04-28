@@ -14,6 +14,7 @@ interface IndexManifest {
   claudeOverlay?: string;
   copilotOverlay?: string;
   cursorOverlayDir?: string;
+  quickstart?: string;
 }
 
 interface IndexFile {
@@ -25,6 +26,7 @@ interface IndexFile {
   commands?: IndexEntry[];
   prompts?: IndexEntry[];
   personas?: IndexEntry[];
+  reference?: IndexEntry[];
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,14 +52,16 @@ async function resolvePackageRoot(start: string): Promise<string> {
 
 async function main(): Promise<void> {
   const packageRoot = await resolvePackageRoot(__dirname);
-  const indexPath = resolve(packageRoot, 'INDEX.json');
+  const kitRoot = resolve(packageRoot, 'kit');
+  const indexPath = resolve(kitRoot, 'INDEX.json');
   const index = JSON.parse(await readFile(indexPath, 'utf8')) as IndexFile;
 
   const issues: string[] = [];
 
+  // INDEX.json paths are kit-relative.
   const checkPath = async (label: string, p: string | undefined): Promise<void> => {
     if (!p) return;
-    const abs = resolve(packageRoot, p);
+    const abs = resolve(kitRoot, p);
     try {
       await stat(abs);
     } catch {
@@ -69,6 +73,7 @@ async function main(): Promise<void> {
   await checkPath('manifest.claudeOverlay', index.manifest?.claudeOverlay);
   await checkPath('manifest.copilotOverlay', index.manifest?.copilotOverlay);
   await checkPath('manifest.cursorOverlayDir', index.manifest?.cursorOverlayDir);
+  await checkPath('manifest.quickstart', index.manifest?.quickstart);
 
   for (const r of index.rules ?? []) {
     await checkPath(`rules[${r.id}]`, r.path);
@@ -86,6 +91,9 @@ async function main(): Promise<void> {
   }
   for (const p of index.personas ?? []) {
     await checkPath(`personas[${p.id}]`, p.path);
+  }
+  for (const r of index.reference ?? []) {
+    await checkPath(`reference[${r.id}]`, r.path);
   }
 
   if (issues.length > 0) {

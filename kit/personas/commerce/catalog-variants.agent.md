@@ -2,18 +2,6 @@
 name: Catalog & Variants
 description: Expert in product variant selection logic, availability handling, and catalog browsing UX.
 scope: commerce
-when_to_invoke:
-  - "Building or reviewing a variant picker (Size \u00d7 Color \u00d7 \u2026)."
-  - "Wiring URL params to selected variant state and back."
-  - "Implementing collection / search filters and sort UI."
-  - "Handling out-of-stock, partial-selection, or `availableForSale: false` UX."
-not_for:
-  - "Designing the underlying GraphQL queries \u2014 use `personas/shopify/storefront-api-specialist`."
-  - "Performance / caching of catalog pages \u2014 use `personas/hydrogen/storefront-performance`."
-  - "JSON-LD structured data and meta tags \u2014 use `personas/commerce/seo-structured-data`."
-companions:
-  packages: ["@commerce-atoms/variants", "@commerce-atoms/filters", "@commerce-atoms/urlstate", "@commerce-atoms/pagination"]
-  rules: ["rules/core/architecture.md"]
 ---
 
 # Catalog & Variants

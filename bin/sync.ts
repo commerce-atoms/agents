@@ -7,7 +7,6 @@ import {readFile, stat} from 'node:fs/promises';
 import {sync} from '../src/sync.js';
 import {validate, formatReport, formatReportJson} from '../src/validate.js';
 import {init} from '../src/init.js';
-import {check, formatCheckResult} from '../src/check.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -68,7 +67,6 @@ COMMANDS
   init <name>              Clone the starter, brand it, pin agents, first commit.
   sync                     Copy canonical content from this package into the consumer repo.
   validate-architecture    Run architecture boundary validators against a project.
-  check                    Combined health check: config + version freshness + architecture.
   version                  Print the package version.
   help                     Show this help.
 
@@ -88,10 +86,6 @@ OPTIONS (validate-architecture)
   --out <dir>       Project root to validate (default: cwd).
   --strict          Treat warnings as exit-failing.
   --json            Emit JSON report instead of human-readable.
-
-OPTIONS (check)
-  --out <dir>       Project root to check (default: cwd).
-  --strict          Treat warnings as exit-failing.
 
 DEFAULTS (sync, when agents.config.json is absent)
   Audience:           store-fork
@@ -197,27 +191,6 @@ async function main(argv: string[]): Promise<number> {
     const {report, exitCode} = await validate({root, strict: values.strict});
     process.stdout.write(`${values.json ? formatReportJson(report) : formatReport(report)}\n`);
     return exitCode;
-  }
-
-  if (command === 'check') {
-    const {values} = parseArgs({
-      args: argv.slice(1),
-      options: {
-        out: {type: 'string'},
-        strict: {type: 'boolean', default: false},
-      },
-      strict: true,
-      allowPositionals: false,
-    });
-
-    const root = resolve(values.out ?? process.cwd());
-    const result = await check({
-      root,
-      installedAgentsVersion: await readPackageVersion(),
-      strict: values.strict,
-    });
-    process.stdout.write(`${formatCheckResult(result)}\n`);
-    return result.exitCode;
   }
 
   process.stderr.write(`Unknown command: ${command}\n\n${help()}`);

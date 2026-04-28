@@ -37,6 +37,14 @@ export interface SyncParams {
 
 const DEFAULT_REPO_URL_BASE = 'https://github.com/commerce-atoms/agents/blob/main';
 
+/**
+ * Subdirectory under the package root where shipped product content lives.
+ * The root of the agents repo holds npm package metadata, source, and
+ * kit-authoring docs; everything that gets synced to consumer repos lives
+ * under `kit/`. See `CONTRIBUTING.md` for the rationale.
+ */
+const KIT_DIR = 'kit';
+
 interface SyncSourceSpec {
   /** Absolute path to the source file. */
   from: string;
@@ -63,27 +71,27 @@ export async function sync({
   const sources: SyncSourceSpec[] = [];
 
   sources.push({
-    from: join(packageRoot, 'AGENTS.md'),
+    from: join(packageRoot, KIT_DIR, 'AGENTS.md'),
     to: join(outDir, out.agentsMd),
-    sourceFileInRepo: 'AGENTS.md',
+    sourceFileInRepo: `${KIT_DIR}/AGENTS.md`,
   });
 
   if (tools.claude) {
     sources.push({
-      from: join(packageRoot, 'CLAUDE.md'),
+      from: join(packageRoot, KIT_DIR, 'CLAUDE.md'),
       to: join(outDir, out.claudeMd),
-      sourceFileInRepo: 'CLAUDE.md',
+      sourceFileInRepo: `${KIT_DIR}/CLAUDE.md`,
     });
   }
   if (tools.copilot) {
     sources.push({
-      from: join(packageRoot, 'copilot-instructions.md'),
+      from: join(packageRoot, KIT_DIR, 'copilot-instructions.md'),
       to: join(outDir, out.copilotInstructions),
-      sourceFileInRepo: 'copilot-instructions.md',
+      sourceFileInRepo: `${KIT_DIR}/copilot-instructions.md`,
     });
   }
   if (tools.cursor) {
-    const cursorSrc = join(packageRoot, '.cursor', 'rules');
+    const cursorSrc = join(packageRoot, KIT_DIR, '.cursor', 'rules');
     if (await pathExists(cursorSrc)) {
       const cursorOut = join(outDir, out.cursorRulesDir);
       const entries = await readdir(cursorSrc, {withFileTypes: true});
@@ -92,7 +100,7 @@ export async function sync({
         sources.push({
           from: join(cursorSrc, entry.name),
           to: join(cursorOut, entry.name),
-          sourceFileInRepo: ['.cursor', 'rules', entry.name].join('/'),
+          sourceFileInRepo: [KIT_DIR, '.cursor', 'rules', entry.name].join('/'),
         });
       }
     }

@@ -1,0 +1,29 @@
+---
+description: Kit-authoring rules for the @commerce-atoms/agents repo. Distinguishes root (npm package) from kit/ (shipped product). Always-on.
+alwaysApply: true
+---
+
+# Kit authoring (this repo)
+
+You are operating in the `@commerce-atoms/agents` npm package itself, **not** a Hydrogen storefront. The shipped product lives under [`kit/`](../../kit/) and has its own per-tool overlays — those rules govern consumer repos, not this one.
+
+## Always
+
+- TypeScript only across `src/` and `bin/`. No `.js` / `.mjs` source. No `any`. Strict mode is non-negotiable.
+- Run `npm run verify` after substantive edits to source. Don't disable a check.
+- Add a test for any behaviour change. Use `node:test` and `node:assert/strict`.
+- New / modified content under `kit/` must be registered in [`kit/INDEX.json`](../../kit/INDEX.json). The CI step `npm run lint:json` rejects missing or broken paths.
+- Synced markdown's repo-relative links are rewritten by [`src/internal/rewrite-links.ts`](../../src/internal/rewrite-links.ts) at sync time. Author links naturally.
+
+## Never
+
+- Apply storefront rules (anything from `kit/rules/core/*`) to this repo's source. Those are for Hydrogen apps.
+- Run `npm publish` from a workstation. Releases go via tag + `.github/workflows/publish.yml` (Trusted Publishing).
+- Move kit-authoring concerns into `kit/`. The split between root (config) and `kit/` (product) is doctrine — see [`CONTRIBUTING.md`](../../CONTRIBUTING.md).
+- Edit `kit/` without first reading [`kit/AGENTS.md`](../../kit/AGENTS.md) and [`kit/reference/conventions.md`](../../kit/reference/conventions.md).
+
+## Quick reference
+
+- Releasing: [`CONTRIBUTING.md`](../../CONTRIBUTING.md) → "Releasing".
+- Adding to the kit: [`CONTRIBUTING.md`](../../CONTRIBUTING.md) → "Kit content".
+- ADRs: [`kit/docs/decisions/`](../../kit/docs/decisions/).

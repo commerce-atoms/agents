@@ -48,34 +48,19 @@
       "types": "./dist/src/init.d.ts",
       "import": "./dist/src/init.js"
     },
-    "./check": {
-      "types": "./dist/src/check.d.ts",
-      "import": "./dist/src/check.js"
-    },
     "./package.json": "./package.json"
   },
   "files": [
-    "AGENTS.md",
-    "CLAUDE.md",
-    "copilot-instructions.md",
-    "QUICKSTART.md",
-    "RUN_PROTOCOL.md",
-    "INDEX.json",
-    "INDEX.schema.json",
-    ".cursor/",
-    "rules/",
-    "skills/",
-    "commands/",
-    "prompts/",
-    "personas/",
-    "reference/",
-    "docs/decisions/",
-    "dist/"
+    "kit/",
+    "dist/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json && chmod +x dist/bin/sync.js dist/bin/validate-index.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/check.test.ts src/internal/path-to-owner.test.ts src/internal/rewrite-links.test.ts",
+    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/internal/path-to-owner.test.ts src/internal/rewrite-links.test.ts",
     "lint:json": "tsx bin/validate-index.ts",
     "verify": "npm run typecheck && npm run lint:json && npm test",
     "prepack": "npm run build"

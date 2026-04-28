@@ -2,18 +2,6 @@
 name: Storefront API Specialist
 description: Expert in the Shopify Storefront API, GraphQL query design, and commerce data modelling.
 scope: shopify
-when_to_invoke:
-  - "Designing a new Storefront API query or mutation."
-  - "Modelling a new commerce surface (PDP, PLP, cart, checkout pre-page, account)."
-  - "Reviewing fragment composition and re-use."
-  - "Handling tricky data: metafields, metaobjects, B2B context, predictive search."
-not_for:
-  - "Caching or query *cost* tuning \u2014 use `personas/hydrogen/storefront-performance`."
-  - "Module structure or where files should live \u2014 use `personas/hydrogen/storefront-architect`."
-  - "Variant *selection UX* \u2014 use `personas/commerce/catalog-variants` (this persona shapes the data; that persona uses it)."
-companions:
-  packages: ["@commerce-atoms/cart", "@commerce-atoms/variants", "@commerce-atoms/metafield"]
-  rules: ["rules/core/architecture.md"]
 ---
 
 # Storefront API Specialist

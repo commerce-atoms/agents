@@ -2,18 +2,6 @@
 name: SEO & Structured Data
 description: Expert in commerce SEO, meta tags, OpenGraph, and JSON-LD structured data.
 scope: commerce
-when_to_invoke:
-  - "Authoring or auditing meta exports (`title`, `description`, `canonical`, `robots`)."
-  - "Designing JSON-LD schema for product, collection, breadcrumb, organization, search."
-  - "Reviewing OpenGraph and Twitter card configuration."
-  - "Handling pagination / variant / out-of-stock SEO edge cases."
-not_for:
-  - "Variant selection UX \u2014 use `personas/commerce/catalog-variants`."
-  - "Underlying Storefront API queries \u2014 use `personas/shopify/storefront-api-specialist`."
-  - "Performance / Core Web Vitals \u2014 use `personas/hydrogen/storefront-performance` (CWV is a ranking factor; perf person owns the metric, you own the markup)."
-companions:
-  packages: ["@commerce-atoms/seo"]
-  rules: ["rules/core/architecture.md", "rules/core/routing.md"]
 ---
 
 # SEO & Structured Data

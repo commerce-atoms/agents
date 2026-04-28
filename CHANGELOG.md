@@ -12,31 +12,36 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ### Added
 
-- **3 real prompt templates** in `prompts/`: [`pr-description.prompt.md`](prompts/pr-description.prompt.md), [`release-notes.prompt.md`](prompts/release-notes.prompt.md), [`store-launch-checklist.prompt.md`](prompts/store-launch-checklist.prompt.md). The directory previously promised templates that did not exist.
-- **`commerce-atoms-agents check`** subcommand — combined health check that runs `validate-architecture`, verifies pinned `agentsVersion` against the installed package, and validates `agents.config.json` shape. Exposed as `@commerce-atoms/agents/check` for programmatic use.
-- **`QUICKSTART.md`** — concrete walkthrough from `init` to first deploy, plus a daily workflow cheatsheet. Shipped in the npm tarball and surfaced in `INDEX.json#manifest.quickstart`.
-- **`reference/{philosophy,conventions}.md`** registered in [`INDEX.json`](INDEX.json) under a new `reference` array so the sync system surfaces them.
-- **Store fork topology** documented in [`rules/stores.md`](rules/stores.md) and [`commands/init-store.md`](commands/init-store.md): local convention `~/Projects/commerce-atoms/stores/<store>/`, remote `github.com/commerce-atoms/store-<name>` (private). Customer stores live under the customer's own org.
+- **`kit/` subdirectory** — every artefact that ships to consumers (manifests, rules, skills, commands, prompts, personas, ADRs, INDEX.json, QUICKSTART.md, RUN_PROTOCOL.md) now lives under [`kit/`](kit/). The repo root is reserved for npm package metadata, source, CI, and kit-authoring docs. The split clarifies that the root governs *this package* while `kit/` governs *consumer storefronts*. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **[`CONTRIBUTING.md`](CONTRIBUTING.md)** — kit-authoring manual: anatomy of the repo, local setup, source-code conventions, kit-content conventions, releasing.
+- **Root kit-authoring overlays** — minimal [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`.github/copilot-instructions.md`](.github/copilot-instructions.md), and [`.cursor/rules/00-kit-authoring.mdc`](.cursor/rules/00-kit-authoring.mdc) so AI tools opened against this repo know they're authoring the npm package, not editing a storefront.
+- **3 real prompt templates** in [`kit/prompts/`](kit/prompts/): `pr-description.prompt.md`, `release-notes.prompt.md`, `store-launch-checklist.prompt.md`. The directory previously promised templates that did not exist.
+- **[`kit/QUICKSTART.md`](kit/QUICKSTART.md)** — concrete walkthrough from `init` to first deploy, plus a daily workflow cheatsheet.
+- **`kit/reference/{philosophy,conventions}.md`** registered in [`kit/INDEX.json`](kit/INDEX.json) under a new `reference` array.
+- **Store fork topology** documented in [`kit/rules/stores.md`](kit/rules/stores.md) and [`kit/commands/init-store.md`](kit/commands/init-store.md): local convention `~/Projects/commerce-atoms/stores/<store>/`, remote `github.com/commerce-atoms/store-<name>` (private).
 
 ### Changed
 
-- **Sync CLI** rewrites repo-relative markdown links to absolute GitHub URLs when copying into consumer repos. Synced `AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, and `.cursor/rules/*.mdc` no longer contain dead links to ADRs, rule sources, or canonical files. The repo URL base is read from `package.json#repository` and may be overridden via the `repoUrlBase` parameter on `sync()`.
-- **`AGENTS.md`** restructured as a navigator: §1 now ladders the five primitives (rule / persona / skill / command / prompt) up-front with a "If you need X, reach for Y" table; §3 trimmed to a tight architecture summary that points at canonical sources in `rules/core/`. Doctrine §0 split into D1 (don't reimplement Shopify), D2 (CI deploys), D3 (rules are not advisory), D4 (repo topology).
-- **`CLAUDE.md`** rewritten to add Claude-specific value (slash command resolution, skill invocation pattern, persona-as-system-prompt, completion contract, behavioural defaults for long-running sessions) instead of mirroring `AGENTS.md`.
-- **`copilot-instructions.md`** rewritten to highlight Copilot autocomplete vs. Chat vs. Skills surfaces and the five constraints autocomplete must enforce on every suggestion.
-- **All 5 personas** strengthened: each declares `when_to_invoke`, `not_for`, and `companions` frontmatter; bodies gained "what you are NOT" sections clarifying handoff to other personas; the duplicated boilerplate "Execution Contract" block was replaced with persona-specific discipline.
-- **`init` next-steps output** updated: includes `gh repo create … --private --push` step and points at `QUICKSTART.md`.
+- **`package.json#files`** simplified to `["kit/", "dist/", "README.md", "CHANGELOG.md", "LICENSE"]`. The npm tarball ships exactly the package + its product.
+- **Sync CLI** sources from `kit/` via the new `KIT_DIR` constant in [`src/sync.ts`](src/sync.ts). Consumer-side output paths (`AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `.cursor/rules/`) are unchanged.
+- **Sync CLI** rewrites repo-relative markdown links to absolute GitHub URLs when copying into consumer repos. Synced overlays no longer contain dead links to ADRs, rule sources, or canonical files. The repo URL base is read from `package.json#repository` and may be overridden via the `repoUrlBase` parameter on `sync()`.
+- **`kit/AGENTS.md`** restructured as a navigator: §1 ladders the five primitives (rule / persona / skill / command / prompt) up-front; §3 trimmed to a tight architecture summary that points at canonical sources in `kit/rules/core/`. Doctrine §0 split into D1 (don't reimplement Shopify), D2 (CI deploys), D3 (rules are not advisory), D4 (repo topology).
+- **`kit/CLAUDE.md`** rewritten to add Claude-specific value (slash command resolution, skill invocation pattern, persona-as-system-prompt, completion contract, behavioural defaults).
+- **`kit/copilot-instructions.md`** rewritten to highlight Copilot autocomplete vs. Chat vs. Skills surfaces and the five constraints autocomplete must enforce.
+- **All 5 personas** in `kit/personas/` strengthened with "what you are NOT" sections clarifying handoff. Frontmatter kept terse (`name / description / scope`); routing hints live in the body where they're readable when pasted into chat.
+- **`init` next-steps output** updated: includes `gh repo create … --private --push` step and points at `kit/QUICKSTART.md`.
+- **`bin/validate-index.ts`** resolves INDEX entries against `kit/` and now validates the new `reference[]` array and `manifest.quickstart` field.
 
 ### Fixed
 
-- **`CLAUDE.md`** broken `/back-port` link removed (the file `commands/back-port.md` does not exist; the command is backlog).
-- **`skills/validate-architecture/SKILL.md`** stale `.mjs` references (`validate.mjs`, `types.mjs`) corrected to `.ts` post-TypeScript migration.
-- **`AGENTS.md` §11** stale "until the sync CLI ships" prose updated to reflect that it shipped in `0.1.0`.
-- **`.cursor/rules/00-agents-md.mdc`** same stale prose fix; reframed overlays as hand-maintained mirrors with generation as a future step.
+- **`kit/CLAUDE.md`** broken `/back-port` link removed (the file does not exist; the command is backlog).
+- **`kit/skills/validate-architecture/SKILL.md`** stale `.mjs` references corrected to `.ts` post-TypeScript migration.
+- **`kit/AGENTS.md` §11** stale "until the sync CLI ships" prose updated to reflect that it shipped in `0.1.0`.
+- **`kit/.cursor/rules/00-agents-md.mdc`** same stale prose fix; reframed overlays as hand-maintained mirrors with generation as a future step.
 
 ### Removed
 
-- **`PROMPT_LIBRARY.md`** — defunct stub. Its content already lived in `AGENTS.md` and the misleading filename suggested a prompt library where none existed.
+- **`PROMPT_LIBRARY.md`** — defunct stub.
 
 ### Migration notes
 
@@ -47,11 +52,7 @@ npm i -D @commerce-atoms/agents@0.1.1
 npx commerce-atoms-agents sync
 ```
 
-The first sync after upgrade will report all synced files as `written` (link rewriting changed the bytes); subsequent syncs are idempotent. Optionally run the new `check` subcommand to verify pin / config / architecture in one go:
-
-```bash
-npx commerce-atoms-agents check
-```
+The first sync after upgrade will report all synced files as `written` (link rewriting changed the bytes); subsequent syncs are idempotent.
 
 ---
 

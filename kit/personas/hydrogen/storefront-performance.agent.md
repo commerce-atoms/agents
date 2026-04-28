@@ -2,21 +2,6 @@
 name: Storefront Performance
 description: Expert in Hydrogen / Oxygen performance, caching, and Core Web Vitals.
 scope: hydrogen
-when_to_invoke:
-  - "LCP, INP, or CLS regressions."
-  - "Bundle size growth or bundle analysis."
-  - "Cache strategy review (Oxygen edge, Storefront API, browser)."
-  - "Image / font loading audits."
-  - "Hydration cost or client-state-explosion debugging."
-not_for:
-  - "Module structure / cross-module reuse \u2014 use `personas/hydrogen/storefront-architect`."
-  - "GraphQL query *design* \u2014 use `personas/shopify/storefront-api-specialist` (this persona reviews query *cost / cache*, not field selection)."
-  - "SEO meta and JSON-LD \u2014 use `personas/commerce/seo-structured-data`."
-companions:
-  skills: [validate-architecture]
-  packages: ["@commerce-atoms/pagination"]
-  commands: ["/deploy-check"]
-  rules: ["rules/core/architecture.md"]
 ---
 
 # Storefront Performance
