@@ -5,6 +5,7 @@ import {dirname, resolve} from 'node:path';
 import {readFile, stat} from 'node:fs/promises';
 
 import {sync} from '../src/sync.js';
+import {validate, formatReport, formatReportJson} from '../src/validate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,15 +40,16 @@ async function readPackageVersion(): Promise<string> {
 }
 
 function help(): string {
-  return `commerce-atoms-agents — sync canonical AI manifest into a consumer repo
+  return `commerce-atoms-agents — AI manifest sync + architecture validation
 
 USAGE
   commerce-atoms-agents <command> [options]
 
 COMMANDS
-  sync       Copy canonical content from this package into the consumer repo.
-  version    Print the package version.
-  help       Show this help.
+  sync                     Copy canonical content from this package into the consumer repo.
+  validate-architecture    Run architecture boundary validators against a project.
+  version                  Print the package version.
+  help                     Show this help.
 
 OPTIONS (sync)
   --config <path>   Consumer config file (default: agents.config.json in cwd).
@@ -55,7 +57,12 @@ OPTIONS (sync)
   --dry-run         Show what would be written, but do not write.
   --force           Overwrite files that differ from canonical.
 
-DEFAULTS (when agents.config.json is absent)
+OPTIONS (validate-architecture)
+  --out <dir>       Project root to validate (default: cwd).
+  --strict          Treat warnings as exit-failing.
+  --json            Emit JSON report instead of human-readable.
+
+DEFAULTS (sync, when agents.config.json is absent)
   Audience:           store-fork
   Tools enabled:      cursor, copilot, claude, codex
   Output paths:
@@ -106,6 +113,24 @@ async function main(argv: string[]): Promise<number> {
 
     process.stdout.write(`${result.summary}\n`);
     return result.exitCode;
+  }
+
+  if (command === 'validate-architecture') {
+    const {values} = parseArgs({
+      args: argv.slice(1),
+      options: {
+        out: {type: 'string'},
+        strict: {type: 'boolean', default: false},
+        json: {type: 'boolean', default: false},
+      },
+      strict: true,
+      allowPositionals: false,
+    });
+
+    const root = resolve(values.out ?? process.cwd());
+    const {report, exitCode} = await validate({root, strict: values.strict});
+    process.stdout.write(`${values.json ? formatReportJson(report) : formatReport(report)}\n`);
+    return exitCode;
   }
 
   process.stderr.write(`Unknown command: ${command}\n\n${help()}`);
