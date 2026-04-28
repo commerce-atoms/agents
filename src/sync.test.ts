@@ -24,7 +24,7 @@ async function pathExists(p: string): Promise<boolean> {
   }
 }
 
-void test('sync into empty consumer copies AGENTS.md, CLAUDE.md, copilot, cursor rules', async () => {
+void test('sync into empty consumer copies overlays plus full kit projection', async () => {
   const outDir = await tempDir();
   try {
     const result = await sync({packageRoot, outDir, version: '0.1.0'});
@@ -40,6 +40,34 @@ void test('sync into empty consumer copies AGENTS.md, CLAUDE.md, copilot, cursor
       await pathExists(join(outDir, '.cursor', 'rules', '00-agents-md.mdc')),
       '.cursor/rules/00-agents-md.mdc exists',
     );
+
+    assert.ok(
+      await pathExists(join(outDir, '.claude', 'commands', 'init-store.md')),
+      '.claude/commands/init-store.md exists',
+    );
+    assert.ok(
+      await pathExists(join(outDir, '.claude', 'skills', 'validate-architecture', 'SKILL.md')),
+      'Claude skill SKILL.md exists',
+    );
+    assert.ok(
+      await pathExists(join(outDir, '.github', 'skills', 'validate-architecture', 'SKILL.md')),
+      'GitHub Copilot skill path exists',
+    );
+    assert.ok(
+      await pathExists(join(outDir, '.github', 'commerce-atoms', 'prompts', 'pr-description.prompt.md')),
+      '.github/commerce-atoms prompt exists',
+    );
+    assert.ok(
+      await pathExists(
+        join(outDir, '.claude', 'personas', 'hydrogen', 'storefront-architect.agent.md'),
+      ),
+      'Claude persona exists',
+    );
+    assert.ok(
+      await pathExists(join(outDir, '.claude', 'rules', 'commerce-atoms', 'core', 'architecture.md')),
+      'Claude mirrored canonical rules exist',
+    );
+    assert.ok(await pathExists(join(outDir, '.claude', 'docs', 'INDEX.json')), '.claude/docs/INDEX.json');
 
     const cfg = JSON.parse(await readFile(join(outDir, 'agents.config.json'), 'utf8')) as AgentsConfig;
     assert.equal(cfg.agentsVersion, '0.1.0');
@@ -206,8 +234,23 @@ void test('agents.config.json with disabled tools skips per-tool overlays', asyn
     const result = await sync({packageRoot, outDir, version: '0.1.0'});
     assert.equal(result.exitCode, 0);
 
+    assert.equal(
+      await pathExists(join(outDir, '.github', 'commerce-atoms', 'commands', 'init-store.md')),
+      false,
+      'copilot kit mirror skipped when copilot disabled',
+    );
+    assert.equal(
+      await pathExists(join(outDir, '.github', 'skills', 'validate-architecture', 'SKILL.md')),
+      false,
+      'github skills skipped when copilot disabled',
+    );
+
     assert.ok(await pathExists(join(outDir, 'AGENTS.md')), 'universal AGENTS.md still emitted');
     assert.ok(await pathExists(join(outDir, 'CLAUDE.md')), 'CLAUDE.md emitted');
+    assert.ok(
+      await pathExists(join(outDir, '.claude', 'commands', 'init-store.md')),
+      'full kit projection for Claude still emitted when copilot/cursor off',
+    );
     assert.equal(
       await pathExists(join(outDir, '.github', 'copilot-instructions.md')),
       false,

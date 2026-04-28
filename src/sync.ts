@@ -3,6 +3,7 @@ import {dirname, join, resolve, relative, sep} from 'node:path';
 
 import {loadConfig, defaults} from './config.js';
 import type {AgentsConfig, OutPaths, ToolFlags} from './config.js';
+import {collectFullKitSyncSpecs} from './internal/full-kit-sync.js';
 import {rewriteRelativeLinks} from './internal/rewrite-links.js';
 
 export type WriteStatus = 'written' | 'unchanged' | 'skipped-conflict' | 'missing-source';
@@ -106,6 +107,11 @@ export async function sync({
     }
   }
 
+  const kitProjection = await collectFullKitSyncSpecs({packageRoot, outDir, tools});
+  for (const spec of kitProjection) {
+    sources.push(spec);
+  }
+
   const writes: PreparedWrite[] = [];
   for (const spec of sources) {
     writes.push(await prepareWrite({spec, force, repoUrlBase}));
@@ -116,7 +122,11 @@ export async function sync({
       if (w.record.status === 'unchanged' || w.record.status === 'skipped-conflict') continue;
       if (w.record.status === 'missing-source') continue;
       await mkdir(dirname(w.record.to), {recursive: true});
-      await writeFile(w.record.to, w.transformedContent ?? '', 'utf8');
+      if (w.binaryPayload) {
+        await writeFile(w.record.to, w.binaryPayload);
+      } else {
+        await writeFile(w.record.to, w.transformedContent ?? '', 'utf8');
+      }
     }
   }
 
@@ -140,8 +150,10 @@ export async function sync({
 
 interface PreparedWrite {
   record: WriteRecord;
-  /** Final content to write to disk (already link-rewritten where applicable). */
+  /** Final UTF-8 text (already link-rewritten for markdown where applicable). */
   transformedContent: string | undefined;
+  /** Non-markdown payloads copied byte-for-byte (e.g. future skill assets). */
+  binaryPayload: Buffer | undefined;
 }
 
 interface PrepareWriteParams {
@@ -154,31 +166,59 @@ async function prepareWrite({spec, force, repoUrlBase}: PrepareWriteParams): Pro
   const {from, to, sourceFileInRepo} = spec;
 
   if (!(await pathExists(from))) {
-    return {record: {from, to, status: 'missing-source'}, transformedContent: undefined};
+    return {
+      record: {from, to, status: 'missing-source'},
+      transformedContent: undefined,
+      binaryPayload: undefined,
+    };
   }
 
-  const sourceContent = await readFile(from, 'utf8');
-  const transformed = shouldRewrite(sourceFileInRepo)
-    ? rewriteRelativeLinks({content: sourceContent, sourceFileInRepo, repoUrlBase})
-    : sourceContent;
+  if (shouldRewriteMarkdown(sourceFileInRepo)) {
+    const sourceContent = await readFile(from, 'utf8');
+    const transformed = rewriteRelativeLinks({content: sourceContent, sourceFileInRepo, repoUrlBase});
 
+    if (!(await pathExists(to))) {
+      return {record: {from, to, status: 'written'}, transformedContent: transformed, binaryPayload: undefined};
+    }
+
+    const destContent = await readFile(to, 'utf8');
+    if (destContent === transformed) {
+      return {record: {from, to, status: 'unchanged'}, transformedContent: transformed, binaryPayload: undefined};
+    }
+
+    if (force) {
+      return {record: {from, to, status: 'written'}, transformedContent: transformed, binaryPayload: undefined};
+    }
+
+    return {
+      record: {from, to, status: 'skipped-conflict'},
+      transformedContent: transformed,
+      binaryPayload: undefined,
+    };
+  }
+
+  const payload = await readFile(from);
   if (!(await pathExists(to))) {
-    return {record: {from, to, status: 'written'}, transformedContent: transformed};
+    return {record: {from, to, status: 'written'}, transformedContent: undefined, binaryPayload: payload};
   }
 
-  const destContent = await readFile(to, 'utf8');
-  if (destContent === transformed) {
-    return {record: {from, to, status: 'unchanged'}, transformedContent: transformed};
+  const destPayload = await readFile(to);
+  if (Buffer.compare(payload, destPayload) === 0) {
+    return {record: {from, to, status: 'unchanged'}, transformedContent: undefined, binaryPayload: payload};
   }
 
   if (force) {
-    return {record: {from, to, status: 'written'}, transformedContent: transformed};
+    return {record: {from, to, status: 'written'}, transformedContent: undefined, binaryPayload: payload};
   }
 
-  return {record: {from, to, status: 'skipped-conflict'}, transformedContent: transformed};
+  return {
+    record: {from, to, status: 'skipped-conflict'},
+    transformedContent: undefined,
+    binaryPayload: payload,
+  };
 }
 
-function shouldRewrite(sourceFileInRepo: string): boolean {
+function shouldRewriteMarkdown(sourceFileInRepo: string): boolean {
   return /\.(md|mdc)$/i.test(sourceFileInRepo);
 }
 

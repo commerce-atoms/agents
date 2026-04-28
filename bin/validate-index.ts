@@ -3,6 +3,8 @@ import {readFile, stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname, resolve} from 'node:path';
 
+import {validateSyncCoverage} from '../src/internal/sync-coverage.js';
+
 interface IndexEntry {
   id: string;
   path?: string;
@@ -101,7 +103,13 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  process.stdout.write(`INDEX.json: ok (${index.name}@${index.version})\n`);
+  const coverageIssues = await validateSyncCoverage(packageRoot);
+  if (coverageIssues.length > 0) {
+    process.stderr.write(`Sync coverage validation failed:\n  - ${coverageIssues.join('\n  - ')}\n`);
+    process.exit(1);
+  }
+
+  process.stdout.write(`INDEX.json + sync coverage: ok (${index.name}@${index.version})\n`);
 }
 
 await main().catch((err: unknown) => {

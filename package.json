@@ -60,7 +60,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && chmod +x dist/bin/sync.js dist/bin/validate-index.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/internal/path-to-owner.test.ts src/internal/rewrite-links.test.ts",
+    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/internal/path-to-owner.test.ts src/internal/rewrite-links.test.ts src/internal/sync-coverage.test.ts",
     "lint:json": "tsx bin/validate-index.ts",
     "verify": "npm run typecheck && npm run lint:json && npm test",
     "prepack": "npm run build"

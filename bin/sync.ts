@@ -90,11 +90,11 @@ OPTIONS (validate-architecture)
 DEFAULTS (sync, when agents.config.json is absent)
   Audience:           store-fork
   Tools enabled:      cursor, copilot, claude, codex
-  Output paths:
-    AGENTS.md                       -> ./AGENTS.md
-    CLAUDE.md                       -> ./CLAUDE.md
-    copilot-instructions.md         -> ./.github/copilot-instructions.md
-    .cursor/rules/*.mdc             -> ./.cursor/rules/
+  Output (always):    ./AGENTS.md
+  When claude:        ./CLAUDE.md, ./.claude/commands|skills|prompts|personas|rules|docs/...
+  When copilot:       ./.github/copilot-instructions.md, ./.github/skills/<id>/,
+                      ./.github/commerce-atoms/... (commands, prompts, personas, rules, reference, docs)
+  When cursor:        ./.cursor/rules/*.mdc
 
 DOCS
   https://github.com/commerce-atoms/agents
