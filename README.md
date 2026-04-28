@@ -1,96 +1,139 @@
-# 🤖 agents
+# @commerce-atoms/agents
 
-> **AI assistance for commerce-atoms.**  
-> Rules for editors. Personas for expertise.
+> **Universal AI manifest, rules, skills, prompts, slash commands, and personas for the `commerce-atoms` ecosystem.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
-
-## What's Here
-
-| Folder       | Purpose                         | Usage                |
-| ------------ | ------------------------------- | -------------------- |
-| `rules/`     | Always-on editor guardrails     | Committed into repos |
-| `agents/`    | Expert personas for domains     | Invoked in AI chat   |
-| `reference/` | Shared philosophy & conventions | Human reading        |
+This repo is the **single source of truth** for AI behaviour across every storefront forked from `hydrogen-storefront-starter`. Read by Cursor, GitHub Copilot, Claude Code, Codex, and other agentic editors via the universal [`AGENTS.md`](AGENTS.md) manifest.
 
 ---
 
-## Rules vs Agents
+## Layout
 
-**Rules** = passive guardrails committed into repos. Run automatically in editors.
-
-**Agents** = expert personas you invoke for specialized help. Deep domain knowledge.
-
-See [`reference/philosophy.md`](reference/philosophy.md) for details.  
-See [`reference/conventions.md`](reference/conventions.md) for file naming and structure patterns.
-
----
-
-## Agents
-
-Expert personas organized by domain:
-
-### Hydrogen
-
-| Agent                                                                     | Mission                                    |
-| ------------------------------------------------------------------------- | ------------------------------------------ |
-| [Storefront Architect](agents/hydrogen/storefront-architect.agent.md)     | Architecture, boundaries, scaling patterns |
-| [Storefront Performance](agents/hydrogen/storefront-performance.agent.md) | Speed, caching, Core Web Vitals            |
-
-### Shopify
-
-| Agent                                                                          | Mission                        |
-| ------------------------------------------------------------------------------ | ------------------------------ |
-| [Storefront API Specialist](agents/shopify/storefront-api-specialist.agent.md) | GraphQL queries, data modeling |
-
-### Commerce
-
-| Agent                                                                 | Mission                               |
-| --------------------------------------------------------------------- | ------------------------------------- |
-| [Catalog & Variants](agents/commerce/catalog-variants.agent.md)       | Variant selection, availability logic |
-| [SEO & Structured Data](agents/commerce/seo-structured-data.agent.md) | Meta tags, JSON-LD, OpenGraph         |
-
----
-
-## Using Rules
-
-Copy into your repo:
-
-```bash
-# Cursor
-cp -r rules/cursor/hydrogen/* .cursor/rules/
-
-# Copilot
-cp rules/copilot/hydrogen/copilot-instructions.md .github/
+```text
+agents/
+├── AGENTS.md                       # ⭐ Universal manifest (read first)
+├── CLAUDE.md                       # Claude-specific overlay
+├── copilot-instructions.md         # Copilot-specific overlay
+├── .cursor/rules/*.mdc             # Cursor-specific overlays
+│
+├── rules/
+│   ├── core/
+│   │   ├── architecture.md         # Module boundaries, route/view split, shared folder policy
+│   │   ├── routing.md              # app/routes.ts manifest rules
+│   │   ├── imports.md              # React Router only, path aliases
+│   │   └── styling.md              # CSS module colocation
+│   ├── packages.md                 # @commerce-atoms/* package authoring (for shoppy)
+│   └── stores.md                   # Per-store fork conventions
+│
+├── skills/                         # Reusable AI capabilities
+│   └── <name>/SKILL.md
+├── commands/                       # Slash commands
+│   └── <name>.md
+├── prompts/                        # Reusable task templates
+│   └── <name>.prompt.md
+│
+├── personas/                       # Domain-expert system prompts
+│   ├── hydrogen/
+│   ├── shopify/
+│   └── commerce/
+│
+├── reference/
+│   ├── philosophy.md
+│   └── conventions.md
+│
+├── docs/
+│   └── decisions/                  # ADRs justifying the architecture of this repo
+│       └── 00X-*.md
+│
+├── INDEX.json                      # Registry walked by the sync CLI
+├── INDEX.schema.json               # Schema for INDEX.json
+├── PROMPT_LIBRARY.md               # Assumed environment context
+└── RUN_PROTOCOL.md                 # Execution steps + escalation rules
 ```
 
-Or use sync script in consuming repos.
+---
+
+## How consumers use this
+
+Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), this repo is published as `@commerce-atoms/agents` on npm. Each consumer repo (`hydrogen-storefront-starter`, store forks, `shoppy`) pins a version and runs:
+
+```bash
+npm i -D @commerce-atoms/agents
+npx commerce-atoms-agents sync
+```
+
+The sync CLI copies canonical content (`AGENTS.md`, `rules/`, …) and **deterministically generates** per-tool overlays in the consumer repo (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`).
+
+> **Status:** the sync CLI is being built in `PLAN.md` task 1.3. Until it ships, consumers continue to copy files manually — see "Transitional usage" below.
 
 ---
 
-## Using Agents
+## Transitional usage (until sync CLI ships)
 
-1. Open the `.agent.md` file
-2. Copy the contents
-3. Paste as system prompt in Claude/Cursor/ChatGPT
-4. Get specialized assistance
+Cursor, Copilot, and Claude already read `AGENTS.md` natively when it sits at a repo root, so the simplest "today" workflow for a consumer is:
 
-**Agent Guidance:**
+```bash
+# Copy the universal manifest + per-tool overlays to your repo root
+cp AGENTS.md /path/to/consumer-repo/
+cp CLAUDE.md /path/to/consumer-repo/
+cp copilot-instructions.md /path/to/consumer-repo/.github/
+cp -r .cursor/rules/. /path/to/consumer-repo/.cursor/rules/
+```
 
-- [Prompt Library](PROMPT_LIBRARY.md) — Enforced context and constraints
-- [Run Protocol](RUN_PROTOCOL.md) — Execution steps and escalation rules
+This will be replaced by `npx commerce-atoms-agents sync` once the CLI lands.
 
 ---
 
-## Adding Agents
+## What lives here
 
-1. Create `agents/<domain>/<name>.agent.md`
-2. Add frontmatter: `name`, `description`, `scope`
-3. Structure: Identity → Mission → Knowledge → Style
+| Folder | Purpose | Edited by |
+|---|---|---|
+| [`rules/core/`](rules/core/) | Canonical sources for path-scoped rules. | Humans. The `sync` CLI generates per-tool overlays from these. |
+| [`rules/`](rules/) (packages, stores) | Audience-specific rules for shoppy authors and store forks. | Humans. |
+| [`.cursor/rules/`](.cursor/rules/) | Cursor-specific overlays. **Generated** once the sync CLI ships; hand-maintained until then. | Generator (target). |
+| [`copilot-instructions.md`](copilot-instructions.md), [`CLAUDE.md`](CLAUDE.md) | Per-tool overlays. **Generated** once the sync CLI ships. | Generator (target). |
+| [`skills/`](skills/) | Reusable AI capabilities. | Humans. |
+| [`commands/`](commands/) | Slash commands. | Humans. |
+| [`prompts/`](prompts/) | Task templates. | Humans. |
+| [`personas/`](personas/) | Domain-expert system prompts (paste into chat to scope a session). | Humans. |
+| [`reference/`](reference/) | Philosophy and conventions for contributors to this repo. | Humans. |
+| [`docs/decisions/`](docs/decisions/) | ADRs. Append-only — supersede with a new ADR rather than editing. | Humans. |
 
-See [`reference/conventions.md`](reference/conventions.md).
+---
+
+## Doctrine
+
+`commerce-atoms` is the **adapter layer** between Shopify upstream (runtime + cookbooks) and a modular, AI-consistent storefront architecture. We **port** Shopify cookbook recipes; we do **not** write competing implementations.
+
+Full statement in [`AGENTS.md §0`](AGENTS.md). The doctrine is non-negotiable — slipping into "let's write our own version of B2B/Markets/etc." is the kit's biggest risk.
+
+---
+
+## Personas
+
+| Domain | Personas |
+|---|---|
+| `personas/hydrogen/` | [Storefront Architect](personas/hydrogen/storefront-architect.agent.md), [Storefront Performance](personas/hydrogen/storefront-performance.agent.md) |
+| `personas/shopify/` | [Storefront API Specialist](personas/shopify/storefront-api-specialist.agent.md) |
+| `personas/commerce/` | [Catalog & Variants](personas/commerce/catalog-variants.agent.md), [SEO & Structured Data](personas/commerce/seo-structured-data.agent.md) |
+
+Paste the contents of any `.agent.md` into a fresh chat to scope the model's perspective for a session. See [`reference/philosophy.md`](reference/philosophy.md) for the rules-vs-personas-vs-skills distinction.
+
+---
+
+## Adding new content
+
+| Add | Where | Format |
+|---|---|---|
+| A rule | `rules/core/<topic>.md` or `rules/<audience>.md` | Markdown with frontmatter; canonical source for tool-overlay generation. |
+| A skill | `skills/<name>/SKILL.md` | GitHub Copilot Skills layout. See [`skills/README.md`](skills/README.md). |
+| A slash command | `commands/<name>.md` | Claude Code commands layout. See [`commands/README.md`](commands/README.md). |
+| A prompt | `prompts/<name>.prompt.md` | Claude Code prompt layout. See [`prompts/README.md`](prompts/README.md). |
+| A persona | `personas/<scope>/<name>.agent.md` | See [`reference/conventions.md`](reference/conventions.md). |
+| An ADR | `docs/decisions/00X-<slug>.md` | See [`docs/decisions/README.md`](docs/decisions/README.md). |
+
+After adding, register the artefact in [`INDEX.json`](INDEX.json) so the sync CLI picks it up.
 
 ---
 

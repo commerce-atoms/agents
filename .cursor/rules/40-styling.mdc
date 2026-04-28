@@ -1,0 +1,18 @@
+---
+description: CSS modules colocated with components, kebab-case filenames. See rules/core/styling.md.
+globs:
+  - "app/**/*.tsx"
+  - "app/**/*.module.css"
+  - "app/styles/**"
+alwaysApply: true
+---
+
+This is a Cursor-specific overlay. **Canonical source: [`rules/core/styling.md`](../../rules/core/styling.md).**
+
+## Rules
+
+- CSS modules MUST be colocated with their components / views (same directory).
+- CSS module filenames MUST be lowercase / kebab-case (`button.module.css`, `product-card.module.css`).
+- Global styles MUST live in `app/styles/`.
+- NO `styles/` subfolders — keep flat.
+- Prefer named CSS variables (tokens) over hardcoded values.

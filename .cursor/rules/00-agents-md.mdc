@@ -1,0 +1,10 @@
+---
+description: Universal AGENTS.md is the canonical source. Read it first.
+alwaysApply: true
+---
+
+ALWAYS read `AGENTS.md` at the repo root for the canonical rules. This `.cursor/rules/` directory contains path-scoped overlays that **complement** `AGENTS.md` — they do not replace it.
+
+If a rule appears here and not in `AGENTS.md`, treat it as a path-specific extension. If a rule contradicts `AGENTS.md`, treat `AGENTS.md` as authoritative and surface the contradiction so it can be resolved at the canonical source.
+
+Per-tool overlay files in this repo (`.cursor/rules/*.mdc`, `copilot-instructions.md`, `CLAUDE.md`) will become **generated artefacts** once the `commerce-atoms-agents sync` CLI ships ([ADR 001](../../docs/decisions/001-agents-distribution-mechanism.md)). Until then, edit canonical sources in `rules/core/*.md` rather than these overlays.

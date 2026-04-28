@@ -1,0 +1,28 @@
+---
+description: Routing manifest rules — single source app/routes.ts. See rules/core/routing.md.
+globs:
+  - "app/routes.ts"
+alwaysApply: true
+---
+
+This is a Cursor-specific overlay. **Canonical source: [`rules/core/routing.md`](../../rules/core/routing.md).**
+
+## Single source of truth
+
+- `app/routes.ts` is the only routing manifest.
+- Do not add additional route manifest files.
+- Do not add a second routing entrypoint that duplicates routing definitions.
+
+## No filesystem routing
+
+- Do not rely on `app/routes/*` filesystem discovery as the routing source of truth.
+
+## Explicit mapping
+
+- Each URL pattern maps explicitly to a route module file under `app/modules/*`.
+- Avoid abstractions that generate, auto-compose, or implicitly register routes.
+
+## Layout nesting
+
+- UI routes are nested under the layout shell route (owned by `app/layout/*`).
+- Resource routes (`robots.txt`, `sitemap.xml`, etc.) remain outside layout nesting.
