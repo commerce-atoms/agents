@@ -38,7 +38,7 @@ Generated on first `sync`; updated each run with the pinned version.
 
 ```json
 {
-  "agentsVersion": "0.1.2",
+  "agentsVersion": "0.2.0",
   "audience": "store-fork",
   "tools": {"cursor": true, "copilot": true, "claude": true, "codex": true},
   "out": {

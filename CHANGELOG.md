@@ -8,6 +8,22 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-04-28
+
+### Added
+
+- **Full kit projection** — `sync` materialises INDEX-backed content into tool-native paths when `claude` / `copilot` are enabled: `.claude/{commands,skills,prompts,personas,rules,docs}` and `.github/skills/*` plus `.github/commerce-atoms/**` mirror. Non-markdown skill assets copy byte-for-byte; markdown still gets repo link rewrite.
+- **`validateSyncCoverage`** — `npm run lint:json` (`bin/validate-index.ts`) now asserts INDEX ↔ disk ↔ sync alignment, including `rules[].generates` overlays and no orphan kit files under commands, prompts, personas, skills, rules, reference.
+
+### Migration
+
+After upgrading, run sync once (new paths may conflict with local edits — use `--force` only if you intend to replace):
+
+```bash
+npm i -D @commerce-atoms/agents@0.2.0
+npx commerce-atoms-agents sync
+```
+
 ## [0.1.2] — 2026-04-28
 
 ### Fixed
