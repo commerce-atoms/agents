@@ -7,3 +7,16 @@
 *.swp
 *.swo
 *~
+
+# Node
+node_modules/
+npm-debug.log*
+.npmrc
+*.tgz
+
+# Test artefacts
+coverage/
+
+# Build output
+dist/
+*.tsbuildinfo

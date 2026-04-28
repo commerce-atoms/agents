@@ -1,0 +1,74 @@
+{
+  "name": "@commerce-atoms/agents",
+  "version": "0.1.0",
+  "description": "Universal AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/commerce-atoms/agents#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/commerce-atoms/agents.git"
+  },
+  "bugs": {
+    "url": "https://github.com/commerce-atoms/agents/issues"
+  },
+  "keywords": [
+    "agents",
+    "ai",
+    "cursor",
+    "copilot",
+    "claude",
+    "codex",
+    "shopify",
+    "hydrogen",
+    "commerce-atoms"
+  ],
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "bin": {
+    "commerce-atoms-agents": "./dist/bin/sync.js"
+  },
+  "main": "./dist/src/sync.js",
+  "types": "./dist/src/sync.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/sync.d.ts",
+      "import": "./dist/src/sync.js"
+    },
+    "./config": {
+      "types": "./dist/src/config.d.ts",
+      "import": "./dist/src/config.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "copilot-instructions.md",
+    "INDEX.json",
+    "INDEX.schema.json",
+    ".cursor/",
+    "rules/",
+    "skills/",
+    "commands/",
+    "prompts/",
+    "personas/",
+    "reference/",
+    "docs/decisions/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/bin/sync.js dist/bin/validate-index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/sync.test.ts",
+    "lint:json": "tsx bin/validate-index.ts",
+    "verify": "npm run typecheck && npm run lint:json && npm test",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

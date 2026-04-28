@@ -65,23 +65,48 @@ npx commerce-atoms-agents sync
 
 The sync CLI copies canonical content (`AGENTS.md`, `rules/`, …) and **deterministically generates** per-tool overlays in the consumer repo (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`).
 
-> **Status:** the sync CLI is being built in `PLAN.md` task 1.3. Until it ships, consumers continue to copy files manually — see "Transitional usage" below.
+> **Status — `0.1.0`:** the CLI ships and copies canonical content into consumer repos. The "deterministic generation" of per-tool overlays from canonical sources (instead of copying hand-maintained overlays) lands in a follow-up. Today's overlays in `.cursor/rules/`, `CLAUDE.md`, and `copilot-instructions.md` are hand-authored mirrors of the canonical sources in `rules/core/`.
 
----
-
-## Transitional usage (until sync CLI ships)
-
-Cursor, Copilot, and Claude already read `AGENTS.md` natively when it sits at a repo root, so the simplest "today" workflow for a consumer is:
+### CLI commands
 
 ```bash
-# Copy the universal manifest + per-tool overlays to your repo root
-cp AGENTS.md /path/to/consumer-repo/
-cp CLAUDE.md /path/to/consumer-repo/
-cp copilot-instructions.md /path/to/consumer-repo/.github/
-cp -r .cursor/rules/. /path/to/consumer-repo/.cursor/rules/
+commerce-atoms-agents sync             # copy into cwd, write back agents.config.json
+commerce-atoms-agents sync --dry-run   # preview without writing
+commerce-atoms-agents sync --force     # overwrite consumer divergence
+commerce-atoms-agents sync --out <dir> # alternate output directory
+commerce-atoms-agents sync --config <path>  # alternate config file
+commerce-atoms-agents version
+commerce-atoms-agents help
 ```
 
-This will be replaced by `npx commerce-atoms-agents sync` once the CLI lands.
+### `agents.config.json`
+
+Generated on first `sync` and updated each run with the pinned version. Shape:
+
+```json
+{
+  "agentsVersion": "0.1.0",
+  "audience": "store-fork",
+  "tools": {"cursor": true, "copilot": true, "claude": true, "codex": true},
+  "out": {
+    "agentsMd": "AGENTS.md",
+    "claudeMd": "CLAUDE.md",
+    "copilotInstructions": ".github/copilot-instructions.md",
+    "cursorRulesDir": ".cursor/rules"
+  }
+}
+```
+
+Disable a tool by setting `tools.<name>` to `false` — its files are skipped on sync.
+
+Customise an output path by editing `out.<key>`.
+
+### Conflict handling
+
+If a consumer mutates a synced file, the next `sync` reports it as a `skipped-conflict` and exits non-zero. Resolve with one of:
+
+- Re-import the upstream content: `commerce-atoms-agents sync --force`.
+- Move the divergence into a per-store overlay (e.g. extend `AGENTS.md` in a separate file or maintain a fork-only addendum).
 
 ---
 
