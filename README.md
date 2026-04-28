@@ -56,7 +56,9 @@ Expert personas organized by domain:
 
 ## Using Rules
 
-Copy into your repo:
+> **In transition.** This repo is migrating to the post-`AGENTS.md` shape — see [`docs/decisions/`](docs/decisions/) for the architecture decisions driving the change. The `cp -r` workflow below is the current state; `npx @commerce-atoms/agents sync` is the target state.
+
+### Today (manual sync)
 
 ```bash
 # Cursor
@@ -66,7 +68,15 @@ cp -r rules/cursor/hydrogen/* .cursor/rules/
 cp rules/copilot/hydrogen/copilot-instructions.md .github/
 ```
 
-Or use sync script in consuming repos.
+### Target (versioned, pinnable)
+
+Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), `agents/` is being published as `@commerce-atoms/agents` on npm. Each consumer repo will pin a version and run:
+
+```bash
+npx @commerce-atoms/agents sync
+```
+
+The `sync` CLI will copy canonical content (`AGENTS.md`, `rules/`, `skills/`, …) and **deterministically generate** per-tool overlays (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`). One source of truth; no hand-maintained per-tool duplicates.
 
 ---
 
