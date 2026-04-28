@@ -72,19 +72,19 @@
       "id": "deploy-setup",
       "title": "Wire CI + secrets",
       "path": "commands/deploy-setup.md",
-      "status": "planned-mvp"
+      "status": "stable"
     },
     {
       "id": "deploy-check",
       "title": "Pre-flight before push",
       "path": "commands/deploy-check.md",
-      "status": "planned-mvp"
+      "status": "stable"
     },
     {
       "id": "release",
       "title": "Tag and push (CI deploys)",
       "path": "commands/release.md",
-      "status": "planned-mvp"
+      "status": "stable"
     },
     {
       "id": "validate-architecture",
