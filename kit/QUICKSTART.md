@@ -151,7 +151,7 @@ When a new `@commerce-atoms/agents` ships:
 ```bash
 npm i -D @commerce-atoms/agents@latest
 npx commerce-atoms-agents sync     # re-materialises overlays, re-pins version
-npx commerce-atoms-agents check    # confirms config + version + architecture
+npx commerce-atoms-agents validate-architecture   # sanity-check boundaries after bump
 git add . && git commit -m "chore: bump @commerce-atoms/agents"
 ```
 

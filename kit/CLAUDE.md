@@ -32,7 +32,7 @@ To invoke a skill, reference its `SKILL.md` path explicitly:
 Run skills/validate-architecture/SKILL.md against this project.
 ```
 
-Claude treats `SKILL.md` as a long-form prompt, follows its **Workflow** section, and verifies the **Post-conditions** before reporting completion. If a skill mutates the codebase (e.g. `port-hydrogen-cookbook-recipe`), it MUST invoke `validate-architecture` afterward — see `skills/<name>/SKILL.md` "Workflow when used by other skills".
+Claude treats `SKILL.md` as a long-form prompt, follows its **Workflow** section, and verifies the **Post-conditions** before reporting completion. After structural edits (new module, route manifest change, shared-folder promotion), run `validate-architecture` — see `skills/validate-architecture/SKILL.md`.
 
 ## Personas — [`personas/`](personas/)
 

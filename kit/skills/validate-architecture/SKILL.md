@@ -15,10 +15,6 @@ inputs:
 post_conditions:
   - "Exit code is 0 when no errors (and no warnings if --strict)."
   - "Exit code is 1 when violations exist."
-related_skills:
-  - port-hydrogen-cookbook-recipe   # planned; will invoke this skill post-port
-  - upgrade-hydrogen                # planned; will invoke this skill post-upgrade
-  - scaffold-module                 # planned; will invoke this skill post-scaffold
 ---
 
 # `validate-architecture`
@@ -81,22 +77,16 @@ Human-readable mode prints one block per violation:
 
 JSON mode emits the full `ValidationReport` object — see [`src/internal/types.ts`](../../../src/internal/types.ts).
 
-## Workflow when used by other skills
+## Future skills
 
-When a skill mutates a Hydrogen codebase (`port-hydrogen-cookbook-recipe`, `upgrade-hydrogen`, `scaffold-module`), it MUST invoke `validate-architecture` afterward and:
-
-1. If `exitCode !== 0`, surface the violations in the resulting PR description.
-2. Block the PR from being marked "ready" until violations are resolved or explicitly accepted with rationale.
-3. Add an entry under "Architecture validation" in the PR body with the violation summary.
-
-This makes architecture validation load-bearing for the doctrine in `AGENTS.md §0`: every Shopify-cookbook port lands in modular shape, every quarterly Hydrogen bump preserves boundaries.
+Backlog skills (`port-hydrogen-cookbook-recipe`, `upgrade-hydrogen`, `scaffold-module`) should call `validate-architecture` after mutating code — when those skills exist, wire them through this skill.
 
 ## What this skill is NOT
 
 - Not a TypeScript type checker. Run `tsc` separately.
 - Not a linter. Run ESLint separately.
 - Not a runtime analyzer. It reads source statically.
-- Not a substitute for the smoke tests in `hydrogen-storefront-starter/app/tests/`. Those run in CI; this runs locally and inside other skills.
+- Not a substitute for the smoke tests in `hydrogen-storefront-starter/app/tests/`. Those run in CI; this runs locally on demand.
 
 ## Limitations
 

@@ -74,7 +74,7 @@ This repo ships five distinct kinds of AI assistance. They are not interchangeab
 | Ask an expert how Shopify variants work | Persona (`commerce/catalog-variants`) |
 | Run the boundary validators against a project | Skill (`validate-architecture`) |
 | Wrap CI deploy preparation behind one keystroke | Command (`/deploy-setup`) |
-| Generate release notes from a changeset | Prompt (`shoppy-release-notes.prompt.md`) |
+| Generate release notes from a changeset | Prompt (`release-notes.prompt.md`) |
 
 If a primitive starts pulling toward another category — e.g. a rule that grew into a multi-step workflow — split it. Misclassification is the most common smell in this repo.
 

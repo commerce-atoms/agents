@@ -23,7 +23,7 @@ Run the architecture validators against a Hydrogen storefront project.
    ```
 
 3. Read the human-readable output. If exit code is non-zero, summarise violations grouped by `code` for the user.
-4. If invoked as part of a larger skill (for example after `port-hydrogen-cookbook-recipe` or `upgrade-hydrogen`), include the violation summary in the resulting PR description under an "Architecture validation" heading.
+4. After structural changes (new module, manifest edits, shared-folder promotions), paste the summary into the PR or notes before marking work complete.
 
 ## Output expectations
 

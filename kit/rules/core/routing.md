@@ -9,7 +9,7 @@ generates:
 
 # Routing manifest rules (`app/routes.ts`)
 
-> Canonical source. Per-tool overlays are generated from this file.
+> Canonical source. Mirror edits into `.cursor/rules/20-routing.mdc` by hand until automated overlay generation lands ([ADR 001](../../docs/decisions/001-agents-distribution-mechanism.md)).
 
 ## Single source of truth
 

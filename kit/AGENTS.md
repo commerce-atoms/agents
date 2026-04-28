@@ -153,7 +153,7 @@ Named exports for components, hooks, utilities, types: `export function Button()
 
 ### Import policy
 
-This project uses **React Router** packages, not Remix. Detail: [`rules/core/imports.md`](rules/core/imports.md).
+Storefronts in this ecosystem use **React Router** packages, not Remix. Detail: [`rules/core/imports.md`](rules/core/imports.md).
 
 - **Forbidden:** `@remix-run/*`, `react-router-dom`.
 - **Required:** `react-router` and `@react-router/*`.
@@ -184,7 +184,7 @@ The `commerce-atoms` GitHub org consists of **independent repositories** develop
 | `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms-agents` CLI. |
 | `shoppy` | Pure-logic packages published as `@commerce-atoms/*`. | Published npm packages. |
 | `hydrogen-storefront-starter` | Canonical fork point for new stores. | GitHub template / forked per store. |
-| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into `agents/src/internal/` — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
+| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into the `@commerce-atoms/agents` package (`src/internal/` in that repo) — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
 
 There is no monorepo, no shared CI, no shared `package.json`. Anything shared between repos must be **published, versioned, and pinned** — never synced via `cp -r`.
 
@@ -228,7 +228,7 @@ Reusable, multi-step AI capabilities. Anthropic Skills layout (folder per skill,
 | Skill | Status | Purpose |
 |---|---|---|
 | [`validate-architecture`](skills/validate-architecture/SKILL.md) | stable | Run boundary validators; report violations with fix guidance. Standalone and consumed by other skills post-mutation. |
-| `port-hydrogen-cookbook-recipe` | backlog | Port a Shopify cookbook recipe into the modular shape. Gated on PLAN §2.10. |
+| `port-hydrogen-cookbook-recipe` | backlog | Port a Shopify cookbook recipe into the modular shape. Not shipped yet — build when a port lands without hand-holding. |
 | `scaffold-module` | backlog | Create a new vertical-slice module. |
 | `upgrade-hydrogen` | backlog | Apply a quarterly Hydrogen bump. |
 | `seed-catalog` | backlog | Seed a fresh Shopify store from a fixture. |
@@ -285,9 +285,8 @@ Personas are intentional, scoped, and few. If you can't name the gap a new perso
 
 ## §11 Distribution and pinning
 
-Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), this repo is published as `@commerce-atoms/agents` on npm. Consumers pin a version in `agents.config.json` and run `npx commerce-atoms-agents sync` to materialise per-tool overlays in their repo.
+Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), `@commerce-atoms/agents` ships on npm. Pin in `agents.config.json` and run `npx commerce-atoms-agents sync` to materialise overlays in the storefront repo.
 
-- **Source format (this repo):** markdown — `AGENTS.md` + `rules/` + `skills/` + `commands/` + `prompts/` + `personas/`.
-- **Per-tool overlay format (consumer repo):** `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` (copy of canonical, with repo-relative links rewritten to absolute GitHub URLs so they remain valid in the consumer).
+Synced copies include `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` — repo-relative links become absolute GitHub URLs so they keep working.
 
-The sync CLI ships in `0.1.0`. Per-tool overlay generation from canonical `rules/core/*.md` sources is the next step (PLAN §2.9); today the overlays in this repo are hand-maintained mirrors that the sync CLI then copies into consumer repos.
+Canonical sources live under `rules/core/*.md`; per-tool overlays are **hand-maintained mirrors** today (generation from canonical sources is a future step).

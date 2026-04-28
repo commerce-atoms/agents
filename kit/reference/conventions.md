@@ -27,7 +27,7 @@ CLAUDE.md                             # Claude Code (top-level)
 AGENTS.md                             # Universal (top-level)
 ```
 
-The `.cursor/rules/*.mdc` overlays are generated from `rules/core/*.md` by the sync CLI. Hand-edit only `rules/core/`.
+The `.cursor/rules/*.mdc` overlays mirror `rules/core/*.md` — edit canonical sources first; keep overlays in sync by hand until generation ships (see ADR 001).
 
 ### Personas
 

@@ -30,7 +30,7 @@ The MVP slice ships one skill:
 | Skill | Status | Purpose |
 |---|---|---|
 | `validate-architecture` | MVP | Run the boundary validators against a project; surface violations. |
-| `port-hydrogen-cookbook-recipe` | Backlog | Port a Shopify cookbook recipe into the modular shape. Gated on `PLAN.md §2.10`. |
+| `port-hydrogen-cookbook-recipe` | Backlog | Port a Shopify cookbook recipe into the modular shape. Ship when the first port needs it. |
 | `scaffold-module` | Backlog | Create a new vertical-slice module. |
 | `upgrade-hydrogen` | Backlog | Apply a quarterly Hydrogen bump. |
 | `seed-catalog` | Backlog | Seed a fresh Shopify store from a fixture. |

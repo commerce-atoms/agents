@@ -56,7 +56,7 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 ### 3. Architecture and rules
 
 - [ ] `npx @commerce-atoms/agents validate-architecture` exits 0.
-- [ ] `agents.config.json` `agentsVersion` matches the latest stable `@commerce-atoms/agents` (run `commerce-atoms-agents check` if 0.1.1+).
+- [ ] `agents.config.json` `agentsVersion` matches the `@commerce-atoms/agents` version you installed (`npm ls @commerce-atoms/agents`).
 - [ ] No barrel files (`find app -name 'index.ts' -o -name 'index.tsx'` returns empty).
 - [ ] No `app/lib`, `app/common`, `app/shared`, `app/ui` folders.
 - [ ] All rules from [`rules/stores.md`](../rules/stores.md) respected (brand layer, core/app split, deploy doctrine).

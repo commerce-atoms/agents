@@ -106,4 +106,4 @@ Do **not** invoke `shopify hydrogen deploy`. Do **not** poll the Oxygen API dire
 - [`commands/deploy-setup.md`](deploy-setup.md)
 - [`commands/deploy-check.md`](deploy-check.md)
 - [`AGENTS.md §0`](../AGENTS.md) — deploy doctrine.
-- The deploy workflow specification lives in [PR S2](https://github.com/commerce-atoms/hydrogen-storefront-starter/pulls).
+- The deploy workflow shipped with `hydrogen-storefront-starter`: [`deploy.yml` on `main`](https://github.com/commerce-atoms/hydrogen-storefront-starter/blob/main/.github/workflows/deploy.yml).

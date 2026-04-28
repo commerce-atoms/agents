@@ -40,8 +40,7 @@ audience: shoppy
 ## Versioning
 
 - Independent semver per package.
-- 10 packages on `0.0.x`; `metafield` ahead at `0.4.x` (external consumer).
-- Do **not** bump to `0.1.0` without an explicit ADR — internal monorepo use does not require it.
+- Publish deliberately — coordinate bumps with consumers when behaviour changes.
 
 ## Naming
 

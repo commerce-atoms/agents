@@ -69,4 +69,4 @@ By convention (see [`rules/stores.md`](../rules/stores.md)), run this command fr
 
 - [`commands/deploy-setup.md`](deploy-setup.md) — the next step after a fresh `init`.
 - [`AGENTS.md §0`](../AGENTS.md) — the doctrine the kit operates under.
-- [`PLAN.md` task 1.7 / 2.1](https://github.com/commerce-atoms) — the executable plan that justifies this command.
+- [`QUICKSTART.md`](../QUICKSTART.md) — end-to-end path from `init` to first deploy.

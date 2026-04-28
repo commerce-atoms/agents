@@ -27,7 +27,7 @@ Wire GitHub Actions secrets, environment variables, and Oxygen tokens so that `g
    test -f .github/workflows/deploy.yml || echo "FAIL: missing .github/workflows/deploy.yml"
    ```
 
-   If missing, sync the upstream starter or copy it from `hydrogen-storefront-starter` (per PR S2).
+   If missing, copy `.github/workflows/deploy.yml` from [`hydrogen-storefront-starter`](https://github.com/commerce-atoms/hydrogen-storefront-starter/blob/main/.github/workflows/deploy.yml).
 
 2. **Inventory required secrets.** Based on the canonical workflow:
 
@@ -93,4 +93,4 @@ Wire GitHub Actions secrets, environment variables, and Oxygen tokens so that `g
 - [`commands/deploy-check.md`](deploy-check.md) — runs before every push.
 - [`commands/release.md`](release.md) — tag + push when the change warrants a release.
 - [`AGENTS.md §0`](../AGENTS.md) — deploy doctrine.
-- [`hydrogen-storefront-starter/.github/workflows/deploy.yml`](https://github.com/commerce-atoms/hydrogen-storefront-starter/blob/main/.github/workflows/deploy.yml) — canonical workflow (lands in PR S2).
+- [`hydrogen-storefront-starter/.github/workflows/deploy.yml`](https://github.com/commerce-atoms/hydrogen-storefront-starter/blob/main/.github/workflows/deploy.yml) — canonical workflow (forks inherit it from the starter).
