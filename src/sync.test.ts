@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const packageRoot = resolve(dirname(__filename), '..');
 
 async function tempDir(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'commerce-atoms-agents-'));
+  return mkdtemp(join(tmpdir(), 'commerce-atoms-test-'));
 }
 
 async function pathExists(p: string): Promise<boolean> {

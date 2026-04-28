@@ -181,7 +181,7 @@ The `commerce-atoms` GitHub org consists of **independent repositories** develop
 
 | Repo | Role | Distributed as |
 |---|---|---|
-| `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms-agents` CLI. |
+| `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms` CLI. |
 | `shoppy` | Pure-logic packages published as `@commerce-atoms/*`. | Published npm packages. |
 | `hydrogen-storefront-starter` | Canonical fork point for new stores. | GitHub template / forked per store. |
 | ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into the `@commerce-atoms/agents` package (`src/internal/` in that repo) — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
@@ -285,7 +285,7 @@ Personas are intentional, scoped, and few. If you can't name the gap a new perso
 
 ## §11 Distribution and pinning
 
-Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), `@commerce-atoms/agents` ships on npm. Pin in `agents.config.json` and run `npx commerce-atoms-agents sync` to materialise overlays in the storefront repo.
+Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), `@commerce-atoms/agents` ships on npm. Pin in `agents.config.json` and run `npx commerce-atoms sync` to materialise overlays in the storefront repo.
 
 Synced copies include `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` — repo-relative links become absolute GitHub URLs so they keep working.
 

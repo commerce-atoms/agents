@@ -70,7 +70,7 @@ Production build must succeed. Bundle-size regressions are not blocking but are 
 ### 7. Architecture validation
 
 ```bash
-npx @commerce-atoms/agents validate-architecture
+npx commerce-atoms validate-architecture
 ```
 
 Zero errors required (the [validate-architecture skill](../skills/validate-architecture/SKILL.md)).

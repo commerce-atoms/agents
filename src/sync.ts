@@ -127,7 +127,7 @@ export async function sync({
   const records = writes.map((w) => w.record);
   const counts = countByStatus(records);
   const lines = [
-    `commerce-atoms-agents@${version} -> ${relativeOrDot(outDir)}`,
+    `commerce-atoms@${version} -> ${relativeOrDot(outDir)}`,
     `  written:   ${counts.written}`,
     `  unchanged: ${counts.unchanged}`,
     `  conflicts: ${counts['skipped-conflict']} (use --force to overwrite)`,

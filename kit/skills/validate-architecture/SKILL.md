@@ -48,10 +48,10 @@ Walks the target project's `app/` directory, parses imports, and reports violati
 ### As an npm CLI
 
 ```bash
-npx @commerce-atoms/agents validate-architecture
-npx @commerce-atoms/agents validate-architecture --out path/to/project
-npx @commerce-atoms/agents validate-architecture --strict   # warnings fail too
-npx @commerce-atoms/agents validate-architecture --json     # for tool consumption
+npx commerce-atoms validate-architecture
+npx commerce-atoms validate-architecture --out path/to/project
+npx commerce-atoms validate-architecture --strict   # warnings fail too
+npx commerce-atoms validate-architecture --json     # for tool consumption
 ```
 
 ### Programmatically

@@ -8,11 +8,28 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-04-28
+
+### Removed
+
+- **`commerce-atoms-agents` npm bin** — use **`commerce-atoms`** only (`sync`, `init`, `validate-architecture`, …). Update npm scripts and docs.
+
+### Migration notes
+
+```bash
+npm i -D @commerce-atoms/agents@0.2.0
+npx commerce-atoms sync
+```
+
+Replace `commerce-atoms-agents …` with `commerce-atoms …` in `package.json` scripts and shell history.
+
+---
+
 ## [0.1.2] — 2026-04-28
 
 ### Fixed
 
-- **Kit docs honesty pass** — removed stale references to `commerce-atoms-agents check`, local `PLAN.md` / “PR S2” placeholders, and `/back-port` as operational. [`kit/rules/stores.md`](kit/rules/stores.md) no longer claims enforced core-file markers or hash smoke tests (manual upstream discipline until tooling exists). Canonical [`kit/rules/core/*.md`](kit/rules/core/) blockquotes now describe **hand-maintained** Cursor overlays, not generated ones. [`kit/skills/validate-architecture/SKILL.md`](kit/skills/validate-architecture/SKILL.md) and [`kit/commands/validate-architecture.md`](kit/commands/validate-architecture.md) drop the fictional multi-skill PR workflow. [`kit/rules/packages.md`](kit/rules/packages.md) drops a brittle per-package version snapshot. Misc: [`kit/reference/philosophy.md`](kit/reference/philosophy.md) prompt filename fix; [`kit/CLAUDE.md`](kit/CLAUDE.md) aligned with the skill edit.
+- **Kit docs honesty pass** — removed stale references to the dropped `check` subcommand, local `PLAN.md` / “PR S2” placeholders, and `/back-port` as operational. [`kit/rules/stores.md`](kit/rules/stores.md) no longer claims enforced core-file markers or hash smoke tests (manual upstream discipline until tooling exists). Canonical [`kit/rules/core/*.md`](kit/rules/core/) blockquotes now describe **hand-maintained** Cursor overlays, not generated ones. [`kit/skills/validate-architecture/SKILL.md`](kit/skills/validate-architecture/SKILL.md) and [`kit/commands/validate-architecture.md`](kit/commands/validate-architecture.md) drop the fictional multi-skill PR workflow. [`kit/rules/packages.md`](kit/rules/packages.md) drops a brittle per-package version snapshot. Misc: [`kit/reference/philosophy.md`](kit/reference/philosophy.md) prompt filename fix; [`kit/CLAUDE.md`](kit/CLAUDE.md) aligned with the skill edit.
 
 ### Migration notes
 
@@ -20,7 +37,7 @@ Consumers upgrade the same way as prior patches:
 
 ```bash
 npm i -D @commerce-atoms/agents@0.1.2
-npx commerce-atoms-agents sync
+npx commerce-atoms sync
 ```
 
 ---
@@ -66,7 +83,7 @@ Consumers can upgrade with no code changes:
 
 ```bash
 npm i -D @commerce-atoms/agents@0.1.1
-npx commerce-atoms-agents sync
+npx commerce-atoms sync
 ```
 
 The first sync after upgrade will report all synced files as `written` (link rewriting changed the bytes); subsequent syncs are idempotent.
@@ -84,7 +101,7 @@ The first sync after upgrade will report all synced files as `written` (link rew
 - **`rules/packages.md`**, **`rules/stores.md`** — audience-specific rules.
 - **`skills/`**, **`commands/`**, **`prompts/`**, **`personas/`** — primitive directories with READMEs documenting their formats per [ADR 004](docs/decisions/004-skill-and-command-format.md).
 - **`INDEX.json`** + **`INDEX.schema.json`** — registry walked by the sync CLI.
-- **`commerce-atoms-agents` CLI** — `sync`, `validate-architecture`, `version`, `help` commands per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md) and [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md).
+- **`commerce-atoms` CLI** — `sync`, `validate-architecture`, `version`, `help`, `init` commands per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md) and [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md).
 - **`validate-architecture` skill + slash command** — runs the boundary validators and reports cross-module imports, reverse imports, dumping-ground folders, barrel files, Remix imports, and missing/duplicated route manifests. Migrated from the now-archived `mcp-hydrogen-kit`.
 - **`src/internal/path-to-owner.mjs`** — owner-inference primitive (migrated from `mcp-hydrogen-kit/src/tools/architecture.graphql.validatePlacement.ts`).
 - **`init` subcommand + `/init-store` slash command** — clone the canonical starter, brand it, pin `@commerce-atoms/agents`, generate brand-layer placeholders, run `sync`, and create the first commit.
@@ -106,7 +123,7 @@ Consumers previously copying files manually with `cp -r rules/cursor/hydrogen/* 
 
 ```bash
 npm i -D @commerce-atoms/agents
-npx commerce-atoms-agents sync
+npx commerce-atoms sync
 ```
 
 The CLI copies `AGENTS.md`, the per-tool overlays, and the Cursor `.mdc` rules into the consumer repo and pins the version in `agents.config.json`.

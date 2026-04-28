@@ -17,7 +17,7 @@ The forcing question: **how should consumer repos pull `agents/` content in a wa
 
 ### A — Pure npm package
 
-`@commerce-atoms/agents` published to npm. Consumers `npm i -D @commerce-atoms/agents`, then `npx commerce-atoms-agents sync` copies content into the consumer repo at well-known paths.
+`@commerce-atoms/agents` published to npm. Consumers `npm i -D @commerce-atoms/agents`, then `npx commerce-atoms sync` copies content into the consumer repo at well-known paths.
 
 - **Pros:** Familiar; works for everyone; semver native; existing tooling.
 - **Cons:** `AGENTS.md`/`.cursor/rules/` must be physically present in the consumer repo (so editor tools find them), so a copy step is unavoidable on every install/sync.
@@ -33,7 +33,7 @@ Consumers `git subtree pull` from a tag in the `agents` repo. Files live nativel
 
 Publish `@commerce-atoms/agents` as the canonical content (`AGENTS.md`, `rules/`, `skills/`, `commands/`, `prompts/`, `personas/`, `INDEX.json`). The package ships a `sync` bin that:
 
-1. Reads consumer's `agents.config.json` (or `package.json#commerce-atoms-agents` block).
+1. Reads consumer's `agents.config.json` (optional overrides).
 2. Copies the canonical files into the consumer repo at the right paths.
 3. **Generates** per-tool overlays deterministically (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`) from the canonical sources rather than maintaining them by hand.
 4. Pins the version that produced the output.
@@ -45,7 +45,7 @@ Publish `@commerce-atoms/agents` as the canonical content (`AGENTS.md`, `rules/`
 
 **Option C — Hybrid.**
 
-Publish `@commerce-atoms/agents` to npm. Ship a `commerce-atoms-agents sync` CLI that copies canonical content and **deterministically generates** per-tool overlays. Consumer pins the version in `agents.config.json`; upgrade is `npm i -D @commerce-atoms/agents@<x.y.z> && npx commerce-atoms-agents sync`.
+Publish `@commerce-atoms/agents` to npm. Ship a `commerce-atoms sync` CLI that copies canonical content and **deterministically generates** per-tool overlays. Consumer pins the version in `agents.config.json`; upgrade is `npm i -D @commerce-atoms/agents@<x.y.z> && npx commerce-atoms sync`.
 
 This is the only mechanism that makes "fix once, propagate to N stores on their own upgrade schedule" a real workflow. It closes drift permanently because the per-tool files are not authored — they are *generated*.
 

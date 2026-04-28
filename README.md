@@ -12,7 +12,7 @@ This is the npm package that distributes the AI kit consumed by every storefront
 
 ```bash
 npm i -D @commerce-atoms/agents
-npx commerce-atoms-agents sync
+npx commerce-atoms sync
 ```
 
 The CLI copies the manifest + per-tool overlays + Cursor rules into the consumer's repo, rewrites repo-relative links to absolute GitHub URLs, and pins the kit version in `agents.config.json`.
@@ -22,14 +22,14 @@ For a guided walkthrough from install to first deploy, see [`kit/QUICKSTART.md`]
 ### CLI commands
 
 ```bash
-commerce-atoms-agents init <name>      # clone the starter, brand, pin, first commit
-commerce-atoms-agents sync             # copy canonical content into cwd; pin version
-commerce-atoms-agents sync --dry-run   # preview without writing
-commerce-atoms-agents sync --force     # overwrite consumer divergence
-commerce-atoms-agents sync --out <dir> # alternate output directory
-commerce-atoms-agents validate-architecture    # run the boundary validators
-commerce-atoms-agents version
-commerce-atoms-agents help
+commerce-atoms init <name>             # clone the starter, brand, pin, first commit
+commerce-atoms sync                    # copy canonical content into cwd; pin version
+commerce-atoms sync --dry-run          # preview without writing
+commerce-atoms sync --force            # overwrite consumer divergence
+commerce-atoms sync --out <dir>        # alternate output directory
+commerce-atoms validate-architecture   # run the boundary validators
+commerce-atoms version
+commerce-atoms help
 ```
 
 ### `agents.config.json`
@@ -38,7 +38,7 @@ Generated on first `sync`; updated each run with the pinned version.
 
 ```json
 {
-  "agentsVersion": "0.1.2",
+  "agentsVersion": "0.2.0",
   "audience": "store-fork",
   "tools": {"cursor": true, "copilot": true, "claude": true, "codex": true},
   "out": {
@@ -106,7 +106,7 @@ Full statement in [`kit/AGENTS.md §0`](kit/AGENTS.md).
 
 ## Status
 
-- `0.1.x` — sync CLI, init CLI, validate-architecture skill + slash command, five personas, three prompt templates, manifest + per-tool overlays. Released via Trusted Publishing (OIDC).
+- `0.2.x` — **`commerce-atoms`** CLI (`sync`, `init`, `validate-architecture`, …). Released via Trusted Publishing (OIDC).
 - Per-tool overlays are currently hand-maintained mirrors of the canonical sources in [`kit/rules/core/`](kit/rules/core/). Deterministic generation from canonical sources is on the roadmap.
 
 ---

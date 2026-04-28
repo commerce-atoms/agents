@@ -7,7 +7,7 @@ trigger_phrases:
 inputs:
   - name: version
     required: true
-    description: Target SemVer (e.g. `0.1.2`).
+    description: Target SemVer (e.g. `0.2.0`).
   - name: changelog_unreleased
     required: false
     description: Existing `[Unreleased]` section content.

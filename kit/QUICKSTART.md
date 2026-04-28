@@ -32,7 +32,7 @@ The `init` command:
 2. Removes the inherited git history.
 3. Renames `package.json#name` to `store-bonzoverse`, sets `private: true`.
 4. Seeds `app/config/brand.ts` and `app/assets/brand/` with placeholders.
-5. Runs `commerce-atoms-agents sync` to materialise `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `.cursor/rules/*.mdc`.
+5. Runs `commerce-atoms sync` to materialise `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `.cursor/rules/*.mdc`.
 6. Pins the agents version in `agents.config.json`.
 7. Initialises a fresh git repo with one commit on `main`.
 
@@ -113,7 +113,7 @@ npm test
 npm run build
 
 # Pre-flight before push (mirrors CI gates)
-npx commerce-atoms-agents validate-architecture
+npx commerce-atoms validate-architecture
 ```
 
 Slash command equivalent of the pre-flight: [`/deploy-check`](commands/deploy-check.md).
@@ -140,7 +140,7 @@ GitHub Actions takes it from there. **Never** run `shopify hydrogen deploy` dire
 | Build a variant picker | Read `personas/commerce/catalog-variants.agent.md`. Reuse `@commerce-atoms/variants` and `@commerce-atoms/urlstate` instead of rolling your own. |
 | Optimise LCP / INP | Read `personas/hydrogen/storefront-performance.agent.md`. Measure first; never optimise without a number. |
 | Author meta tags / JSON-LD | Read `personas/commerce/seo-structured-data.agent.md`. Use `@commerce-atoms/seo` helpers; validate with Google Rich Results Test. |
-| Validate boundaries before push | `/validate-architecture` or `npx commerce-atoms-agents validate-architecture`. |
+| Validate boundaries before push | `/validate-architecture` or `npx commerce-atoms validate-architecture`. |
 | Pre-flight before push | `/deploy-check` (mirrors CI). |
 | Cut a release | `/release [patch\|minor\|major]`. |
 
@@ -150,8 +150,8 @@ When a new `@commerce-atoms/agents` ships:
 
 ```bash
 npm i -D @commerce-atoms/agents@latest
-npx commerce-atoms-agents sync     # re-materialises overlays, re-pins version
-npx commerce-atoms-agents validate-architecture   # sanity-check boundaries after bump
+npx commerce-atoms sync     # re-materialises overlays, re-pins version
+npx commerce-atoms validate-architecture   # sanity-check boundaries after bump
 git add . && git commit -m "chore: bump @commerce-atoms/agents"
 ```
 

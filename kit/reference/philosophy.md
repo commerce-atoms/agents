@@ -22,7 +22,7 @@ This repo ships five distinct kinds of AI assistance. They are not interchangeab
 
 **Purpose:** Enforce architecture, prevent mistakes, maintain consistency.
 
-**Lifecycle:** Synced into consumer repos via the `commerce-atoms-agents` package. Versioned and pinned.
+**Lifecycle:** Synced into consumer repos via the `@commerce-atoms/agents` package (`commerce-atoms` CLI). Versioned and pinned.
 
 ### Personas — expertise
 

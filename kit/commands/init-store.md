@@ -33,7 +33,7 @@ By convention (see [`rules/stores.md`](../rules/stores.md)), run this command fr
    3. Rename `package.json#name` to `<store-name>`, set `private: true`, reset to `0.1.0`.
    4. Replace `README.md` with a store-specific stub (linked to `@commerce-atoms/agents` version).
    5. Seed `app/config/brand.ts` and `app/assets/brand/` with placeholders if the starter doesn't provide them.
-   6. Run `commerce-atoms-agents sync` internally to materialise `AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, and `.cursor/rules/*.mdc`.
+   6. Run `commerce-atoms sync` internally to materialise `AGENTS.md`, `CLAUDE.md`, `copilot-instructions.md`, and `.cursor/rules/*.mdc`.
    7. `git init --initial-branch=main` + initial commit.
 
 4. **Print the next-steps checklist** (the CLI does this; surface it verbatim to the user):

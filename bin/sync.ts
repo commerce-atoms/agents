@@ -58,10 +58,10 @@ async function resolveRepoUrlBase(): Promise<string | undefined> {
 }
 
 function help(): string {
-  return `commerce-atoms-agents — AI manifest sync + architecture validation + storefront init
+  return `commerce-atoms — AI manifest sync + architecture validation + storefront init
 
 USAGE
-  commerce-atoms-agents <command> [options]
+  commerce-atoms <command> [options]
 
 COMMANDS
   init <name>              Clone the starter, brand it, pin agents, first commit.
@@ -157,7 +157,7 @@ async function main(argv: string[]): Promise<number> {
 
     const name = positionals[0];
     if (!name) {
-      process.stderr.write('Error: store name is required.\n\nUsage: commerce-atoms-agents init <store-name>\n');
+      process.stderr.write('Error: store name is required.\n\nUsage: commerce-atoms init <store-name>\n');
       return 2;
     }
 

@@ -53,7 +53,7 @@ Conceptually the starter has two layers — shared scaffold vs. what changes per
 
 Automatic marker comments / hash checks on "core" files are **not** enforced yet — track upstream discipline manually until tooling lands.
 
-- Upgrades: bump `@commerce-atoms/agents` → `npx commerce-atoms-agents sync` → run tests → commit.
+- Upgrades: bump `@commerce-atoms/agents` → `npx commerce-atoms sync` → run tests → commit.
 
 ## AGENTS.md overlay
 

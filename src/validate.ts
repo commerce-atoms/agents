@@ -69,7 +69,7 @@ export async function validate({root, strict = false}: ValidateParams): Promise<
 
 export function formatReport(report: ValidationReport): string {
   const {root, violations, counts} = report;
-  const lines = ['commerce-atoms-agents validate-architecture', `  root: ${root}`];
+  const lines = ['commerce-atoms validate-architecture', `  root: ${root}`];
 
   if (violations.length === 0) {
     lines.push('  result: PASS — no violations found.');

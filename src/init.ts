@@ -49,7 +49,7 @@ export async function init(params: InitParams): Promise<InitResult> {
   } = params;
 
   if (!name) {
-    throw new Error('Store name is required. Usage: commerce-atoms-agents init <store-name>');
+    throw new Error('Store name is required. Usage: commerce-atoms init <store-name>');
   }
   if (!VALID_NAME.test(name)) {
     throw new Error(
@@ -105,7 +105,7 @@ interface DryRunSummaryParams {
 
 function dryRunSummary({name, dir, starterRepo, starterRef, packageVersion}: DryRunSummaryParams): string {
   return [
-    `commerce-atoms-agents init ${name} (dry-run)`,
+    `commerce-atoms init ${name} (dry-run)`,
     `  would clone:        ${starterRepo} @ ${starterRef}`,
     `  would write to:     ${dir}`,
     `  would pin agents:   ${packageVersion}`,
@@ -122,7 +122,7 @@ interface DoneSummaryParams {
 
 function doneSummary({name, dir, packageVersion}: DoneSummaryParams): string {
   return [
-    `commerce-atoms-agents init ${name} — done`,
+    `commerce-atoms init ${name} — done`,
     `  ${dir}`,
     '',
     'Next steps:',
@@ -134,7 +134,7 @@ function doneSummary({name, dir, packageVersion}: DoneSummaryParams): string {
     '  5. Wire CI (one-time): use the /deploy-setup slash command, or follow',
     '       https://github.com/commerce-atoms/agents/blob/main/kit/commands/deploy-setup.md',
     '  6. Daily workflow: npm install && npm run dev',
-    '  7. Pre-flight before push: npx commerce-atoms-agents validate-architecture',
+    '  7. Pre-flight before push: npx commerce-atoms validate-architecture',
     '  8. First deploy: git push origin main (CI deploys via .github/workflows/deploy.yml).',
     '',
     `(@commerce-atoms/agents@${packageVersion} pinned in agents.config.json — see QUICKSTART.md for the full guide.)`,
@@ -210,10 +210,10 @@ async function writeStoreReadme({dir, storeName, packageVersion}: WriteStoreRead
     'npm test',
     '',
     '# Re-sync agent rules after upgrading @commerce-atoms/agents',
-    'npx @commerce-atoms/agents sync',
+    'npx commerce-atoms sync',
     '',
     '# Validate architecture before pushing',
-    'npx @commerce-atoms/agents validate-architecture',
+    'npx commerce-atoms validate-architecture',
     '```',
     '',
     '## Deploy',

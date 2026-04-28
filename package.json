@@ -1,6 +1,6 @@
 {
   "name": "@commerce-atoms/agents",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Universal AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "type": "module",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "node": ">=20.11.0"
   },
   "bin": {
-    "commerce-atoms-agents": "./dist/bin/sync.js"
+    "commerce-atoms": "./dist/bin/sync.js"
   },
   "main": "./dist/src/sync.js",
   "types": "./dist/src/sync.d.ts",

@@ -19,7 +19,7 @@ Run the architecture validators against a Hydrogen storefront project.
 2. Invoke the CLI:
 
    ```bash
-   npx @commerce-atoms/agents validate-architecture --out <path>
+   npx commerce-atoms validate-architecture --out <path>
    ```
 
 3. Read the human-readable output. If exit code is non-zero, summarise violations grouped by `code` for the user.
