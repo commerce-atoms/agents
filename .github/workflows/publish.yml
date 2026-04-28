@@ -5,6 +5,8 @@ on:
     tags:
       - 'v*'
 
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 permissions:
   contents: read
   id-token: write
@@ -16,12 +18,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '22'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for Trusted Publishing
+        run: |
+          npm --version
+          npm install -g npm@^11.5.1
+          npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -41,7 +49,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish
-        run: npm publish --access public --provenance
+      - name: Publish (Trusted Publishing via OIDC)
+        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'
