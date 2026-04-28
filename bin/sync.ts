@@ -7,6 +7,7 @@ import {readFile, stat} from 'node:fs/promises';
 import {sync} from '../src/sync.js';
 import {validate, formatReport, formatReportJson} from '../src/validate.js';
 import {init} from '../src/init.js';
+import {check, formatCheckResult} from '../src/check.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,6 +15,7 @@ const packageRoot = await resolvePackageRoot(__dirname);
 
 interface PackageJson {
   version: string;
+  repository?: {url?: string} | string;
 }
 
 async function resolvePackageRoot(start: string): Promise<string> {
@@ -34,10 +36,26 @@ async function resolvePackageRoot(start: string): Promise<string> {
   throw new Error(`Could not locate @commerce-atoms/agents package root from ${start}`);
 }
 
-async function readPackageVersion(): Promise<string> {
+async function readPackageJson(): Promise<PackageJson> {
   const raw = await readFile(resolve(packageRoot, 'package.json'), 'utf8');
-  const pkg = JSON.parse(raw) as PackageJson;
-  return pkg.version;
+  return JSON.parse(raw) as PackageJson;
+}
+
+async function readPackageVersion(): Promise<string> {
+  return (await readPackageJson()).version;
+}
+
+async function resolveRepoUrlBase(): Promise<string | undefined> {
+  const pkg = await readPackageJson();
+  const raw =
+    typeof pkg.repository === 'string'
+      ? pkg.repository
+      : pkg.repository?.url;
+  if (!raw) return undefined;
+  // Normalise `git+https://github.com/owner/repo.git` -> `https://github.com/owner/repo`
+  const cleaned = raw.replace(/^git\+/, '').replace(/\.git$/, '');
+  if (!/^https?:\/\/github\.com\//.test(cleaned)) return undefined;
+  return `${cleaned.replace(/\/+$/, '')}/blob/main`;
 }
 
 function help(): string {
@@ -50,6 +68,7 @@ COMMANDS
   init <name>              Clone the starter, brand it, pin agents, first commit.
   sync                     Copy canonical content from this package into the consumer repo.
   validate-architecture    Run architecture boundary validators against a project.
+  check                    Combined health check: config + version freshness + architecture.
   version                  Print the package version.
   help                     Show this help.
 
@@ -70,6 +89,10 @@ OPTIONS (validate-architecture)
   --strict          Treat warnings as exit-failing.
   --json            Emit JSON report instead of human-readable.
 
+OPTIONS (check)
+  --out <dir>       Project root to check (default: cwd).
+  --strict          Treat warnings as exit-failing.
+
 DEFAULTS (sync, when agents.config.json is absent)
   Audience:           store-fork
   Tools enabled:      cursor, copilot, claude, codex
@@ -81,6 +104,7 @@ DEFAULTS (sync, when agents.config.json is absent)
 
 DOCS
   https://github.com/commerce-atoms/agents
+  See QUICKSTART.md for a guided walkthrough from install to first deploy.
 `;
 }
 
@@ -117,6 +141,7 @@ async function main(argv: string[]): Promise<number> {
       dryRun: values['dry-run'],
       force: values.force,
       version: await readPackageVersion(),
+      repoUrlBase: await resolveRepoUrlBase(),
     });
 
     process.stdout.write(`${result.summary}\n`);
@@ -172,6 +197,27 @@ async function main(argv: string[]): Promise<number> {
     const {report, exitCode} = await validate({root, strict: values.strict});
     process.stdout.write(`${values.json ? formatReportJson(report) : formatReport(report)}\n`);
     return exitCode;
+  }
+
+  if (command === 'check') {
+    const {values} = parseArgs({
+      args: argv.slice(1),
+      options: {
+        out: {type: 'string'},
+        strict: {type: 'boolean', default: false},
+      },
+      strict: true,
+      allowPositionals: false,
+    });
+
+    const root = resolve(values.out ?? process.cwd());
+    const result = await check({
+      root,
+      installedAgentsVersion: await readPackageVersion(),
+      strict: values.strict,
+    });
+    process.stdout.write(`${formatCheckResult(result)}\n`);
+    return result.exitCode;
   }
 
   process.stderr.write(`Unknown command: ${command}\n\n${help()}`);

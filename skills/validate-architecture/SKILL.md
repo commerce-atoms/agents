@@ -60,8 +60,8 @@ npx @commerce-atoms/agents validate-architecture --json     # for tool consumpti
 
 ### Programmatically
 
-```js
-import {validate, formatReport} from '@commerce-atoms/agents/src/validate.mjs';
+```ts
+import {validate, formatReport} from '@commerce-atoms/agents/validate';
 
 const {report, exitCode} = await validate({root: '/path/to/project'});
 console.log(formatReport(report));
@@ -79,7 +79,7 @@ Human-readable mode prints one block per violation:
     fix:  Promote the shared logic per the cross-module reuse ladder (AGENTS.md §4) or duplicate intentionally.
 ```
 
-JSON mode emits the full `ValidationReport` object — see [`src/internal/types.mjs`](../../src/internal/types.mjs).
+JSON mode emits the full `ValidationReport` object — see [`src/internal/types.ts`](../../src/internal/types.ts).
 
 ## Workflow when used by other skills
 

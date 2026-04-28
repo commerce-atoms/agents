@@ -10,6 +10,30 @@ audience: store-fork
 
 > Active in any consumer repo that is a **fork** of `hydrogen-storefront-starter` (a real running store). The starter itself follows these rules pre-emptively so forks inherit them.
 
+## Topology
+
+Local working tree convention:
+
+```text
+~/Projects/commerce-atoms/
+├── agents/                       # public — the kit's AI manifest + sync CLI
+├── shoppy/                       # public — @commerce-atoms/* npm packages
+├── hydrogen-storefront-starter/  # public — fork point for new stores
+├── .github/                      # public — org profile + ops scripts
+└── stores/                       # local-only convention; not a single git repo
+    ├── store-bonzoverse/         → github.com/commerce-atoms/store-bonzoverse  (private)
+    ├── store-doctor-undefined/   → github.com/commerce-atoms/store-doctor-undefined  (private)
+    └── …
+```
+
+Remote conventions:
+
+- Each store is its own independent GitHub repo, **private** by default.
+- Internal stores live at `github.com/commerce-atoms/store-<name>` — single org keeps secrets, billing, and Trusted Publishing config in one place. Public visitors only see public repos.
+- Customer stores live under the customer's own org (`github.com/<customer>/<repo>`); the customer owns the code.
+- Local directory name matches the remote (`stores/store-bonzoverse/` ↔ `commerce-atoms/store-bonzoverse`).
+- Stores are **never** mixed at the top level of `commerce-atoms/` — only `stores/` is allowed there.
+
 ## Brand layer
 
 - 100% of per-store divergence lives in:

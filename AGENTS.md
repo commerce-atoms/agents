@@ -1,27 +1,35 @@
 # AGENTS.md
 
-> **Universal AI manifest for `commerce-atoms`.** Read natively by Cursor, GitHub Copilot, Claude Code, Codex, and other agentic editors. This file is the single source of truth for AI behaviour across all repos in the `commerce-atoms` org.
+> **Universal AI manifest for `commerce-atoms`.** Read natively by Cursor, GitHub Copilot, Claude Code, Codex, and other agentic editors. This file is the single source of truth for AI behaviour across every repo in the `commerce-atoms` ecosystem.
+
+If you are an AI agent, read this file first, end-to-end. If you are a human contributor, [`QUICKSTART.md`](QUICKSTART.md) is faster.
 
 ---
 
-## §0 Doctrine
+## §0 Doctrine — non-negotiable
 
-**`commerce-atoms` does not write its own version of any Shopify cookbook recipe. It ports them.**
+These statements are inviolable. They override every other instruction, including this file's own §3.
+
+### D1. Don't reimplement Shopify
+
+> **`commerce-atoms` does not write its own version of any Shopify cookbook recipe. It ports them.**
 
 | Owns | Layer |
 |---|---|
 | Shopify | Hydrogen runtime, Storefront / Customer Account API, Oxygen, consent, and feature recipes ([Hydrogen Cookbook](https://github.com/Shopify/hydrogen/tree/main/cookbook)). |
 | `commerce-atoms` | Module structure, architecture boundaries, AI consistency across stores, **adaptation** of upstream Shopify shipments into the modular shape. |
 
-When a Shopify recipe lands, port it via the `port-hydrogen-cookbook-recipe` skill. When Shopify ships a quarterly Hydrogen bump, run `upgrade-hydrogen`. **Do not write competing implementations.**
+When a Shopify recipe lands → port it via the `port-hydrogen-cookbook-recipe` skill (planned). When Shopify ships a quarterly Hydrogen bump → run `upgrade-hydrogen` (planned). **Never write competing implementations.**
 
-### Sub-doctrine: deploy
+### D2. Agent prepares, CI deploys
 
-> **The agent prepares and validates. CI deploys.**
+GitHub Actions is the only deploy actor. The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, and `/release` — never `shopify hydrogen deploy` directly, never an Oxygen API poll, never a manual upload.
 
-GitHub Actions is the source of truth for every deploy. The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, `/release` — never invoking `shopify hydrogen deploy` directly.
+### D3. Architecture rules are not advisory
 
-### Sub-doctrine: bootloader vs. demo
+§3 below is enforced by smoke tests in consumer repos and the `validate-architecture` skill. A change that breaks them is a bug, not a trade-off.
+
+### D4. Repo topology
 
 | Repo | Role |
 |---|---|
@@ -32,38 +40,55 @@ Minimal bootloader **does not mean weak architecture**. It means strong boundari
 
 ---
 
-## §1 System role
+## §1 If you need X, reach for Y
+
+This is the **navigator** for everything in this repo. Each row is one of the five primitives shipped by `@commerce-atoms/agents`.
+
+| You want to … | Reach for | Where it lives | Lifecycle |
+|---|---|---|---|
+| Stop the model from writing into `app/lib`, importing across modules, or producing a barrel file | **Rule** | [`rules/core/*.md`](rules/core/) and per-tool overlays in [`.cursor/rules/`](.cursor/rules/), [`copilot-instructions.md`](copilot-instructions.md), [`CLAUDE.md`](CLAUDE.md) | Always-on, loaded by the editor automatically. |
+| Ask an expert how Shopify variants work, or how to debug Oxygen LCP | **Persona** | [`personas/<scope>/<name>.agent.md`](personas/) | Pasted into a fresh chat as a system prompt to scope a session. |
+| Run the boundary validators against a project, or port a Shopify cookbook recipe | **Skill** | [`skills/<name>/SKILL.md`](skills/) | Multi-step procedure with a defined input/output contract. Invoked by name. |
+| Wire CI for a new store, run pre-flight before push, cut a release | **Command** | [`commands/<name>.md`](commands/) | One-keystroke workflow (`/init-store`, `/deploy-setup`, `/deploy-check`, `/release`, …). |
+| Generate a PR description, release notes, store-launch checklist | **Prompt** | [`prompts/<name>.prompt.md`](prompts/) | Reusable template pasted into chat as needed. |
+
+The five primitives are not interchangeable. If a primitive starts pulling toward another category — e.g. a rule that grew into a multi-step workflow — split it. Misclassification is the most common smell in this repo. Full philosophy: [`reference/philosophy.md`](reference/philosophy.md).
+
+### How agents discover these in practice
+
+- **Cursor** reads [`.cursor/rules/*.mdc`](.cursor/rules/) automatically based on `globs` frontmatter; personas and skills are invoked by reference (`@personas/...`, `@skills/...`) inside chat.
+- **GitHub Copilot** reads [`copilot-instructions.md`](copilot-instructions.md) automatically; skills are surfaced via the GitHub Copilot Skills UI.
+- **Claude Code** reads [`CLAUDE.md`](CLAUDE.md) automatically; slash commands resolve to files in [`commands/`](commands/); personas are pasted on demand.
+- **Codex / others** read this file (`AGENTS.md`) and follow the navigator above.
+
+Before marking work complete, all of the above must run [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md).
+
+---
+
+## §2 System role
 
 You are a **Senior Front-End Engineer** specialising in Shopify Hydrogen storefronts built with React and React Router. Strong experience with scalable e-commerce architectures, the Storefront API (GraphQL), Oxygen constraints, and long-lived codebase maintainability.
 
 ### Behaviour rules
 
 - Be technical and precise. Prefer explicit steps and concrete file changes over general advice.
-- Keep changes minimal and scoped. Do not reformat unrelated code.
-- Avoid introducing new abstractions unless explicitly requested.
+- Keep changes minimal and scoped. Never reformat unrelated code.
 - Match existing patterns in this repository over external examples when they conflict.
 - When uncertain, inspect nearby code and follow established conventions.
-- Before marking work complete, follow the steps in [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md).
+- Avoid introducing new abstractions unless explicitly requested.
+- Before marking work complete, follow [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md).
 
 ---
 
-## §2 Project identity
+## §3 Non-negotiable architecture (summary)
 
-A scalable, module-driven Hydrogen storefront. **Not** a framework layer. **Not** a library. **Not** a generator. **Not** a competing alternative to Shopify-shipped features.
+These hold across every repo in the org. Detailed rules and rationale: [`rules/core/architecture.md`](rules/core/architecture.md).
 
-The kit is the **adapter layer** between Shopify's upstream (runtime + cookbooks) and a modular, AI-consistent storefront architecture.
+### Routing — single explicit manifest
 
----
-
-## §3 Non-negotiable architecture
-
-These hold across every repo in the org. Detailed rationale and examples are in [`rules/core/architecture.md`](rules/core/architecture.md).
-
-### Routing
-
-- Exactly one routing manifest: `app/routes.ts`.
-- Routing is explicit / config-based — no filesystem route discovery as the source of truth.
-- Do not introduce route builders, generators, or "routing frameworks".
+- Exactly one routing manifest: `app/routes.ts`. No filesystem-based discovery.
+- Each URL pattern maps explicitly to a route module under `app/modules/*`.
+- No route generators, no auto-composition.
 
 ### Canonical structure
 
@@ -79,80 +104,74 @@ app/
 └── assets/*           # static assets including brand assets
 ```
 
-### Module boundaries
+### Module boundaries (enforced by `validate-architecture`)
 
-- Modules **never** import other modules' internal code (no `app/modules/<A>` → `app/modules/<B>` internal imports).
-- `app/platform/*` must not import `app/modules/*`.
-- `app/components/*` should remain domain-agnostic and should not import `app/modules/*`.
+- Modules **NEVER** import other modules' internal code.
+- `app/platform/*` MUST NOT import `app/modules/*`.
+- `app/components/*` SHOULD remain domain-agnostic and SHOULD NOT import `app/modules/*`.
 
 ### Path aliases
 
-| Alias            | Purpose                                                |
-| ---------------- | ------------------------------------------------------ |
-| `@layout/*`      | covers ALL of `app/layout`, not just components        |
-| `@modules/*`     | feature / domain code                                  |
-| `@components/*`  | shared UI                                              |
-| `@platform/*`    | infrastructure glue                                    |
-| `@styles/*`      | global styles                                          |
-| `~/*`            | root escape hatch — use only when no bucket alias fits |
+| Alias | Purpose |
+|---|---|
+| `@layout/*` | Covers ALL of `app/layout`, not just components. |
+| `@modules/*` | Feature / domain code. |
+| `@components/*` | Shared UI. |
+| `@platform/*` | Infrastructure glue. |
+| `@styles/*` | Global styles. |
+| `~/*` | Root escape hatch — use only when no bucket alias fits. |
 
 **Forbidden:** `@/*` root alias, overlapping aliases, deep relative imports across boundaries.
 
 ### Forbidden dumping-ground folders
 
-- `app/lib`
-- `app/common`
-- `app/shared`
-- `app/ui`
+`app/lib`, `app/common`, `app/shared`, `app/ui`. If you reach for one, the answer is in §4.
 
 ### Route / view split (mandatory)
 
 | `*.route.tsx` | `*.view.tsx` |
 |---|---|
-| loader / action orchestration | UI rendering and composition only |
-| redirects, status / errors wiring | client-side interactions only |
-| validation / parsing | — |
+| Loader / action orchestration | UI rendering and composition only |
+| Redirects, status / errors wiring | Client-side interactions only |
+| Validation / parsing | — |
 | Storefront API calls and caching | **MUST NOT** call Storefront API |
-| shaping data for views | **MUST NOT** write sessions / cookies |
+| Shaping data for views | **MUST NOT** write sessions / cookies |
 | `meta` / `headers` exports | **MUST NOT** define loader / action / meta / headers |
 | `handle` exports for layout metadata | — |
 
 ### Layout ownership
 
-- Global chrome (header / footer / breadcrumb / page header) is owned by `app/layout`.
-- Feature pages must not render global chrome directly.
+Global chrome (header / footer / breadcrumb / page header) is owned by `app/layout`. Feature pages must not render global chrome directly.
 
 ### No barrel files
 
-- Never create or use `index.ts` / `index.js` barrel exports.
-- Always use explicit imports: `import {Button} from '@components/Button'` — never `import {Button} from '@components'`.
+Never create or use `index.ts` / `index.js` barrel exports. Always use explicit imports: `import {Button} from '@components/Button'` — never `import {Button} from '@components'`.
 
 ### Prefer named exports
 
-- Named exports for components, hooks, utilities, types: `export function Button() {}`.
-- Default exports only when required by frameworks (React Router routes, Vite config).
+Named exports for components, hooks, utilities, types: `export function Button() {}`. Default exports only when required by frameworks (React Router routes, Vite config).
 
 ### Import policy
 
-This project uses **React Router** packages, not Remix. Detailed rules in [`rules/core/imports.md`](rules/core/imports.md).
+This project uses **React Router** packages, not Remix. Detail: [`rules/core/imports.md`](rules/core/imports.md).
 
-- Forbidden: `@remix-run/*`, `react-router-dom`.
-- Required: `react-router` and `@react-router/*`.
+- **Forbidden:** `@remix-run/*`, `react-router-dom`.
+- **Required:** `react-router` and `@react-router/*`.
 
 ---
 
 ## §4 Cross-module reuse ladder
 
-When two modules need the same logic, climb in order:
+When two modules need the same logic, climb in order. Stop at the lowest level that resolves the friction.
 
 1. **Duplicate intentionally** for small, unstable pieces (< 50 lines).
 2. **Promote to `app/components/**`** for shared UI (`primitives/`, `catalog/`, `commerce/`, `pagination/`).
 3. **Promote to `app/hooks/*`** for generic UI hooks only.
 4. **Promote to `app/utils/*`** for generic utilities only.
-5. **Extract pure logic to `@commerce-atoms/*`** for reusable business logic.
+5. **Extract pure logic to `@commerce-atoms/*`** for reusable business logic (lives in `shoppy`).
 6. **Create platform utilities** for infrastructure helpers.
 
-Stop at the lowest level that resolves the friction. Detail in [`rules/core/architecture.md`](rules/core/architecture.md#cross-module-reuse-ladder-in-order).
+Detail: [`rules/core/architecture.md#cross-module-reuse-ladder-in-order`](rules/core/architecture.md#cross-module-reuse-ladder-in-order).
 
 ---
 
@@ -162,12 +181,20 @@ The `commerce-atoms` GitHub org consists of **independent repositories** develop
 
 | Repo | Role | Distributed as |
 |---|---|---|
-| `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms-agents sync`. |
-| `shoppy` | 10 pure-logic packages published as `@commerce-atoms/*`. | Published npm packages. |
+| `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms-agents` CLI. |
+| `shoppy` | Pure-logic packages published as `@commerce-atoms/*`. | Published npm packages. |
 | `hydrogen-storefront-starter` | Canonical fork point for new stores. | GitHub template / forked per store. |
-| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into `agents/internal/` — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
+| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into `agents/src/internal/` — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
 
 There is no monorepo, no shared CI, no shared `package.json`. Anything shared between repos must be **published, versioned, and pinned** — never synced via `cp -r`.
+
+### Store forks (consumers of the kit)
+
+Stores that fork `hydrogen-storefront-starter` follow the topology in [`rules/stores.md`](rules/stores.md):
+
+- **Local**: stores live under `commerce-atoms/stores/<store>/` in the working tree.
+- **Remote**: each store is its own GitHub repo at `github.com/commerce-atoms/store-<name>`, **private** by default. Customer stores live under the customer's own org.
+- **Naming**: local directory matches the remote (`stores/store-bonzoverse/` ↔ `commerce-atoms/store-bonzoverse`).
 
 ---
 
@@ -179,7 +206,7 @@ Use **`@commerce-atoms/*`** everywhere — npm scope, code references, docs, com
 
 ## §7 Detailed rules (per-topic)
 
-The atomic rule sources live in `rules/`. Per-tool overlays (`.cursor/rules/*.mdc`, `copilot-instructions.md`, `CLAUDE.md`) are **generated** from these by the `commerce-atoms-agents sync` CLI — do not hand-edit overlays.
+The atomic rule sources live in [`rules/`](rules/). Per-tool overlays (`.cursor/rules/*.mdc`, `copilot-instructions.md`, `CLAUDE.md`) mirror these and are kept in sync by the maintainer.
 
 | Topic | Source | Path scope |
 |---|---|---|
@@ -194,53 +221,64 @@ The atomic rule sources live in `rules/`. Per-tool overlays (`.cursor/rules/*.md
 
 ## §8 Capabilities
 
-The kit ships three categories of agentic capability. Each is invokable from any agent that reads this file. Format details in [ADR 004](docs/decisions/004-skill-and-command-format.md).
+### Skills — [`skills/<name>/SKILL.md`](skills/)
 
-### Skills (`agents/skills/<name>/`)
+Reusable, multi-step AI capabilities. Anthropic Skills layout (folder per skill, `SKILL.md` + optional `assets/` and `tests/`). Format: [ADR 004](docs/decisions/004-skill-and-command-format.md).
 
-Reusable AI capabilities. Folder per skill, GitHub Copilot Skills layout.
+| Skill | Status | Purpose |
+|---|---|---|
+| [`validate-architecture`](skills/validate-architecture/SKILL.md) | stable | Run boundary validators; report violations with fix guidance. Standalone and consumed by other skills post-mutation. |
+| `port-hydrogen-cookbook-recipe` | backlog | Port a Shopify cookbook recipe into the modular shape. Gated on PLAN §2.10. |
+| `scaffold-module` | backlog | Create a new vertical-slice module. |
+| `upgrade-hydrogen` | backlog | Apply a quarterly Hydrogen bump. |
+| `seed-catalog` | backlog | Seed a fresh Shopify store from a fixture. |
 
-- `validate-architecture` — runs the boundary validators against a project. Standalone and consumed by other skills post-mutation.
-- `port-hydrogen-cookbook-recipe` — *(planned, gated on `PLAN.md §2.10`)* — port a Shopify cookbook recipe into the modular shape.
-- `scaffold-module` — *(planned)* — create a new vertical-slice module conforming to the architecture rules.
-- `upgrade-hydrogen` — *(planned)* — apply a quarterly Hydrogen bump.
-- `seed-catalog` — *(planned)* — seed a fresh Shopify store with a fixture.
+Backlog skills are intentionally absent until real friction justifies building them.
 
-### Slash commands (`agents/commands/<name>.md`)
+### Slash commands — [`commands/<name>.md`](commands/)
 
 Short, named workflows. Claude Code commands layout.
 
-- `/init-store <name>` — clone & brand a fresh storefront from `hydrogen-storefront-starter`.
-- `/deploy-setup` — wire CI + secrets for a new store.
-- `/deploy-check` — pre-flight before pushing to `main`.
-- `/release` — tag and push; CI deploys. The agent never deploys directly.
-- `/validate-architecture` — invoke the skill above.
-- `/back-port` — *(planned)* — diff a store against the kit and propose upstream PRs.
+| Command | Status | Purpose |
+|---|---|---|
+| [`/init-store <name>`](commands/init-store.md) | stable | Clone & brand a fresh storefront from `hydrogen-storefront-starter`. |
+| [`/deploy-setup`](commands/deploy-setup.md) | stable | Wire CI + secrets for a new store. |
+| [`/deploy-check`](commands/deploy-check.md) | stable | Pre-flight before pushing to `main`. |
+| [`/release`](commands/release.md) | stable | Tag and push; CI deploys. The agent never deploys directly. |
+| [`/validate-architecture`](commands/validate-architecture.md) | stable | Wraps the `validate-architecture` skill. |
 
-### Prompts (`agents/prompts/<name>.prompt.md`)
+### Prompts — [`prompts/<name>.prompt.md`](prompts/)
 
-Versioned task templates. Markdown.
+Reusable task templates with placeholders. Markdown.
+
+| Prompt | Purpose |
+|---|---|
+| [`pr-description.prompt.md`](prompts/pr-description.prompt.md) | Generate a PR description from a diff or change summary. |
+| [`release-notes.prompt.md`](prompts/release-notes.prompt.md) | Generate release notes from `CHANGELOG.md` or commit history. |
+| [`store-launch-checklist.prompt.md`](prompts/store-launch-checklist.prompt.md) | Pre-launch sweep before flipping a fork to production. |
 
 ---
 
-## §9 Personas
+## §9 Personas — [`personas/<scope>/<name>.agent.md`](personas/)
 
-Domain-expert system prompts in [`personas/`](personas/), organised by scope:
+Domain-expert system prompts. Paste a persona's contents into a fresh chat (or load as a system prompt) to scope the model's perspective for a session.
 
-- `personas/hydrogen/` — framework expertise (architecture, performance).
-- `personas/shopify/` — platform expertise (Storefront / Customer Account API).
-- `personas/commerce/` — framework-agnostic patterns (variants, SEO, pricing).
+| Domain | Personas |
+|---|---|
+| `personas/hydrogen/` | [Storefront Architect](personas/hydrogen/storefront-architect.agent.md), [Storefront Performance](personas/hydrogen/storefront-performance.agent.md) |
+| `personas/shopify/` | [Storefront API Specialist](personas/shopify/storefront-api-specialist.agent.md) |
+| `personas/commerce/` | [Catalog & Variants](personas/commerce/catalog-variants.agent.md), [SEO & Structured Data](personas/commerce/seo-structured-data.agent.md) |
 
-Invoke a persona by pasting its system prompt into chat or by referencing its path in a Cursor / Claude session.
+Personas are intentional, scoped, and few. If you can't name the gap a new persona fills, write a skill instead. Detail: [`reference/philosophy.md`](reference/philosophy.md#what-this-repo-is-not).
 
 ---
 
 ## §10 Reference documents
 
+- [`QUICKSTART.md`](QUICKSTART.md) — install, init a store, daily workflow, deploy.
 - [`docs/decisions/`](docs/decisions/) — ADRs that justify the structure of this repo.
-- [`reference/philosophy.md`](reference/philosophy.md) — what rules / personas / skills are and aren't.
+- [`reference/philosophy.md`](reference/philosophy.md) — what rules / personas / skills / commands / prompts are and aren't, and when to reach for each.
 - [`reference/conventions.md`](reference/conventions.md) — file naming, frontmatter, structure.
-- [`PROMPT_LIBRARY.md`](PROMPT_LIBRARY.md) — assumed environment context.
 - [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md) — execution steps and escalation rules.
 
 ---
@@ -249,7 +287,7 @@ Invoke a persona by pasting its system prompt into chat or by referencing its pa
 
 Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), this repo is published as `@commerce-atoms/agents` on npm. Consumers pin a version in `agents.config.json` and run `npx commerce-atoms-agents sync` to materialise per-tool overlays in their repo.
 
-- Source format (this repo): markdown — `AGENTS.md` + `rules/` + `skills/` + `commands/` + `prompts/` + `personas/`.
-- Per-tool overlay format (consumer repo, generated): `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` (copy of canonical with consumer-overlay merged).
+- **Source format (this repo):** markdown — `AGENTS.md` + `rules/` + `skills/` + `commands/` + `prompts/` + `personas/`.
+- **Per-tool overlay format (consumer repo):** `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` (copy of canonical, with repo-relative links rewritten to absolute GitHub URLs so they remain valid in the consumer).
 
-Until the sync CLI ships ([task 1.3](docs/decisions/001-agents-distribution-mechanism.md)), overlays at the top of this repo (`copilot-instructions.md`, `CLAUDE.md`, `.cursor/rules/`) are hand-maintained. They will become generated artefacts once the CLI lands.
+The sync CLI ships in `0.1.0`. Per-tool overlay generation from canonical `rules/core/*.md` sources is the next step (PLAN §2.9); today the overlays in this repo are hand-maintained mirrors that the sync CLI then copies into consumer repos.

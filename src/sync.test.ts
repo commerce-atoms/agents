@@ -49,6 +49,81 @@ void test('sync into empty consumer copies AGENTS.md, CLAUDE.md, copilot, cursor
   }
 });
 
+void test('sync rewrites repo-relative links in AGENTS.md to absolute GitHub URLs', async () => {
+  const outDir = await tempDir();
+  try {
+    await sync({packageRoot, outDir, version: '0.1.0'});
+
+    const consumerAgentsMd = await readFile(join(outDir, 'AGENTS.md'), 'utf8');
+
+    // Should NOT contain repo-relative ADR links any more
+    assert.doesNotMatch(
+      consumerAgentsMd,
+      /\]\(docs\/decisions\/[^)]+\)/,
+      'consumer AGENTS.md must not contain raw repo-relative ADR links',
+    );
+    // SHOULD contain absolute GitHub blob URLs to the canonical sources
+    assert.match(
+      consumerAgentsMd,
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/docs\/decisions\//,
+      'consumer AGENTS.md should contain absolute ADR URLs',
+    );
+    assert.match(
+      consumerAgentsMd,
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/rules\/core\//,
+      'consumer AGENTS.md should contain absolute rules/core URLs',
+    );
+  } finally {
+    await rm(outDir, {recursive: true, force: true});
+  }
+});
+
+void test('sync rewrites links in nested .cursor/rules/*.mdc relative to their location', async () => {
+  const outDir = await tempDir();
+  try {
+    await sync({packageRoot, outDir, version: '0.1.0'});
+
+    const cursorRule = await readFile(
+      join(outDir, '.cursor', 'rules', '10-imports.mdc'),
+      'utf8',
+    );
+
+    // Original `../../rules/core/imports.md` should resolve to absolute repo URL
+    assert.doesNotMatch(
+      cursorRule,
+      /\]\(\.\.\/\.\.\/rules\/core\//,
+      'cursor mdc must not contain raw `../../rules/core/` paths',
+    );
+    assert.match(
+      cursorRule,
+      /https:\/\/github\.com\/commerce-atoms\/agents\/blob\/main\/rules\/core\/imports\.md/,
+      'cursor mdc should rewrite to absolute repo URL',
+    );
+  } finally {
+    await rm(outDir, {recursive: true, force: true});
+  }
+});
+
+void test('sync uses custom repoUrlBase when provided', async () => {
+  const outDir = await tempDir();
+  try {
+    await sync({
+      packageRoot,
+      outDir,
+      version: '0.1.0',
+      repoUrlBase: 'https://example.com/my-org/agents/blob/v0.1.0',
+    });
+
+    const consumerAgentsMd = await readFile(join(outDir, 'AGENTS.md'), 'utf8');
+    assert.match(
+      consumerAgentsMd,
+      /https:\/\/example\.com\/my-org\/agents\/blob\/v0\.1\.0\/docs\/decisions\//,
+    );
+  } finally {
+    await rm(outDir, {recursive: true, force: true});
+  }
+});
+
 void test('re-running sync is idempotent (all unchanged)', async () => {
   const outDir = await tempDir();
   try {

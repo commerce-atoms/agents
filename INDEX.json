@@ -1,13 +1,14 @@
 {
   "$schema": "./INDEX.schema.json",
   "name": "@commerce-atoms/agents",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Canonical AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "manifest": {
     "agentsMd": "AGENTS.md",
     "claudeOverlay": "CLAUDE.md",
     "copilotOverlay": "copilot-instructions.md",
-    "cursorOverlayDir": ".cursor/rules"
+    "cursorOverlayDir": ".cursor/rules",
+    "quickstart": "QUICKSTART.md"
   },
   "rules": [
     {
@@ -93,7 +94,23 @@
       "status": "stable"
     }
   ],
-  "prompts": [],
+  "prompts": [
+    {
+      "id": "pr-description",
+      "title": "Generate a PR description from a diff or commit list",
+      "path": "prompts/pr-description.prompt.md"
+    },
+    {
+      "id": "release-notes",
+      "title": "Generate CHANGELOG release notes from commits / PRs",
+      "path": "prompts/release-notes.prompt.md"
+    },
+    {
+      "id": "store-launch-checklist",
+      "title": "Pre-launch sweep before flipping a fork to production",
+      "path": "prompts/store-launch-checklist.prompt.md"
+    }
+  ],
   "personas": [
     {
       "id": "hydrogen/storefront-architect",
@@ -124,6 +141,18 @@
       "title": "SEO & Structured Data",
       "path": "personas/commerce/seo-structured-data.agent.md",
       "scope": "commerce"
+    }
+  ],
+  "reference": [
+    {
+      "id": "philosophy",
+      "title": "What rules / personas / skills / commands / prompts are and aren't",
+      "path": "reference/philosophy.md"
+    },
+    {
+      "id": "conventions",
+      "title": "File naming, frontmatter, and structure for every artefact",
+      "path": "reference/conventions.md"
     }
   ]
 }

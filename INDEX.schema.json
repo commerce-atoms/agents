@@ -16,7 +16,8 @@
         "agentsMd": {"type": "string"},
         "claudeOverlay": {"type": "string"},
         "copilotOverlay": {"type": "string"},
-        "cursorOverlayDir": {"type": "string"}
+        "cursorOverlayDir": {"type": "string"},
+        "quickstart": {"type": "string"}
       }
     },
     "rules": {
@@ -82,6 +83,18 @@
           "title": {"type": "string"},
           "path": {"type": "string"},
           "scope": {"type": "string", "enum": ["hydrogen", "shopify", "commerce"]}
+        }
+      }
+    },
+    "reference": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "path"],
+        "properties": {
+          "id": {"type": "string"},
+          "title": {"type": "string"},
+          "path": {"type": "string"}
         }
       }
     }

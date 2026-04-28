@@ -1,9 +1,9 @@
-import {readFile, writeFile, mkdir, stat, readdir, copyFile} from 'node:fs/promises';
-import {dirname, join, resolve, relative} from 'node:path';
-import {createHash} from 'node:crypto';
+import {readFile, writeFile, mkdir, stat, readdir} from 'node:fs/promises';
+import {dirname, join, resolve, relative, sep} from 'node:path';
 
 import {loadConfig, defaults} from './config.js';
 import type {AgentsConfig, OutPaths, ToolFlags} from './config.js';
+import {rewriteRelativeLinks} from './internal/rewrite-links.js';
 
 export type WriteStatus = 'written' | 'unchanged' | 'skipped-conflict' | 'missing-source';
 
@@ -26,6 +26,24 @@ export interface SyncParams {
   dryRun?: boolean | undefined;
   force?: boolean | undefined;
   version: string;
+  /**
+   * Absolute base URL pointing at the agents repo's blob root, e.g.
+   * `https://github.com/commerce-atoms/agents/blob/main`. Used to rewrite
+   * repo-relative links in synced markdown so they remain valid in the
+   * consumer repo. Defaults to the canonical `main` branch.
+   */
+  repoUrlBase?: string | undefined;
+}
+
+const DEFAULT_REPO_URL_BASE = 'https://github.com/commerce-atoms/agents/blob/main';
+
+interface SyncSourceSpec {
+  /** Absolute path to the source file. */
+  from: string;
+  /** Absolute path to write to in the consumer repo. */
+  to: string;
+  /** Path of the source file relative to the package root, posix-style. */
+  sourceFileInRepo: string;
 }
 
 export async function sync({
@@ -35,39 +53,34 @@ export async function sync({
   dryRun = false,
   force = false,
   version,
+  repoUrlBase = DEFAULT_REPO_URL_BASE,
 }: SyncParams): Promise<SyncResult> {
   const config = await loadConfig({configPath, outDir});
 
   const tools: ToolFlags = {...defaults().tools, ...config.tools};
   const out: OutPaths = {...defaults().out, ...config.out};
 
-  const writes: WriteRecord[] = [];
+  const sources: SyncSourceSpec[] = [];
 
-  writes.push(
-    await prepareCopy({
-      from: join(packageRoot, 'AGENTS.md'),
-      to: join(outDir, out.agentsMd),
-      force,
-    }),
-  );
+  sources.push({
+    from: join(packageRoot, 'AGENTS.md'),
+    to: join(outDir, out.agentsMd),
+    sourceFileInRepo: 'AGENTS.md',
+  });
 
   if (tools.claude) {
-    writes.push(
-      await prepareCopy({
-        from: join(packageRoot, 'CLAUDE.md'),
-        to: join(outDir, out.claudeMd),
-        force,
-      }),
-    );
+    sources.push({
+      from: join(packageRoot, 'CLAUDE.md'),
+      to: join(outDir, out.claudeMd),
+      sourceFileInRepo: 'CLAUDE.md',
+    });
   }
   if (tools.copilot) {
-    writes.push(
-      await prepareCopy({
-        from: join(packageRoot, 'copilot-instructions.md'),
-        to: join(outDir, out.copilotInstructions),
-        force,
-      }),
-    );
+    sources.push({
+      from: join(packageRoot, 'copilot-instructions.md'),
+      to: join(outDir, out.copilotInstructions),
+      sourceFileInRepo: 'copilot-instructions.md',
+    });
   }
   if (tools.cursor) {
     const cursorSrc = join(packageRoot, '.cursor', 'rules');
@@ -76,22 +89,26 @@ export async function sync({
       const entries = await readdir(cursorSrc, {withFileTypes: true});
       for (const entry of entries) {
         if (!entry.isFile() || !entry.name.endsWith('.mdc')) continue;
-        writes.push(
-          await prepareCopy({
-            from: join(cursorSrc, entry.name),
-            to: join(cursorOut, entry.name),
-            force,
-          }),
-        );
+        sources.push({
+          from: join(cursorSrc, entry.name),
+          to: join(cursorOut, entry.name),
+          sourceFileInRepo: ['.cursor', 'rules', entry.name].join('/'),
+        });
       }
     }
   }
 
+  const writes: PreparedWrite[] = [];
+  for (const spec of sources) {
+    writes.push(await prepareWrite({spec, force, repoUrlBase}));
+  }
+
   if (!dryRun) {
     for (const w of writes) {
-      if (w.status === 'unchanged' || w.status === 'skipped-conflict') continue;
-      await mkdir(dirname(w.to), {recursive: true});
-      await copyFile(w.from, w.to);
+      if (w.record.status === 'unchanged' || w.record.status === 'skipped-conflict') continue;
+      if (w.record.status === 'missing-source') continue;
+      await mkdir(dirname(w.record.to), {recursive: true});
+      await writeFile(w.record.to, w.transformedContent ?? '', 'utf8');
     }
   }
 
@@ -99,9 +116,10 @@ export async function sync({
     await writeBackConfig({outDir, configPath, config, version, tools, out});
   }
 
-  const counts = countByStatus(writes);
+  const records = writes.map((w) => w.record);
+  const counts = countByStatus(records);
   const lines = [
-    `commerce-atoms-agents@${version} -> ${relative(process.cwd(), outDir) || '.'}`,
+    `commerce-atoms-agents@${version} -> ${relativeOrDot(outDir)}`,
     `  written:   ${counts.written}`,
     `  unchanged: ${counts.unchanged}`,
     `  conflicts: ${counts['skipped-conflict']} (use --force to overwrite)`,
@@ -109,33 +127,51 @@ export async function sync({
   ];
   const exitCode = counts['skipped-conflict'] > 0 && !force ? 1 : 0;
 
-  return {exitCode, summary: lines.join('\n'), writes};
+  return {exitCode, summary: lines.join('\n'), writes: records};
 }
 
-interface PrepareCopyParams {
-  from: string;
-  to: string;
+interface PreparedWrite {
+  record: WriteRecord;
+  /** Final content to write to disk (already link-rewritten where applicable). */
+  transformedContent: string | undefined;
+}
+
+interface PrepareWriteParams {
+  spec: SyncSourceSpec;
   force: boolean;
+  repoUrlBase: string;
 }
 
-async function prepareCopy({from, to, force}: PrepareCopyParams): Promise<WriteRecord> {
-  const fromExists = await pathExists(from);
-  if (!fromExists) {
-    return {from, to, status: 'missing-source'};
-  }
-  const toExists = await pathExists(to);
-  if (!toExists) {
-    return {from, to, status: 'written'};
+async function prepareWrite({spec, force, repoUrlBase}: PrepareWriteParams): Promise<PreparedWrite> {
+  const {from, to, sourceFileInRepo} = spec;
+
+  if (!(await pathExists(from))) {
+    return {record: {from, to, status: 'missing-source'}, transformedContent: undefined};
   }
 
-  const [fromHash, toHash] = await Promise.all([fileHash(from), fileHash(to)]);
-  if (fromHash === toHash) {
-    return {from, to, status: 'unchanged'};
+  const sourceContent = await readFile(from, 'utf8');
+  const transformed = shouldRewrite(sourceFileInRepo)
+    ? rewriteRelativeLinks({content: sourceContent, sourceFileInRepo, repoUrlBase})
+    : sourceContent;
+
+  if (!(await pathExists(to))) {
+    return {record: {from, to, status: 'written'}, transformedContent: transformed};
   }
+
+  const destContent = await readFile(to, 'utf8');
+  if (destContent === transformed) {
+    return {record: {from, to, status: 'unchanged'}, transformedContent: transformed};
+  }
+
   if (force) {
-    return {from, to, status: 'written'};
+    return {record: {from, to, status: 'written'}, transformedContent: transformed};
   }
-  return {from, to, status: 'skipped-conflict'};
+
+  return {record: {from, to, status: 'skipped-conflict'}, transformedContent: transformed};
+}
+
+function shouldRewrite(sourceFileInRepo: string): boolean {
+  return /\.(md|mdc)$/i.test(sourceFileInRepo);
 }
 
 interface WriteBackConfigParams {
@@ -165,11 +201,6 @@ async function writeBackConfig({
   await writeFile(targetPath, `${JSON.stringify(next, null, 2)}\n`, 'utf8');
 }
 
-async function fileHash(path: string): Promise<string> {
-  const buf = await readFile(path);
-  return createHash('sha256').update(buf).digest('hex');
-}
-
 async function pathExists(p: string): Promise<boolean> {
   try {
     await stat(p);
@@ -192,4 +223,10 @@ function countByStatus(writes: WriteRecord[]): StatusTally {
     tally[w.status] += 1;
   }
   return tally;
+}
+
+function relativeOrDot(outDir: string): string {
+  const rel = relative(process.cwd(), outDir);
+  if (!rel) return '.';
+  return rel.split(sep).join('/');
 }

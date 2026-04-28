@@ -48,7 +48,7 @@ agents/
 │
 ├── INDEX.json                      # Registry walked by the sync CLI
 ├── INDEX.schema.json               # Schema for INDEX.json
-├── PROMPT_LIBRARY.md               # Assumed environment context
+├── QUICKSTART.md                   # Install → init → first deploy walkthrough
 └── RUN_PROTOCOL.md                 # Execution steps + escalation rules
 ```
 
@@ -65,19 +65,24 @@ npx commerce-atoms-agents sync
 
 The sync CLI copies canonical content (`AGENTS.md`, `rules/`, …) and **deterministically generates** per-tool overlays in the consumer repo (`.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`).
 
-> **Status — `0.1.0`:** the CLI ships and copies canonical content into consumer repos. The "deterministic generation" of per-tool overlays from canonical sources (instead of copying hand-maintained overlays) lands in a follow-up. Today's overlays in `.cursor/rules/`, `CLAUDE.md`, and `copilot-instructions.md` are hand-authored mirrors of the canonical sources in `rules/core/`.
+> **Status — `0.1.1`:** the CLI ships, copies canonical content, and rewrites repo-relative markdown links to absolute GitHub URLs so synced files keep working in consumer repos. The "deterministic generation" of per-tool overlays from canonical sources (instead of copying hand-maintained overlays) is the next step (PLAN §2.9). Today's overlays in `.cursor/rules/`, `CLAUDE.md`, and `copilot-instructions.md` are hand-authored mirrors of the canonical sources in `rules/core/`.
 
 ### CLI commands
 
 ```bash
-commerce-atoms-agents sync             # copy into cwd, write back agents.config.json
+commerce-atoms-agents init <name>      # clone the starter, brand, pin, first commit
+commerce-atoms-agents sync             # copy canonical content into cwd; pin version
 commerce-atoms-agents sync --dry-run   # preview without writing
 commerce-atoms-agents sync --force     # overwrite consumer divergence
 commerce-atoms-agents sync --out <dir> # alternate output directory
-commerce-atoms-agents sync --config <path>  # alternate config file
+commerce-atoms-agents sync --config <path>     # alternate config file
+commerce-atoms-agents validate-architecture    # run the boundary validators
+commerce-atoms-agents check            # validate-arch + version freshness + config sanity
 commerce-atoms-agents version
 commerce-atoms-agents help
 ```
+
+For a guided walkthrough from install to first deploy, see [`QUICKSTART.md`](QUICKSTART.md).
 
 ### `agents.config.json`
 

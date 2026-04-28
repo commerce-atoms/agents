@@ -11,6 +11,10 @@ arguments:
 
 Initialise a new Shopify Hydrogen storefront from the canonical starter, with the agent layer pinned and a brand-layer placeholder ready to fill in.
 
+## Convention
+
+By convention (see [`rules/stores.md`](../rules/stores.md)), run this command from `~/Projects/commerce-atoms/stores/`. The new store is created as a sibling under `stores/`, never at the top level of `commerce-atoms/`.
+
 ## Workflow
 
 1. **Validate the name.** Lowercase letters, digits, hyphens; starts with a letter; 2–50 chars. Reject anything else and surface the validation error.
@@ -18,6 +22,7 @@ Initialise a new Shopify Hydrogen storefront from the canonical starter, with th
 3. **Run the CLI:**
 
    ```bash
+   cd ~/Projects/commerce-atoms/stores
    npx @commerce-atoms/agents init <store-name>
    ```
 

@@ -1,6 +1,6 @@
 {
   "name": "@commerce-atoms/agents",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Universal AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "type": "module",
   "license": "MIT",
@@ -48,12 +48,18 @@
       "types": "./dist/src/init.d.ts",
       "import": "./dist/src/init.js"
     },
+    "./check": {
+      "types": "./dist/src/check.d.ts",
+      "import": "./dist/src/check.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
     "AGENTS.md",
     "CLAUDE.md",
     "copilot-instructions.md",
+    "QUICKSTART.md",
+    "RUN_PROTOCOL.md",
     "INDEX.json",
     "INDEX.schema.json",
     ".cursor/",
@@ -69,7 +75,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && chmod +x dist/bin/sync.js dist/bin/validate-index.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/internal/path-to-owner.test.ts",
+    "test": "tsx --test src/sync.test.ts src/validate.test.ts src/init.test.ts src/check.test.ts src/internal/path-to-owner.test.ts src/internal/rewrite-links.test.ts",
     "lint:json": "tsx bin/validate-index.ts",
     "verify": "npm run typecheck && npm run lint:json && npm test",
     "prepack": "npm run build"
