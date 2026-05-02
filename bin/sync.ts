@@ -89,8 +89,8 @@ OPTIONS (validate-architecture)
 
 DEFAULTS (sync, when agents.config.json is absent)
   Audience:           store-fork
-  Tools enabled:      cursor, copilot, claude, codex
-  Output (always):    ./AGENTS.md
+  Tools enabled:      cursor, copilot, claude
+  Output (always):    ./AGENTS.md  (also read natively by Codex)
   When claude:        ./CLAUDE.md, ./.claude/commands|skills|prompts|personas|rules|docs/...
   When copilot:       ./.github/copilot-instructions.md, ./.github/skills/<id>/,
                       ./.github/commerce-atoms/... (commands, prompts, personas, rules, reference, docs)

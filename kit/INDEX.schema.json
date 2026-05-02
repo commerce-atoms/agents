@@ -31,7 +31,7 @@
           "path": {"type": "string"},
           "appliesTo": {"type": "array", "items": {"type": "string"}},
           "generates": {"type": "array", "items": {"type": "string"}},
-          "audience": {"type": "string", "enum": ["shoppy", "store-fork", "starter"]}
+          "audience": {"type": "string", "enum": ["shoppy", "store-fork"]}
         }
       }
     },
