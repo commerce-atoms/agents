@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "@commerce-atoms/agents INDEX.json",
-  "description": "Registry of every artefact this package ships. Walked by the sync CLI to materialise per-tool overlays in consumer repos.",
+  "description": "Registry of every artefact this package ships. The sync CLI materialises INDEX-listed paths plus manifests into consumer repos; `npm run lint:json` asserts filesystem + sync coverage.",
   "type": "object",
   "required": ["name", "version", "manifest", "rules"],
   "properties": {
