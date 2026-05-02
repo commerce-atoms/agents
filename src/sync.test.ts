@@ -275,7 +275,7 @@ void test('agents.config.json with disabled tools skips per-tool overlays', asyn
       join(outDir, 'agents.config.json'),
       JSON.stringify({
         audience: 'store-fork',
-        tools: {cursor: false, copilot: false, claude: true, codex: true},
+        tools: {cursor: false, copilot: false, claude: true},
       }),
       'utf8',
     );

@@ -14,6 +14,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 - Default exit code is `0`; pass `--strict` to fail on any divergent file (used by the starter's drift CI).
 - `WriteStatus`: `skipped-conflict` removed; `divergent` and `sidecar-cleaned` added.
 
+### Removed
+
+- Dead `tools.codex` flag and unused `'starter'` audience. Codex auto-reads `AGENTS.md` (always synced); no per-tool projection was ever needed.
+
 ## [0.2.0] — 2026-04-28
 
 ### Added

@@ -40,7 +40,7 @@ Generated on first `sync`; updated each run with the pinned version.
 {
   "agentsVersion": "0.2.0",
   "audience": "store-fork",
-  "tools": {"cursor": true, "copilot": true, "claude": true, "codex": true},
+  "tools": {"cursor": true, "copilot": true, "claude": true},
   "out": {
     "agentsMd": "AGENTS.md",
     "claudeMd": "CLAUDE.md",
@@ -50,7 +50,7 @@ Generated on first `sync`; updated each run with the pinned version.
 }
 ```
 
-Disable a tool by setting `tools.<name>` to `false`. Customise an output path by editing `out.<key>`.
+Disable a tool by setting `tools.<name>` to `false`. Customise an output path by editing `out.<key>`. Codex is not a flag — it auto-reads the always-synced `AGENTS.md`.
 
 ### Conflict handling
 
