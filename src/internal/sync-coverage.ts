@@ -61,7 +61,7 @@ export async function validateSyncCoverage(packageRoot: string): Promise<string[
 
   const index = JSON.parse(await readFile(indexPath, 'utf8')) as IndexFile;
 
-  const tools = {...defaults().tools, cursor: true, copilot: true, claude: true, codex: true};
+  const tools = {...defaults().tools, cursor: true, copilot: true, claude: true};
   const dummyOut = join(packageRoot, '.sync-coverage-out');
   const fullKitSpecs = await collectFullKitSyncSpecs({packageRoot, outDir: dummyOut, tools});
 
