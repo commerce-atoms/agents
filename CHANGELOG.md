@@ -8,6 +8,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+### Changed
+
+- Sync no longer bails on consumer-edited files. Divergent files are reported as `divergent`; canonical content lands in a `<file>.kit-incoming.<ext>` sidecar next to the consumer file. All unrelated files still sync. Sidecars auto-clean once the consumer file converges with canonical.
+- Default exit code is `0`; pass `--strict` to fail on any divergent file (used by the starter's drift CI).
+- `WriteStatus`: `skipped-conflict` removed; `divergent` and `sidecar-cleaned` added.
+
 ### Removed
 
 - Dead `tools.codex` flag and unused `'starter'` audience. Codex auto-reads `AGENTS.md` (always synced); no per-tool projection was ever needed.

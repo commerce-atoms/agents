@@ -1,17 +1,27 @@
-import {readFile, writeFile, mkdir, stat, readdir} from 'node:fs/promises';
-import {dirname, join, resolve, relative, sep} from 'node:path';
+import {readFile, writeFile, mkdir, stat, readdir, unlink} from 'node:fs/promises';
+import {dirname, join, resolve, relative, sep, basename, extname} from 'node:path';
 
 import {loadConfig, defaults} from './config.js';
 import type {AgentsConfig, OutPaths, ToolFlags} from './config.js';
 import {collectFullKitSyncSpecs} from './internal/full-kit-sync.js';
 import {rewriteRelativeLinks} from './internal/rewrite-links.js';
 
-export type WriteStatus = 'written' | 'unchanged' | 'skipped-conflict' | 'missing-source';
+export type WriteStatus =
+  | 'written'
+  | 'unchanged'
+  | 'divergent'
+  | 'sidecar-cleaned'
+  | 'missing-source';
 
 export interface WriteRecord {
   from: string;
   to: string;
   status: WriteStatus;
+  /**
+   * Set on `divergent` records — the consumer-side file we left untouched.
+   * `to` for those records points at the `<file>.kit-incoming.<ext>` sidecar.
+   */
+  consumerPath?: string;
 }
 
 export interface SyncResult {
@@ -25,7 +35,17 @@ export interface SyncParams {
   configPath?: string | undefined;
   outDir?: string | undefined;
   dryRun?: boolean | undefined;
+  /**
+   * Overwrite consumer divergence in place. Skips sidecar generation.
+   */
   force?: boolean | undefined;
+  /**
+   * Treat divergent files as failures (exit 1). Default behaviour is to
+   * write a `<file>.kit-incoming.<ext>` sidecar, leave the consumer file
+   * untouched, and exit 0 so unrelated updates still land. CI gates can
+   * opt into strict to fail PRs on divergence.
+   */
+  strict?: boolean | undefined;
   version: string;
   /**
    * Absolute base URL pointing at the agents repo's blob root, e.g.
@@ -46,6 +66,8 @@ const DEFAULT_REPO_URL_BASE = 'https://github.com/commerce-atoms/agents/blob/mai
  */
 const KIT_DIR = 'kit';
 
+const SIDECAR_INFIX = '.kit-incoming';
+
 interface SyncSourceSpec {
   /** Absolute path to the source file. */
   from: string;
@@ -61,6 +83,7 @@ export async function sync({
   outDir = process.cwd(),
   dryRun = false,
   force = false,
+  strict = false,
   version,
   repoUrlBase = DEFAULT_REPO_URL_BASE,
 }: SyncParams): Promise<SyncResult> {
@@ -119,8 +142,12 @@ export async function sync({
 
   if (!dryRun) {
     for (const w of writes) {
-      if (w.record.status === 'unchanged' || w.record.status === 'skipped-conflict') continue;
-      if (w.record.status === 'missing-source') continue;
+      const status = w.record.status;
+      if (status === 'unchanged' || status === 'missing-source') continue;
+      if (status === 'sidecar-cleaned') {
+        await tryUnlink(w.record.to);
+        continue;
+      }
       await mkdir(dirname(w.record.to), {recursive: true});
       if (w.binaryPayload) {
         await writeFile(w.record.to, w.binaryPayload);
@@ -138,12 +165,25 @@ export async function sync({
   const counts = countByStatus(records);
   const lines = [
     `commerce-atoms-agents@${version} -> ${relativeOrDot(outDir)}`,
-    `  written:   ${counts.written}`,
-    `  unchanged: ${counts.unchanged}`,
-    `  conflicts: ${counts['skipped-conflict']} (use --force to overwrite)`,
-    `  dry-run:   ${dryRun}`,
+    `  written:    ${counts.written}`,
+    `  unchanged:  ${counts.unchanged}`,
+    `  divergent:  ${counts.divergent} (consumer edits preserved; canonical written to *${SIDECAR_INFIX}* sidecars)`,
   ];
-  const exitCode = counts['skipped-conflict'] > 0 && !force ? 1 : 0;
+  if (counts['sidecar-cleaned'] > 0) {
+    lines.push(`  cleaned:    ${counts['sidecar-cleaned']} stale sidecar(s) removed`);
+  }
+  lines.push(`  dry-run:    ${dryRun}`);
+
+  if (counts.divergent > 0) {
+    lines.push('');
+    lines.push('Divergent files (review and merge manually, or re-run with --force to overwrite):');
+    for (const r of records) {
+      if (r.status !== 'divergent') continue;
+      lines.push(`  ${relativeOrDot(r.consumerPath ?? r.to)}  <-  ${relativeOrDot(r.to)}`);
+    }
+  }
+
+  const exitCode = strict && counts.divergent > 0 ? 1 : 0;
 
   return {exitCode, summary: lines.join('\n'), writes: records};
 }
@@ -164,6 +204,7 @@ interface PrepareWriteParams {
 
 async function prepareWrite({spec, force, repoUrlBase}: PrepareWriteParams): Promise<PreparedWrite> {
   const {from, to, sourceFileInRepo} = spec;
+  const sidecar = sidecarPathFor(to);
 
   if (!(await pathExists(from))) {
     return {
@@ -178,20 +219,39 @@ async function prepareWrite({spec, force, repoUrlBase}: PrepareWriteParams): Pro
     const transformed = rewriteRelativeLinks({content: sourceContent, sourceFileInRepo, repoUrlBase});
 
     if (!(await pathExists(to))) {
-      return {record: {from, to, status: 'written'}, transformedContent: transformed, binaryPayload: undefined};
+      return {
+        record: {from, to, status: 'written'},
+        transformedContent: transformed,
+        binaryPayload: undefined,
+      };
     }
 
     const destContent = await readFile(to, 'utf8');
     if (destContent === transformed) {
-      return {record: {from, to, status: 'unchanged'}, transformedContent: transformed, binaryPayload: undefined};
+      if (await pathExists(sidecar)) {
+        return {
+          record: {from, to: sidecar, status: 'sidecar-cleaned', consumerPath: to},
+          transformedContent: undefined,
+          binaryPayload: undefined,
+        };
+      }
+      return {
+        record: {from, to, status: 'unchanged'},
+        transformedContent: transformed,
+        binaryPayload: undefined,
+      };
     }
 
     if (force) {
-      return {record: {from, to, status: 'written'}, transformedContent: transformed, binaryPayload: undefined};
+      return {
+        record: {from, to, status: 'written'},
+        transformedContent: transformed,
+        binaryPayload: undefined,
+      };
     }
 
     return {
-      record: {from, to, status: 'skipped-conflict'},
+      record: {from, to: sidecar, status: 'divergent', consumerPath: to},
       transformedContent: transformed,
       binaryPayload: undefined,
     };
@@ -199,23 +259,57 @@ async function prepareWrite({spec, force, repoUrlBase}: PrepareWriteParams): Pro
 
   const payload = await readFile(from);
   if (!(await pathExists(to))) {
-    return {record: {from, to, status: 'written'}, transformedContent: undefined, binaryPayload: payload};
+    return {
+      record: {from, to, status: 'written'},
+      transformedContent: undefined,
+      binaryPayload: payload,
+    };
   }
 
   const destPayload = await readFile(to);
   if (Buffer.compare(payload, destPayload) === 0) {
-    return {record: {from, to, status: 'unchanged'}, transformedContent: undefined, binaryPayload: payload};
+    if (await pathExists(sidecar)) {
+      return {
+        record: {from, to: sidecar, status: 'sidecar-cleaned', consumerPath: to},
+        transformedContent: undefined,
+        binaryPayload: undefined,
+      };
+    }
+    return {
+      record: {from, to, status: 'unchanged'},
+      transformedContent: undefined,
+      binaryPayload: payload,
+    };
   }
 
   if (force) {
-    return {record: {from, to, status: 'written'}, transformedContent: undefined, binaryPayload: payload};
+    return {
+      record: {from, to, status: 'written'},
+      transformedContent: undefined,
+      binaryPayload: payload,
+    };
   }
 
   return {
-    record: {from, to, status: 'skipped-conflict'},
+    record: {from, to: sidecar, status: 'divergent', consumerPath: to},
     transformedContent: undefined,
     binaryPayload: payload,
   };
+}
+
+/**
+ * `AGENTS.md` -> `AGENTS.kit-incoming.md`
+ * `30-imports.mdc` -> `30-imports.kit-incoming.mdc`
+ * `INDEX.json` -> `INDEX.kit-incoming.json`
+ *
+ * Extension is preserved on the sidecar so editors keep syntax highlighting.
+ */
+function sidecarPathFor(absPath: string): string {
+  const dir = dirname(absPath);
+  const name = basename(absPath);
+  const ext = extname(name);
+  const stem = ext ? name.slice(0, -ext.length) : name;
+  return join(dir, `${stem}${SIDECAR_INFIX}${ext}`);
 }
 
 function shouldRewriteMarkdown(sourceFileInRepo: string): boolean {
@@ -258,13 +352,22 @@ async function pathExists(p: string): Promise<boolean> {
   }
 }
 
+async function tryUnlink(p: string): Promise<void> {
+  try {
+    await unlink(p);
+  } catch {
+    // best-effort cleanup
+  }
+}
+
 type StatusTally = Record<WriteStatus, number>;
 
 function countByStatus(writes: WriteRecord[]): StatusTally {
   const tally: StatusTally = {
     written: 0,
     unchanged: 0,
-    'skipped-conflict': 0,
+    divergent: 0,
+    'sidecar-cleaned': 0,
     'missing-source': 0,
   };
   for (const w of writes) {

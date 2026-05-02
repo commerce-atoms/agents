@@ -169,7 +169,7 @@ void test('re-running sync is idempotent (all unchanged)', async () => {
   }
 });
 
-void test('local divergence is preserved without --force (conflict skipped)', async () => {
+void test('local divergence is preserved and canonical lands in a sidecar', async () => {
   const outDir = await tempDir();
   try {
     await sync({packageRoot, outDir, version: '0.1.0'});
@@ -178,12 +178,61 @@ void test('local divergence is preserved without --force (conflict skipped)', as
     await writeFile(join(outDir, 'AGENTS.md'), customised, 'utf8');
 
     const result = await sync({packageRoot, outDir, version: '0.1.0'});
-    assert.equal(result.exitCode, 1, 'non-zero exit because of conflict');
-    const conflicts = result.writes.filter((w) => w.status === 'skipped-conflict');
-    assert.ok(conflicts.length >= 1, 'AGENTS.md is reported as conflict');
+    assert.equal(result.exitCode, 0, 'default sync exits 0 even on divergence');
+
+    const divergent = result.writes.filter((w) => w.status === 'divergent');
+    assert.ok(divergent.length >= 1, 'AGENTS.md is reported as divergent');
+    const agentsRecord = divergent.find(
+      (w) => w.consumerPath === join(outDir, 'AGENTS.md'),
+    );
+    assert.ok(agentsRecord, 'divergent record references the consumer AGENTS.md');
 
     const stillCustom = await readFile(join(outDir, 'AGENTS.md'), 'utf8');
-    assert.equal(stillCustom, customised, 'consumer override preserved');
+    assert.equal(stillCustom, customised, 'consumer override preserved in place');
+
+    const sidecar = await readFile(join(outDir, 'AGENTS.kit-incoming.md'), 'utf8');
+    assert.match(sidecar, /Universal AI manifest/i, 'canonical content written to sidecar');
+  } finally {
+    await rm(outDir, {recursive: true, force: true});
+  }
+});
+
+void test('--strict exits 1 when any file is divergent', async () => {
+  const outDir = await tempDir();
+  try {
+    await sync({packageRoot, outDir, version: '0.1.0'});
+    await writeFile(join(outDir, 'AGENTS.md'), '# override\n', 'utf8');
+
+    const result = await sync({packageRoot, outDir, version: '0.1.0', strict: true});
+    assert.equal(result.exitCode, 1, 'strict mode fails on divergence');
+  } finally {
+    await rm(outDir, {recursive: true, force: true});
+  }
+});
+
+void test('sidecar is removed once the consumer file converges with canonical', async () => {
+  const outDir = await tempDir();
+  try {
+    await sync({packageRoot, outDir, version: '0.1.0'});
+
+    const canonical = await readFile(join(outDir, 'AGENTS.md'), 'utf8');
+    await writeFile(join(outDir, 'AGENTS.md'), '# divergent\n', 'utf8');
+
+    const second = await sync({packageRoot, outDir, version: '0.1.0'});
+    assert.equal(second.exitCode, 0);
+    assert.ok(await pathExists(join(outDir, 'AGENTS.kit-incoming.md')), 'sidecar exists after divergence');
+
+    await writeFile(join(outDir, 'AGENTS.md'), canonical, 'utf8');
+    const third = await sync({packageRoot, outDir, version: '0.1.0'});
+    assert.equal(third.exitCode, 0);
+
+    const cleaned = third.writes.filter((w) => w.status === 'sidecar-cleaned');
+    assert.ok(cleaned.length >= 1, 'stale sidecar reported as cleaned');
+    assert.equal(
+      await pathExists(join(outDir, 'AGENTS.kit-incoming.md')),
+      false,
+      'stale sidecar removed when consumer file converges',
+    );
   } finally {
     await rm(outDir, {recursive: true, force: true});
   }

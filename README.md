@@ -54,7 +54,9 @@ Disable a tool by setting `tools.<name>` to `false`. Customise an output path by
 
 ### Conflict handling
 
-If a consumer mutates a synced file, the next `sync` reports it as a `skipped-conflict` and exits non-zero. Resolve with `--force` (overwrite) or by maintaining a separate per-store overlay file.
+If a consumer mutates a synced file, the next `sync` writes the new canonical content to a `<file>.kit-incoming.<ext>` sidecar next to the consumer's edit and reports the file as `divergent`. The consumer's edit is left untouched and **all unrelated files still sync**. The sidecar is auto-removed once the consumer file converges with canonical (or is deleted).
+
+Default exit code is `0` so unrelated updates aren't blocked by one local edit. CI gates that want to fail on divergence should pass `--strict`. To overwrite the consumer's edit instead of producing a sidecar, pass `--force`.
 
 ---
 
