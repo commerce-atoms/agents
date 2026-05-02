@@ -1,13 +1,12 @@
 import {readFile} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
 
-export type Audience = 'store-fork' | 'shoppy' | 'starter';
+export type Audience = 'store-fork' | 'shoppy';
 
 export interface ToolFlags {
   cursor: boolean;
   copilot: boolean;
   claude: boolean;
-  codex: boolean;
 }
 
 export interface OutPaths {
@@ -29,7 +28,7 @@ export interface LoadConfigParams {
   outDir: string;
 }
 
-const VALID_AUDIENCES: ReadonlySet<Audience> = new Set<Audience>(['store-fork', 'shoppy', 'starter']);
+const VALID_AUDIENCES: ReadonlySet<Audience> = new Set<Audience>(['store-fork', 'shoppy']);
 
 export async function loadConfig({configPath, outDir}: LoadConfigParams): Promise<AgentsConfig> {
   const path = configPath ? resolve(configPath) : join(outDir, 'agents.config.json');
@@ -59,7 +58,7 @@ export function defaults(): AgentsConfig {
   return {
     agentsVersion: null,
     audience: 'store-fork',
-    tools: {cursor: true, copilot: true, claude: true, codex: true},
+    tools: {cursor: true, copilot: true, claude: true},
     out: {
       agentsMd: 'AGENTS.md',
       claudeMd: 'CLAUDE.md',

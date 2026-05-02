@@ -8,6 +8,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+### Removed
+
+- Dead `tools.codex` flag and unused `'starter'` audience. Codex auto-reads `AGENTS.md` (always synced); no per-tool projection was ever needed.
+
 ## [0.2.0] — 2026-04-28
 
 ### Added
