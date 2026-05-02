@@ -155,7 +155,9 @@ npx commerce-atoms-agents validate-architecture   # sanity-check boundaries afte
 git add . && git commit -m "chore: bump @commerce-atoms/agents"
 ```
 
-If `sync` reports `skipped-conflict`, you've diverged a synced file locally. Either accept upstream with `--force`, or move your divergence into a per-store overlay (see [`rules/stores.md`](rules/stores.md)).
+If `sync` reports a file as `divergent`, you've edited a synced file locally. Sync writes the new canonical content to `<file>.kit-incoming.<ext>` next to your edit so you can `diff` and merge by hand. Your edit is left untouched and all unrelated files still sync. To accept upstream wholesale, re-run with `--force`. To gate CI on no divergence, use `--strict`.
+
+The sidecar is auto-removed on the next sync once your file converges with canonical, or you can delete it yourself.
 
 ## Where to ask for help
 

@@ -80,7 +80,10 @@ OPTIONS (sync)
   --config <path>   Consumer config file (default: agents.config.json in cwd).
   --out <dir>       Output directory (default: cwd).
   --dry-run         Show what would be written, but do not write.
-  --force           Overwrite files that differ from canonical.
+  --force           Overwrite consumer-divergent files in place (skips sidecar).
+  --strict          Exit 1 if any consumer-divergent files exist (CI gate mode).
+                    Default behaviour writes a <file>.kit-incoming.<ext>
+                    sidecar and exits 0 so unrelated updates still land.
 
 OPTIONS (validate-architecture)
   --out <dir>       Project root to validate (default: cwd).
@@ -123,6 +126,7 @@ async function main(argv: string[]): Promise<number> {
         out: {type: 'string'},
         'dry-run': {type: 'boolean', default: false},
         force: {type: 'boolean', default: false},
+        strict: {type: 'boolean', default: false},
       },
       strict: true,
       allowPositionals: false,
@@ -134,6 +138,7 @@ async function main(argv: string[]): Promise<number> {
       outDir: values.out,
       dryRun: values['dry-run'],
       force: values.force,
+      strict: values.strict,
       version: await readPackageVersion(),
       repoUrlBase: await resolveRepoUrlBase(),
     });
