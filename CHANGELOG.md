@@ -8,6 +8,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-05-02
+
 ### Changed
 
 - Sync no longer bails on consumer-edited files. Divergent files are reported as `divergent`; canonical content lands in a `<file>.kit-incoming.<ext>` sidecar next to the consumer file. All unrelated files still sync. Sidecars auto-clean once the consumer file converges with canonical.
