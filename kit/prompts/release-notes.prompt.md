@@ -13,7 +13,7 @@ inputs:
     description: Existing `[Unreleased]` section content.
   - name: commit_log
     required: false
-    description: '`git log v<previous>..HEAD --oneline`.'
+    description: '`git log v<previous>.HEAD --oneline`.'
   - name: merged_prs
     required: false
     description: '`gh pr list --state merged --base main --search "merged:>=<date>"`.'
@@ -28,16 +28,16 @@ Generate consumer-facing release notes for a `commerce-atoms` package. Format fo
 
 ## Rules
 
-1. **Heading** — `## [{version}] — YYYY-MM-DD`. Replace the existing `## [Unreleased]` heading and re-add a fresh empty `## [Unreleased]` above it.
+1. **Heading**. `## [{version}] — YYYY-MM-DD`. Replace the existing `## [Unreleased]` heading and re-add a fresh empty `## [Unreleased]` above it.
 
 2. **Sub-sections in this order, omit empty ones:**
-   - `### Added` — new features, files, primitives, exports.
-   - `### Changed` — modifications to existing behaviour or shape.
-   - `### Fixed` — bug fixes.
-   - `### Removed` — deleted features, files, exports.
-   - `### Deprecated` — features still present but scheduled for removal.
-   - `### Security` — security-relevant fixes only.
-   - `### Migration notes` — required reader action when consumers upgrade. Include code snippets for renames or signature changes.
+   - `### Added`. New features, files, primitives, exports.
+   - `### Changed`. Modifications to existing behaviour or shape.
+   - `### Fixed`. Bug fixes.
+   - `### Removed`. Deleted features, files, exports.
+   - `### Deprecated`. Features still present but scheduled for removal.
+   - `### Security`. Security-relevant fixes only.
+   - `### Migration notes`. Required reader action when consumers upgrade. Include code snippets for renames or signature changes.
 
 3. **Bullet style:**
    - Each bullet is a complete thought; pick imperative or past tense and stay consistent.
@@ -77,4 +77,4 @@ Generate consumer-facing release notes for a `commerce-atoms` package. Format fo
 {required_consumer_action_if_any_with_code_snippet}
 ```
 
-For a worked example, see [`CHANGELOG.md`](../../CHANGELOG.md) — it's the canonical reference for tone and shape.
+For a worked example, see [`CHANGELOG.md`](././CHANGELOG.md). It's the canonical reference for tone and shape.

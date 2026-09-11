@@ -1,6 +1,6 @@
 ---
 name: release
-description: Tag a versioned release and push. CI deploys on the tag — the agent does not.
+description: Tag a versioned release and push. CI deploys on the tag. The agent does not.
 arguments:
   - name: bump
     required: false
@@ -11,7 +11,7 @@ arguments:
 
 > Doctrine reminder (`AGENTS.md §0` sub-doctrine): **the agent prepares and validates. CI deploys.** This command tags and pushes; GitHub Actions deploys on tag detection. The agent never runs `shopify hydrogen deploy`.
 
-Cut a versioned release from `main`. Bumps `package.json#version`, updates `CHANGELOG.md`, creates an annotated git tag, and pushes — letting CI take it from there.
+Cut a versioned release from `main`. Bumps `package.json#version`, updates `CHANGELOG.md`, creates an annotated git tag, and pushes. Letting CI take it from there.
 
 ## Prerequisites
 
@@ -58,7 +58,7 @@ Confirm? (y/n)
 ### 4. Update `package.json` and `CHANGELOG.md`
 
 - Bump `package.json#version` to the new SemVer.
-- In `CHANGELOG.md`, rename the `[Unreleased]` heading to `[<new-version>] — <YYYY-MM-DD>` and add a fresh empty `[Unreleased]` section above it.
+- In `CHANGELOG.md`, rename the `[Unreleased]` heading to `[<new-version>]. <YYYY-MM-DD>` and add a fresh empty `[Unreleased]` section above it.
 - Stage both files.
 
 ### 5. Commit, tag, push
@@ -97,7 +97,7 @@ Do **not** invoke `shopify hydrogen deploy`. Do **not** poll the Oxygen API dire
 | Not on `main` | `git switch main` and re-run. Releases ship from `main` only. |
 | Working tree dirty | Commit or stash before releasing. |
 | Pre-flight fails | Fix and rerun `/deploy-check`. Do not release a broken state. |
-| Tag already exists | The bump pushed someone else's tag — re-infer or pick a higher version. |
+| Tag already exists | The bump pushed someone else's tag. Re-infer or pick a higher version. |
 | Push to `origin/main` rejected | Pull, rebase, re-run `/deploy-check`, re-release. Do not force-push tags. |
 | GitHub Actions doesn't trigger | The tag push should trigger Shopify's `oxygen-deployment-<storefrontId>.yml` via its `on: [push]` (tags are refs). If not, verify the workflow is enabled (`gh workflow list`) and the auto-provisioned PR was merged (see `/deploy-setup`). |
 
@@ -105,5 +105,5 @@ Do **not** invoke `shopify hydrogen deploy`. Do **not** poll the Oxygen API dire
 
 - [`commands/deploy-setup.md`](deploy-setup.md)
 - [`commands/deploy-check.md`](deploy-check.md)
-- [`AGENTS.md §0`](../AGENTS.md) — deploy doctrine.
-- [Shopify — Continuous deployment with Hydrogen and Oxygen](https://shopify.dev/docs/custom-storefronts/hydrogen/deployments) — the deploy workflow is Shopify-provisioned, not kit-shipped (see [CHANGELOG 0.3.4](../CHANGELOG.md)).
+- [`AGENTS.md §0`](./AGENTS.md). Deploy doctrine.
+- [Shopify. Continuous deployment with Hydrogen and Oxygen](https://shopify.dev/docs/custom-storefronts/hydrogen/deployments) — the deploy workflow is Shopify-provisioned, not kit-shipped (see [CHANGELOG 0.3.4](./CHANGELOG.md)).

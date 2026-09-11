@@ -27,12 +27,12 @@ Run the architecture validators against a Hydrogen storefront project.
 
 ## Output expectations
 
-- **PASS** — exit 0, no further action needed.
-- **WARN** — exit 0 (unless `--strict`), but surface the warnings to the user with their remedies.
-- **FAIL** — exit 1, list every error with file path and remedy. Do not mark the work complete until errors are addressed or explicitly accepted.
+- **PASS**. Exit 0, no further action needed.
+- **WARN**. Exit 0 (unless `--strict`), but surface the warnings to the user with their remedies.
+- **FAIL**. Exit 1, list every error with file path and remedy. Do not mark the work complete until errors are addressed or explicitly accepted.
 
 ## See also
 
-- [`skills/validate-architecture/SKILL.md`](../skills/validate-architecture/SKILL.md) — the skill definition this command wraps.
-- [`AGENTS.md §3`](../AGENTS.md) — the rules being validated.
-- [ADR 003](../docs/decisions/003-mcp-hydrogen-kit-archive-path.md) — why this skill exists in `agents/` rather than as a separate MCP server.
+- [`skills/validate-architecture/SKILL.md`](./skills/validate-architecture/SKILL.md). The skill definition this command wraps.
+- [`AGENTS.md §3`](./AGENTS.md). The rules being validated.
+- [ADR 003](./docs/decisions/003-mcp-hydrogen-kit-archive-path.md). Why this skill exists in `agents/` rather than as a separate MCP server.

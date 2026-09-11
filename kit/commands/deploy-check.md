@@ -8,7 +8,7 @@ arguments: []
 
 > Doctrine reminder (`AGENTS.md §0` sub-doctrine): **the agent prepares and validates. CI deploys.** This command validates locally; `ci.yml` runs the same gates on PR + `push:main`, and Shopify's `oxygen-deployment-<storefrontId>.yml` deploys once the code lands on `main`.
 
-Reproduce the CI validation gates locally before `git push`. If anything fails, fix it and re-run — do not push a broken change and rely on CI to catch it. The Shopify-provisioned deployer has **no pre-deploy validation of its own** (it just runs `shopify hydrogen deploy`); the safety net is `ci.yml` + branch protection.
+Reproduce the CI validation gates locally before `git push`. If anything fails, fix it and re-run. Do not push a broken change and rely on CI to catch it. The Shopify-provisioned deployer has **no pre-deploy validation of its own** (it just runs `shopify hydrogen deploy`); the safety net is `ci.yml` + branch protection.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Run each step in order. Stop on the first failure and surface the output to the 
 git status --porcelain
 ```
 
-If output is non-empty, surface a warning: *"Uncommitted changes detected — they will be excluded from the push but included in the local pre-flight."*
+If output is non-empty, surface a warning: *"Uncommitted changes detected. They will be excluded from the push but included in the local pre-flight."*
 
 ### 2. Codegen
 
@@ -73,7 +73,7 @@ Production build must succeed. Bundle-size regressions are not blocking but are 
 npx @commerce-atoms/agents validate-architecture
 ```
 
-Zero errors required (the [validate-architecture skill](../skills/validate-architecture/SKILL.md)).
+Zero errors required (the [validate-architecture skill](./skills/validate-architecture/SKILL.md)).
 
 ### 8. Summary
 
@@ -105,6 +105,6 @@ Or, if the change warrants a release: /release
 
 ## See also
 
-- [`commands/deploy-setup.md`](deploy-setup.md) — one-time CI wiring.
-- [`commands/release.md`](release.md) — versioned release.
-- [`AGENTS.md §0`](../AGENTS.md) — deploy doctrine.
+- [`commands/deploy-setup.md`](deploy-setup.md). One-time CI wiring.
+- [`commands/release.md`](release.md). Versioned release.
+- [`AGENTS.md §0`](./AGENTS.md). Deploy doctrine.

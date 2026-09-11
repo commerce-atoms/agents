@@ -7,10 +7,10 @@ trigger_phrases:
 inputs:
   - name: diff
     required: false
-    description: '`git diff main...HEAD`.'
+    description: '`git diff main..HEAD`.'
   - name: commit_summary
     required: false
-    description: '`git log main..HEAD --oneline`.'
+    description: '`git log main.HEAD --oneline`.'
   - name: scope_hint
     required: false
     description: 'agents | shoppy | starter | store-<name> | meta'
@@ -22,15 +22,15 @@ Draft a PR description from a diff and / or a commit list. Output should be revi
 
 ## Rules
 
-1. **Title** — conventional commit: `<type>(<scope>): <imperative summary>`. Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`. Keep ≤ 70 chars.
+1. **Title**. Conventional commit: `<type>(<scope>): <imperative summary>`. Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`. Keep ≤ 70 chars.
 
-2. **Body — three sections, in order, no others:**
-   - **Summary** — 1-3 bullets covering the *why* and the user-visible effect. Not a file list.
-   - **What's in the diff** — terse list of meaningful surfaces (max 5 entries). Skip lockfile / generated noise.
-   - **Test plan** — checkboxes of what was verified locally + what the reviewer should sanity-check. Don't fabricate; only list what was actually run.
+2. **Body. Three sections, in order, no others:**
+   - **Summary**. 1-3 bullets covering the *why* and the user-visible effect. Not a file list.
+   - **What's in the diff**. Terse list of meaningful surfaces (max 5 entries). Skip lockfile / generated noise.
+   - **Test plan**. Checkboxes of what was verified locally + what the reviewer should sanity-check. Don't fabricate; only list what was actually run.
 
 3. **Surface doctrine when applicable:**
-   - Touches a Shopify cookbook surface → confirm it's a port, not a reimplementation ([`AGENTS.md §0`](../AGENTS.md)).
+   - Touches a Shopify cookbook surface → confirm it's a port, not a reimplementation ([`AGENTS.md §0`](./AGENTS.md)).
    - Touches `app/platform/*`, `app/routes.ts`, or shared `app/components/*` → mention `validate-architecture` was run.
    - Release / version bump → confirm `CHANGELOG.md` updated.
 

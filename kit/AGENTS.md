@@ -4,11 +4,11 @@
 
 If you are an AI agent, read this file first, end-to-end. If you are a human contributor, [`QUICKSTART.md`](QUICKSTART.md) is faster.
 
-**Project-local additions.** If `AGENTS.local.md` exists at the repository root, read it after this file and treat its contents as project-specific additions to this manifest. Consumers use it for per-repo context (product briefs, deployment specifics, project-only conventions) without editing this canonical file — `agents:sync` leaves `*.local.*` files untouched, and the drift gate is unaffected.
+**Project-local additions.** If `AGENTS.local.md` exists at the repository root, read it after this file and treat its contents as project-specific additions to this manifest. Consumers use it for per-repo context (product briefs, deployment specifics, project-only conventions) without editing this canonical file. `agents:sync` leaves `*.local.*` files untouched, and the drift gate is unaffected.
 
 ---
 
-## §0 Doctrine — non-negotiable
+## §0 Doctrine. Non-negotiable
 
 These statements are inviolable. They override every other instruction, including this file's own §3.
 
@@ -27,10 +27,10 @@ When a Shopify recipe lands → port it via the `port-hydrogen-cookbook-recipe` 
 
 GitHub Actions is the only deploy actor. Two workflows split the responsibility:
 
-- **Validation gate** — `ci.yml` runs on every PR and blocks merge via branch protection.
-- **Deployer** — `oxygen-deployment-<storefrontId>.yml` is **auto-provisioned by Shopify** when a Hydrogen storefront is linked to the repo. It deploys production on `push:main` and a preview URL on every other branch push. The kit does not ship a competing deploy workflow — accepting Shopify's auto-PR is part of `/deploy-setup`.
+- **Validation gate**. `ci.yml` runs on every PR and blocks merge via branch protection.
+- **Deployer**. `oxygen-deployment-<storefrontId>.yml` is **auto-provisioned by Shopify** when a Hydrogen storefront is linked to the repo. It deploys production on `push:main` and a preview URL on every other branch push. The kit does not ship a competing deploy workflow — accepting Shopify's auto-PR is part of `/deploy-setup`.
 
-The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, and `/release` — never `shopify hydrogen deploy` directly, never an Oxygen API poll, never a manual upload.
+The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, and `/release`. Never `shopify hydrogen deploy` directly, never an Oxygen API poll, never a manual upload.
 
 ### D3. Architecture rules are not advisory
 
@@ -41,7 +41,7 @@ The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, a
 | Repo | Role |
 |---|---|
 | `hydrogen-storefront-starter` | Minimal bounded bootloader. Lean by design. The fork point used to spin up real stores. |
-| `hydrogen-storefront-demo` *(future, deferred)* | Optional OSS showcase — not built now. |
+| `hydrogen-storefront-demo` *(future, deferred)* | Optional OSS showcase. Not built now. |
 
 Minimal bootloader **does not mean weak architecture**. It means strong boundaries with minimal feature surface.
 
@@ -59,11 +59,11 @@ This is the **navigator** for everything in this repo. Each row is one of the fi
 | Wire CI for a new store, run pre-flight before push, cut a release | **Command** | [`commands/<name>.md`](commands/) | One-keystroke workflow (`/init-store`, `/deploy-setup`, `/deploy-check`, `/release`, …). |
 | Generate a PR description, release notes, store-launch checklist | **Prompt** | [`prompts/<name>.prompt.md`](prompts/) | Reusable template pasted into chat as needed. |
 
-The five primitives are not interchangeable. If a primitive starts pulling toward another category — e.g. a rule that grew into a multi-step workflow — split it. Misclassification is the most common smell in this repo. Full philosophy: [`reference/philosophy.md`](reference/philosophy.md).
+The five primitives are not interchangeable. If a primitive starts pulling toward another category. E.g. a rule that grew into a multi-step workflow — split it. Misclassification is the most common smell in this repo. Full philosophy: [`reference/philosophy.md`](reference/philosophy.md).
 
 ### How agents discover these in practice
 
-- **Cursor** reads [`.cursor/rules/*.mdc`](.cursor/rules/) automatically based on `globs` frontmatter; personas and skills are invoked by reference (`@personas/...`, `@skills/...`) inside chat.
+- **Cursor** reads [`.cursor/rules/*.mdc`](.cursor/rules/) automatically based on `globs` frontmatter; personas and skills are invoked by reference (`@personas/..`, `@skills/..`) inside chat.
 - **GitHub Copilot** reads [`copilot-instructions.md`](copilot-instructions.md) automatically; skills are surfaced via the GitHub Copilot Skills UI.
 - **Claude Code** reads [`CLAUDE.md`](CLAUDE.md) automatically; slash commands resolve to files in [`commands/`](commands/); personas are pasted on demand.
 - **Codex / others** read this file (`AGENTS.md`) and follow the navigator above.
@@ -91,7 +91,7 @@ You are a **Senior Front-End Engineer** specialising in Shopify Hydrogen storefr
 
 These hold across every repo in the org. Detailed rules and rationale: [`rules/core/architecture.md`](rules/core/architecture.md).
 
-### Routing — single explicit manifest
+### Routing. Single explicit manifest
 
 - Exactly one routing manifest: `app/routes.ts`. No filesystem-based discovery.
 - Each URL pattern maps explicitly to a route module under `app/modules/*`.
@@ -126,7 +126,7 @@ app/
 | `@components/*` | Shared UI. |
 | `@platform/*` | Infrastructure glue. |
 | `@styles/*` | Global styles. |
-| `~/*` | Root escape hatch — use only when no bucket alias fits. |
+| `~/*` | Root escape hatch. Use only when no bucket alias fits. |
 
 **Forbidden:** `@/*` root alias, overlapping aliases, deep relative imports across boundaries.
 
@@ -140,11 +140,11 @@ app/
 |---|---|
 | Loader / action orchestration | UI rendering and composition only |
 | Redirects, status / errors wiring | Client-side interactions only |
-| Validation / parsing | — |
+| Validation / parsing |. |
 | Storefront API calls and caching | **MUST NOT** call Storefront API |
 | Shaping data for views | **MUST NOT** write sessions / cookies |
 | `meta` / `headers` exports | **MUST NOT** define loader / action / meta / headers |
-| `handle` exports for layout metadata | — |
+| `handle` exports for layout metadata |. |
 
 ### Layout ownership
 
@@ -152,7 +152,7 @@ Global chrome (header / footer / breadcrumb / page header) is owned by `app/layo
 
 ### No barrel files
 
-Never create or use `index.ts` / `index.js` barrel exports. Always use explicit imports: `import {Button} from '@components/Button'` — never `import {Button} from '@components'`.
+Never create or use `index.ts` / `index.js` barrel exports. Always use explicit imports: `import {Button} from '@components/Button'`. Never `import {Button} from '@components'`.
 
 ### Prefer named exports
 
@@ -191,9 +191,9 @@ The `commerce-atoms` GitHub org consists of **independent repositories** develop
 | `agents` | This repo. AI rules, personas, skills, prompts, slash commands. | `@commerce-atoms/agents` npm package + `npx commerce-atoms-agents` CLI. |
 | `shoppy` | Pure-logic packages published as `@commerce-atoms/*`. | Published npm packages. |
 | `hydrogen-storefront-starter` | Canonical fork point for new stores. | GitHub template / forked per store. |
-| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into the `@commerce-atoms/agents` package (`src/internal/` in that repo) — see [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
+| ~~`mcp-hydrogen-kit`~~ | *Archived.* Validation logic relocated into the `@commerce-atoms/agents` package (`src/internal/` in that repo). See [ADR 003](docs/decisions/003-mcp-hydrogen-kit-archive-path.md). | n/a |
 
-There is no monorepo, no shared CI, no shared `package.json`. Anything shared between repos must be **published, versioned, and pinned** — never synced via `cp -r`.
+There is no monorepo, no shared CI, no shared `package.json`. Anything shared between repos must be **published, versioned, and pinned**. Never synced via `cp -r`.
 
 ### Store forks (consumers of the kit)
 
@@ -207,7 +207,7 @@ Stores that fork `hydrogen-storefront-starter` follow the topology in [`rules/st
 
 ## §6 Canonical name
 
-Use **`@commerce-atoms/*`** everywhere — npm scope, code references, docs, comments. `@shoppy/*` is deprecated; see [ADR 002](docs/decisions/002-canonical-org-name.md).
+Use **`@commerce-atoms/*`** everywhere. Npm scope, code references, docs, comments. `@shoppy/*` is deprecated; see [ADR 002](docs/decisions/002-canonical-org-name.md).
 
 ---
 
@@ -228,21 +228,21 @@ The atomic rule sources live in [`rules/`](rules/). Per-tool overlays (`.cursor/
 
 ## §8 Capabilities
 
-### Skills — [`skills/<name>/SKILL.md`](skills/)
+### Skills. [`skills/<name>/SKILL.md`](skills/)
 
 Reusable, multi-step AI capabilities. Anthropic Skills layout (folder per skill, `SKILL.md` + optional `assets/` and `tests/`). Format: [ADR 004](docs/decisions/004-skill-and-command-format.md).
 
 | Skill | Status | Purpose |
 |---|---|---|
 | [`validate-architecture`](skills/validate-architecture/SKILL.md) | stable | Run boundary validators; report violations with fix guidance. Standalone and consumed by other skills post-mutation. |
-| `port-hydrogen-cookbook-recipe` | backlog | Port a Shopify cookbook recipe into the modular shape. Not shipped yet — build when a port lands without hand-holding. |
+| `port-hydrogen-cookbook-recipe` | backlog | Port a Shopify cookbook recipe into the modular shape. Not shipped yet. Build when a port lands without hand-holding. |
 | `scaffold-module` | backlog | Create a new vertical-slice module. |
 | `upgrade-hydrogen` | backlog | Apply a quarterly Hydrogen bump. |
 | `seed-catalog` | backlog | Seed a fresh Shopify store from a fixture. |
 
 Backlog skills are intentionally absent until real friction justifies building them.
 
-### Slash commands — [`commands/<name>.md`](commands/)
+### Slash commands. [`commands/<name>.md`](commands/)
 
 Short, named workflows. Claude Code commands layout.
 
@@ -254,7 +254,7 @@ Short, named workflows. Claude Code commands layout.
 | [`/release`](commands/release.md) | stable | Tag and push; CI deploys. The agent never deploys directly. |
 | [`/validate-architecture`](commands/validate-architecture.md) | stable | Wraps the `validate-architecture` skill. |
 
-### Prompts — [`prompts/<name>.prompt.md`](prompts/)
+### Prompts. [`prompts/<name>.prompt.md`](prompts/)
 
 Reusable task templates with placeholders. Markdown.
 
@@ -266,7 +266,7 @@ Reusable task templates with placeholders. Markdown.
 
 ---
 
-## §9 Personas — [`personas/<scope>/<name>.agent.md`](personas/)
+## §9 Personas. [`personas/<scope>/<name>.agent.md`](personas/)
 
 Domain-expert system prompts. Paste a persona's contents into a fresh chat (or load as a system prompt) to scope the model's perspective for a session.
 
@@ -282,11 +282,11 @@ Personas are intentional, scoped, and few. If you can't name the gap a new perso
 
 ## §10 Reference documents
 
-- [`QUICKSTART.md`](QUICKSTART.md) — install, init a store, daily workflow, deploy.
-- [`docs/decisions/`](docs/decisions/) — ADRs that justify the structure of this repo.
-- [`reference/philosophy.md`](reference/philosophy.md) — what rules / personas / skills / commands / prompts are and aren't, and when to reach for each.
-- [`reference/conventions.md`](reference/conventions.md) — file naming, frontmatter, structure.
-- [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md) — execution steps and escalation rules.
+- [`QUICKSTART.md`](QUICKSTART.md). Install, init a store, daily workflow, deploy.
+- [`docs/decisions/`](docs/decisions/). ADRs that justify the structure of this repo.
+- [`reference/philosophy.md`](reference/philosophy.md). What rules / personas / skills / commands / prompts are and aren't, and when to reach for each.
+- [`reference/conventions.md`](reference/conventions.md). File naming, frontmatter, structure.
+- [`RUN_PROTOCOL.md`](RUN_PROTOCOL.md). Execution steps and escalation rules.
 
 ---
 
@@ -294,6 +294,6 @@ Personas are intentional, scoped, and few. If you can't name the gap a new perso
 
 Per [ADR 001](docs/decisions/001-agents-distribution-mechanism.md), `@commerce-atoms/agents` ships on npm. Pin in `agents.config.json` and run `npx commerce-atoms-agents sync` to materialise overlays in the storefront repo.
 
-Synced copies include `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md` — repo-relative links become absolute GitHub URLs so they keep working.
+Synced copies include `.cursor/rules/*.mdc`, `.github/copilot-instructions.md`, `CLAUDE.md`, `AGENTS.md`. Repo-relative links become absolute GitHub URLs so they keep working.
 
 Canonical sources live under `rules/core/*.md`; per-tool overlays are **hand-maintained mirrors** today (generation from canonical sources is a future step).

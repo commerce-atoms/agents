@@ -1,4 +1,4 @@
-# ADR 001 — `agents/` distribution mechanism
+# ADR 001. `agents/` distribution mechanism
 
 - **Status:** Accepted
 - **Date:** 2026-04-28
@@ -7,7 +7,7 @@
 
 ## Context
 
-The `commerce-atoms` org is composed of **independent GitHub repositories** developed locally side-by-side but versioned, released, and consumed independently. There is **no monorepo, no shared CI, no shared `package.json`**. Anything shared between them must be **published, versioned, and pinned** — not synced via `cp -r`.
+The `commerce-atoms` org is composed of **independent GitHub repositories** developed locally side-by-side but versioned, released, and consumed independently. There is **no monorepo, no shared CI, no shared `package.json`**. Anything shared between them must be **published, versioned, and pinned**. Not synced via `cp -r`.
 
 Today `agents/` is consumed by manual `cp -r` (documented in `agents/README.md:62-67`). This breaks the moment N>1 stores exist: drift is the default state, every store ages independently, and "fix once, propagate to all stores" stops being a real workflow.
 
@@ -15,21 +15,21 @@ The forcing question: **how should consumer repos pull `agents/` content in a wa
 
 ## Options considered
 
-### A — Pure npm package
+### A. Pure npm package
 
 `@commerce-atoms/agents` published to npm. Consumers `npm i -D @commerce-atoms/agents`, then `npx commerce-atoms-agents sync` copies content into the consumer repo at well-known paths.
 
 - **Pros:** Familiar; works for everyone; semver native; existing tooling.
 - **Cons:** `AGENTS.md`/`.cursor/rules/` must be physically present in the consumer repo (so editor tools find them), so a copy step is unavoidable on every install/sync.
 
-### B — Git subtree
+### B. Git subtree
 
 Consumers `git subtree pull` from a tag in the `agents` repo. Files live natively in the consumer repo's tree.
 
 - **Pros:** No install step; files are committed in the consumer; offline-friendly.
 - **Cons:** `git subtree` is awkward in practice; merge conflicts on customization; no `package.json`-style version pinning visible at a glance; harder for AI tools to enforce "pinned version".
 
-### C — Hybrid (npm package + sync CLI that generates per-tool overlays)
+### C. Hybrid (npm package + sync CLI that generates per-tool overlays)
 
 Publish `@commerce-atoms/agents` as the canonical content (`AGENTS.md`, `rules/`, `skills/`, `commands/`, `prompts/`, `personas/`, `INDEX.json`). The package ships a `sync` bin that:
 
@@ -39,22 +39,22 @@ Publish `@commerce-atoms/agents` as the canonical content (`AGENTS.md`, `rules/`
 4. Pins the version that produced the output.
 
 - **Pros:** `AGENTS.md` stays the single source; per-tool drift becomes structurally impossible (rebuilt every sync); upgrade workflow is one command; semver is honored end-to-end.
-- **Cons:** Most upfront work — need to author the generator alongside the canonical content.
+- **Cons:** Most upfront work. Need to author the generator alongside the canonical content.
 
 ## Decision
 
-**Option C — Hybrid.**
+**Option C. Hybrid.**
 
 Publish `@commerce-atoms/agents` to npm. Ship a `commerce-atoms-agents sync` CLI that copies canonical content and **deterministically generates** per-tool overlays. Consumer pins the version in `agents.config.json`; upgrade is `npm i -D @commerce-atoms/agents@<x.y.z> && npx commerce-atoms-agents sync`.
 
-This is the only mechanism that makes "fix once, propagate to N stores on their own upgrade schedule" a real workflow. It closes drift permanently because the per-tool files are not authored — they are *generated*.
+This is the only mechanism that makes "fix once, propagate to N stores on their own upgrade schedule" a real workflow. It closes drift permanently because the per-tool files are not authored. They are *generated*.
 
 ## Consequences
 
 ### Positive
 
 - `AGENTS.md` becomes the only place humans edit AI-rule content.
-- Per-tool overlays (`.cursor/rules/*.mdc`, `copilot-instructions.md`, `CLAUDE.md`) cannot drift — they're rebuilt from canonical content on every `sync`.
+- Per-tool overlays (`.cursor/rules/*.mdc`, `copilot-instructions.md`, `CLAUDE.md`) cannot drift. They're rebuilt from canonical content on every `sync`.
 - Each consumer repo declares its pinned version explicitly. Upgrade is intentional, never silent.
 - `INDEX.json` becomes the manifest the CLI walks to know what to copy/generate.
 - Sets the foundation for Phase 1 task `1.3` (build the package) and Phase 2 task `2.1` (`npx commerce-atoms init` wrapper, which will internally call `sync`).
@@ -63,7 +63,7 @@ This is the only mechanism that makes "fix once, propagate to N stores on their 
 
 - Consumers gain a `node_modules` dependency on `@commerce-atoms/agents` (devDep only).
 - The generator must be maintained as canonical formats evolve (e.g. when Cursor or Copilot change their schema).
-- Tagged releases require a publishing pipeline (CI on tag push) — extra setup compared to manual `cp -r`.
+- Tagged releases require a publishing pipeline (CI on tag push). Extra setup compared to manual `cp -r`.
 
 ### Neutral
 

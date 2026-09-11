@@ -50,7 +50,7 @@ Generated on first `sync`; updated each run with the pinned version.
 }
 ```
 
-Disable a tool by setting `tools.<name>` to `false`. Customise an output path by editing `out.<key>`. Codex is not a flag — it auto-reads the always-synced `AGENTS.md`.
+Disable a tool by setting `tools.<name>` to `false`. Customise an output path by editing `out.<key>`. Codex is not a flag. It auto-reads the always-synced `AGENTS.md`.
 
 ### Conflict handling
 
@@ -83,7 +83,7 @@ agents/
     ├── RUN_PROTOCOL.md, QUICKSTART.md
 ```
 
-The split is doctrine — root files govern the package; `kit/` files ship to consumers and govern Hydrogen storefronts. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the rationale.
+The split is doctrine. Root files govern the package; `kit/` files ship to consumers and govern Hydrogen storefronts. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the rationale.
 
 ### Where to look
 
@@ -108,7 +108,7 @@ Full statement in [`kit/AGENTS.md §0`](kit/AGENTS.md).
 
 ## Status
 
-- `0.1.x` — sync CLI, init CLI, validate-architecture skill + slash command, five personas, three prompt templates, manifest + per-tool overlays. Released via Trusted Publishing (OIDC).
+- `0.1.x`. Sync CLI, init CLI, validate-architecture skill + slash command, five personas, three prompt templates, manifest + per-tool overlays. Released via Trusted Publishing (OIDC).
 - Per-tool overlays are currently hand-maintained mirrors of the canonical sources in [`kit/rules/core/`](kit/rules/core/). Deterministic generation from canonical sources is on the roadmap.
 
 ---

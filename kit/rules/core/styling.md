@@ -6,24 +6,24 @@ applies_to:
   - "app/styles/**"
 canonical: true
 generates:
-  - .cursor/rules/40-styling.mdc
+  -.cursor/rules/40-styling.mdc
 ---
 
 # Styling and CSS
 
-> Canonical source. Mirror edits into `.cursor/rules/40-styling.mdc` by hand until automated overlay generation lands ([ADR 001](../../docs/decisions/001-agents-distribution-mechanism.md)).
+> Canonical source. Mirror edits into `.cursor/rules/40-styling.mdc` by hand until automated overlay generation lands ([ADR 001](././docs/decisions/001-agents-distribution-mechanism.md)).
 
 ## Rules
 
 - CSS modules **MUST** be colocated with their components / views (same directory).
 - CSS module filenames **MUST** be lowercase / kebab-case (e.g. `button.module.css`, `product-card.module.css`).
 - Global styles **MUST** live in `app/styles/`.
-- **No** `styles/` subfolders — keep flat.
+- **No** `styles/` subfolders. Keep flat.
 - Prefer named CSS variables (tokens) over hardcoded values.
 
 ## Examples
 
-### Correct — colocated
+### Correct. Colocated
 
 ```text
 components/
@@ -38,7 +38,7 @@ components/
     └── sort-select.module.css       ✓ colocated
 ```
 
-### Wrong — `styles/` subfolder
+### Wrong. `styles/` subfolder
 
 ```text
 components/

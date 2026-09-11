@@ -15,13 +15,13 @@ audience: shoppy
 
 ### Pure logic only
 
-- **Zero runtime dependencies on framework packages** — no `react`, no `@shopify/hydrogen`, no `@react-router/*` in any `package.json#dependencies`.
+- **Zero runtime dependencies on framework packages**. No `react`, no `@shopify/hydrogen`, no `@react-router/*` in any `package.json#dependencies`.
 - Framework integrations live in the consumer (`hydrogen-storefront-starter` glues `@commerce-atoms/seo` into React Router `MetaDescriptor[]`, etc.).
 
 ### One concept per package
 
 - 10 packages, each scoped to one commerce concept (`cart`, `filters`, `money`, `seo`, `urlstate`, `variants`, `pagination`, `metafield`, `discounts`, `date`).
-- A new concept warrants a new package — not an extension of an existing one.
+- A new concept warrants a new package. Not an extension of an existing one.
 
 ### Zero cross-package imports
 
@@ -40,7 +40,7 @@ audience: shoppy
 ## Versioning
 
 - Independent semver per package.
-- Publish deliberately — coordinate bumps with consumers when behaviour changes.
+- Publish deliberately. Coordinate bumps with consumers when behaviour changes.
 
 ## Naming
 
