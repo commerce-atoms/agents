@@ -87,6 +87,22 @@ The canonical `AGENTS.md` instructs every consuming agent to read `AGENTS.local.
 - The kit does **not** ship a competing deploy workflow — accepting Shopify's auto-provisioned PR is a step in `/deploy-setup`. Legacy kit-shipped `deploy.yml` files from versions ≤ 0.3.3 must be removed to avoid duplicating every prod deploy.
 - The `/deploy-setup`, `/deploy-check`, `/release` slash commands wrap CI — they prepare and validate, they never deploy.
 
+## Metafield-backed features
+
+Every new capability that stores custom data in Shopify (metaobjects, metafield definitions on Product / Collection / Shop / Customer / Order) follows the pattern in `hydrogen-storefront-starter/docs/reference/metaobjects.md`. Reference implementation: `app/platform/theming/`.
+
+Non-negotiables:
+
+- Schema is provisioned by an idempotent `scripts/setup-<feature>.mjs` script using the shared helpers in `scripts/shared/admin-schema.mjs`. No manual admin UI as the source of truth.
+- GraphQL fragments select `key + value + type` on every metafield node so Hydrogen's `parseMetafield<ParsedMetafields[T]>` can dispatch.
+- Loaders transform raw metaobjects into domain types (`toX()`). Views and components never see raw metaobjects.
+- Cross-cutting features live in `app/platform/<feature>/`; feature-specific data lives in the consuming module.
+- `@commerce-atoms/metafield` for field extraction, Hydrogen's `parseMetafield` for value coercion. Bespoke parsers only when domain-specific validation is required (e.g. CSS-injection guards on values inlined into a `<style>` block).
+
+The kit does not ship a competing schema DSL. `shopify.app.toml`-style declarative schema is a Shopify Apps concept; Hydrogen storefronts use merchant-owned definitions provisioned via the Admin API. The setup-script pattern wraps that path.
+
+For section-based CMS content following the Shopify Hydrogen cookbook ("Dynamic Content with Metaobjects"), adopt the cookbook's `parseSection` verbatim inside `app/platform/metaobjects/`. See the Compatibility section in `metaobjects.md`.
+
 ## Cross-store learning loop
 
 - When a fork develops a useful pattern that belongs upstream, open PRs against `hydrogen-storefront-starter` (core layers) or `@commerce-atoms/agents` (rules / personas).

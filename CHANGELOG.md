@@ -8,6 +8,22 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.5] — 2026-09-11
+
+### Added
+
+- `kit/rules/stores.md` — new section **Metafield-backed features** codifying the pattern for adding capabilities that store custom data in Shopify (metaobjects and metafield definitions). Points at the reference implementation (`app/platform/theming/`) and the doctrine that ships with `hydrogen-storefront-starter` in the coordinated companion release: `docs/reference/metaobjects.md` (pattern + Hydrogen `parseMetafield` guidance + cookbook compatibility) and `docs/reference/setup-scripts.md` (idempotent Admin API provisioning contract). Enforces five non-negotiables: idempotent setup scripts as schema source of truth; GraphQL fragments select `key + value + type`; loaders transform to domain types; cross-cutting features in `platform/*`; `@commerce-atoms/metafield` for extraction, Hydrogen `parseMetafield` for value coercion.
+
+### Motivation
+
+Doctor Undefined and any future store that needs GPSR / compliance / warranty / structured product data was heading toward re-implementing what the theming module already demonstrates. The pattern is not novel — Shopify ships the primitives (Admin API definition mutations, `parseMetafield`) — but the Hydrogen cookbook stops short of automation, module boundaries, and a domain-type discipline. The kit now names the pattern explicitly so consumers do not drift into private mini-frameworks or reinvent Shopify's own tools.
+
+### Migration for existing consumer stores
+
+1. Bump `@commerce-atoms/agents` to `^0.3.5` (`npm i -D @commerce-atoms/agents@latest`).
+2. Run `npx commerce-atoms-agents sync`.
+3. When adding a new metafield-backed feature, follow `docs/reference/metaobjects.md` (synced from the coordinated companion release of `hydrogen-storefront-starter`).
+
 ## [0.3.4] — 2026-09-11
 
 ### Changed
