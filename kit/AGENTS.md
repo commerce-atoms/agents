@@ -4,6 +4,8 @@
 
 If you are an AI agent, read this file first, end-to-end. If you are a human contributor, [`QUICKSTART.md`](QUICKSTART.md) is faster.
 
+**Project-local additions.** If `AGENTS.local.md` exists at the repository root, read it after this file and treat its contents as project-specific additions to this manifest. Consumers use it for per-repo context (product briefs, deployment specifics, project-only conventions) without editing this canonical file — `agents:sync` leaves `*.local.*` files untouched, and the drift gate is unaffected.
+
 ---
 
 ## §0 Doctrine — non-negotiable

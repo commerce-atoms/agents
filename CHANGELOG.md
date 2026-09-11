@@ -8,6 +8,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.3] — 2026-09-11
+
+### Added
+
+- `AGENTS.local.md` convention for project-local additions to the AI manifest. Canonical `kit/AGENTS.md` now instructs every consuming agent to read `AGENTS.local.md` at the repository root (if present) as project-specific additions. Because `CLAUDE.md` and `copilot-instructions.md` both begin with "read `AGENTS.md` first", coverage is universal from a single consumer-owned file — no per-tool `.local` variants required. Sync-safe by construction (kit inventory does not include `AGENTS.local.md`), so the drift gate stays green regardless of local additions.
+- `kit/rules/stores.md` — new subsection under "AGENTS.md overlay" documenting the `AGENTS.local.md` convention and its interaction with sync + drift.
+
+### Motivation
+
+Previously, per-repo additions to the AI manifest (e.g. pointing agents at a product brief in a store fork) had to be added directly to `AGENTS.md`, which the drift gate correctly flagged as divergence from the pinned kit version. That left OSS consumers with no escape hatch: either edit the canonical and break CI, or lose the ability to teach every agent about project-specific context. Tracks [commerce-atoms/agents#21](https://github.com/commerce-atoms/agents/issues/21).
+
 ## [0.3.2] — 2026-09-11
 
 ### Changed
