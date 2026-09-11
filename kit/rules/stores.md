@@ -80,8 +80,11 @@ The canonical `AGENTS.md` instructs every consuming agent to read `AGENTS.local.
 ## Deploy
 
 - **GitHub Actions deploys**, the agent never invokes `shopify hydrogen deploy` directly.
-- Deploy triggered by `push to main` and `workflow_dispatch`.
-- Pipeline: install → codegen → typecheck → lint → test → build → deploy to Oxygen.
+- Two workflows split the responsibility:
+  - **Validation gate** — `.github/workflows/ci.yml` runs on every PR + `push:main`. Blocks merge via branch protection. Pipeline: install → lint → codegen → typecheck → test → validate-architecture.
+  - **Deployer** — `.github/workflows/oxygen-deployment-<storefrontId>.yml` is **auto-provisioned by Shopify** when a Hydrogen storefront is linked to the repo. Trigger: `push` on any branch. Production on `main`, preview URL per branch elsewhere. One workflow file per Hydrogen storefront (multi-storefront setups get multiple files).
+- Runtime env (`PUBLIC_STORE_DOMAIN`, `PUBLIC_STOREFRONT_ID`, tokens, `SESSION_SECRET`, etc.) lives in **Oxygen storefront settings** (Shopify Admin), not GitHub Actions secrets. The only GitHub secret is `OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>`, which Shopify auto-manages.
+- The kit does **not** ship a competing deploy workflow — accepting Shopify's auto-provisioned PR is a step in `/deploy-setup`. Legacy kit-shipped `deploy.yml` files from versions ≤ 0.3.3 must be removed to avoid duplicating every prod deploy.
 - The `/deploy-setup`, `/deploy-check`, `/release` slash commands wrap CI — they prepare and validate, they never deploy.
 
 ## Cross-store learning loop

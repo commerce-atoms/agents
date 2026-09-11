@@ -8,6 +8,28 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.4] — 2026-09-11
+
+### Changed
+
+- **Deploy doctrine rewritten around Shopify's auto-provisioned Oxygen workflow.** The kit no longer teaches operators to author or maintain a `deploy.yml`. When a Hydrogen storefront is linked to a repo, Shopify's GitHub App auto-provisions `.github/workflows/oxygen-deployment-<storefrontId>.yml` with a rotating deployment token secret. The kit now treats this as the authoritative deploy actor; the operator's job in `/deploy-setup` is to **accept** it, not to duplicate it. `AGENTS.md §0 D2`, `CLAUDE.md`, `copilot-instructions.md`, `QUICKSTART.md`, `rules/stores.md`, `prompts/store-launch-checklist.prompt.md`, `commands/deploy-setup.md`, `commands/deploy-check.md`, `commands/release.md`, `commands/README.md` updated accordingly.
+- `commands/deploy-setup.md` fully rewritten. New flow: verify `ci.yml` present with `Validate architecture` step → wait for Shopify's auto-PR → merge → confirm secret → push runtime env to Oxygen → confirm branch protection requires `ci`. No manual GitHub secret dance for storefront credentials — those are now Oxygen runtime env, managed in Shopify Admin or via `shopify hydrogen env push`.
+- `prompts/store-launch-checklist.prompt.md` Section 8 rewritten with the new workflow file names and secret expectations. Adds a launch-blocker check for the legacy `deploy.yml` still being present.
+
+### Motivation
+
+The kit's previous `deploy.yml` (shipped by `hydrogen-storefront-starter`) and Shopify's auto-provisioned `oxygen-deployment-<storefrontId>.yml` both triggered on `push:main`, both deployed to the same Oxygen storefront, and used different secret names. Result: two workflows racing on every prod deploy, contradicting D2 ("CI is the only deploy actor" — there were two). Shopify's workflow additionally provides preview-per-branch environments the kit's version did not. The correct architectural answer is a single deployer (Shopify's) and a single validation gate (`ci.yml` + branch protection). The starter's `deploy.yml` is being deleted in the coordinated companion release; consumer stores must delete their inherited copy on their next `agents:sync`.
+
+### Migration for existing consumer stores
+
+1. Bump `@commerce-atoms/agents` to `^0.3.4` (`npm i -D @commerce-atoms/agents@latest`).
+2. Run `npx commerce-atoms-agents sync`.
+3. Delete `.github/workflows/deploy.yml` if present.
+4. Add a `Validate architecture` step to `.github/workflows/ci.yml` (kit adds this to the starter — copy the step if you diverged).
+5. Accept Shopify's auto-provisioned Oxygen workflow PR if not already merged.
+6. Verify branch protection on `main` requires `ci`.
+7. Push runtime env to Oxygen via `shopify hydrogen env push` (do not migrate GitHub secrets — Oxygen manages runtime env).
+
 ## [0.3.3] — 2026-09-11
 
 ### Added

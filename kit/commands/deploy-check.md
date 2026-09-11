@@ -6,9 +6,9 @@ arguments: []
 
 # `/deploy-check`
 
-> Doctrine reminder (`AGENTS.md §0` sub-doctrine): **the agent prepares and validates. CI deploys.** This command validates locally; CI runs the same gates again on push.
+> Doctrine reminder (`AGENTS.md §0` sub-doctrine): **the agent prepares and validates. CI deploys.** This command validates locally; `ci.yml` runs the same gates on PR + `push:main`, and Shopify's `oxygen-deployment-<storefrontId>.yml` deploys once the code lands on `main`.
 
-Reproduce the CI gates locally before `git push origin main`. If anything fails, fix it and re-run — do not push a broken change and rely on CI to catch it.
+Reproduce the CI validation gates locally before `git push`. If anything fails, fix it and re-run — do not push a broken change and rely on CI to catch it. The Shopify-provisioned deployer has **no pre-deploy validation of its own** (it just runs `shopify hydrogen deploy`); the safety net is `ci.yml` + branch protection.
 
 ## Prerequisites
 

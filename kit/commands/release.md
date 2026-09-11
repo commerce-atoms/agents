@@ -76,8 +76,8 @@ git push origin "v<new-version>"
 ```text
 Released v<new-version>.
 
-GitHub Actions is now deploying (CI: .github/workflows/deploy.yml).
-Watch the run: gh run watch
+GitHub Actions is now deploying (CI: .github/workflows/oxygen-deployment-<storefrontId>.yml,
+Shopify-provisioned). Watch the run: gh run watch
 ```
 
 Do **not** invoke `shopify hydrogen deploy`. Do **not** poll the Oxygen API directly. CI is the only deploy actor.
@@ -99,11 +99,11 @@ Do **not** invoke `shopify hydrogen deploy`. Do **not** poll the Oxygen API dire
 | Pre-flight fails | Fix and rerun `/deploy-check`. Do not release a broken state. |
 | Tag already exists | The bump pushed someone else's tag — re-infer or pick a higher version. |
 | Push to `origin/main` rejected | Pull, rebase, re-run `/deploy-check`, re-release. Do not force-push tags. |
-| GitHub Actions doesn't trigger | Verify the deploy workflow listens on `push: tags: ['v*']`; rerun `/deploy-setup` if not. |
+| GitHub Actions doesn't trigger | The tag push should trigger Shopify's `oxygen-deployment-<storefrontId>.yml` via its `on: [push]` (tags are refs). If not, verify the workflow is enabled (`gh workflow list`) and the auto-provisioned PR was merged (see `/deploy-setup`). |
 
 ## See also
 
 - [`commands/deploy-setup.md`](deploy-setup.md)
 - [`commands/deploy-check.md`](deploy-check.md)
 - [`AGENTS.md §0`](../AGENTS.md) — deploy doctrine.
-- The deploy workflow shipped with `hydrogen-storefront-starter`: [`deploy.yml` on `main`](https://github.com/commerce-atoms/hydrogen-storefront-starter/blob/main/.github/workflows/deploy.yml).
+- [Shopify — Continuous deployment with Hydrogen and Oxygen](https://shopify.dev/docs/custom-storefronts/hydrogen/deployments) — the deploy workflow is Shopify-provisioned, not kit-shipped (see [CHANGELOG 0.3.4](../CHANGELOG.md)).
