@@ -73,7 +73,7 @@ Never write a competing implementation of a Shopify cookbook feature. Cart, chec
 
 ### Deploy doctrine
 
-Never suggest `shopify hydrogen deploy` directly. The agent prepares (`/deploy-check`) and tags (`/release`); GitHub Actions deploys. See [`AGENTS.md §0` D2](AGENTS.md).
+Never suggest `shopify hydrogen deploy` directly. The agent prepares (`/deploy-check`) and tags (`/release`); GitHub Actions deploys. CI is two workflows: `ci.yml` (validation gate) and `oxygen-deployment-<storefrontId>.yml` (deployer, **auto-provisioned by Shopify** — never author a replacement). See [`AGENTS.md §0` D2](AGENTS.md).
 
 ### Completion contract
 

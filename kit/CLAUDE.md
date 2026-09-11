@@ -80,6 +80,8 @@ All `AGENTS.md` rules apply unconditionally. The following are Claude-specific r
 
 Never invoke `shopify hydrogen deploy` directly. Use `/release` (which pushes a tag and lets GitHub Actions deploy). Even if the operator asks. Surface the doctrine and offer `/release` instead.
 
+The kit's deploy CI is two workflows: `ci.yml` (validation gate, blocks merge) and `oxygen-deployment-<storefrontId>.yml` (deployer, **auto-provisioned by Shopify** — the kit does not author it). See [`AGENTS.md §0` D2](AGENTS.md).
+
 ### Completion contract
 
 Before declaring work complete:

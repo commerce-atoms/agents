@@ -78,23 +78,25 @@ Per [`rules/stores.md`](rules/stores.md), **all** brand divergence lives here. N
 
 ## 4. Wire CI for deploy
 
-The kit's deploy doctrine ([`AGENTS.md §0` D2](AGENTS.md)): **the agent prepares and validates; CI deploys.** Wire CI once with `/deploy-setup` (or run the steps manually):
+The kit's deploy doctrine ([`AGENTS.md §0` D2](AGENTS.md)): **the agent prepares and validates; CI deploys.** Two workflows split the job:
+
+- **Validation gate** — `.github/workflows/ci.yml` (shipped by the starter). Runs on every PR; branch protection requires it green before merge.
+- **Deployer** — `.github/workflows/oxygen-deployment-<storefrontId>.yml`, **auto-provisioned by Shopify** when you link a Hydrogen storefront to this repo in Shopify Admin.
+
+Wire it up with `/deploy-setup`. In one command:
+
+1. Create (or link) a Hydrogen storefront in Shopify Admin → **Hydrogen**.
+2. Shopify opens a PR titled `Set up Oxygen deployment workflow file`. Merge it.
+3. The `OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>` secret is set automatically.
+4. Push runtime env to Oxygen: `npx shopify hydrogen env push --env production`.
+5. Verify branch protection requires `ci`.
 
 ```bash
-gh secret set OXYGEN_DEPLOYMENT_TOKEN --body "$(echo $TOKEN)"
-gh secret set SHOPIFY_STOREFRONT_API_TOKEN --body "$(echo $TOKEN)"
-gh secret set SHOPIFY_STOREFRONT_ID --body "$(echo $ID)"
-gh secret set PUBLIC_STOREFRONT_API_VERSION --body "2026-04"
+gh workflow list          # should show "CI" + "Storefront <storefrontId>"
+gh secret list            # should show OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>
 ```
 
-Verify the deploy workflow is enabled:
-
-```bash
-gh workflow list
-gh workflow view deploy.yml
-```
-
-Full step-by-step walkthrough: [`commands/deploy-setup.md`](commands/deploy-setup.md).
+The kit does **not** ship its own `deploy.yml` — the Shopify auto-provisioned workflow is authoritative. Full step-by-step walkthrough: [`commands/deploy-setup.md`](commands/deploy-setup.md).
 
 ## 5. Develop, validate, ship
 

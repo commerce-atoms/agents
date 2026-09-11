@@ -42,7 +42,7 @@ The body of the file is the workflow the agent follows when invoked.
 
 > **The agent prepares and validates. CI deploys.**
 
-`/release` pushes a tag — it never invokes `shopify hydrogen deploy` directly. GitHub Actions is the only deploy actor. See `AGENTS.md §0` and the `.github/workflows/deploy.yml` shipped in `hydrogen-storefront-starter`.
+`/release` pushes a tag — it never invokes `shopify hydrogen deploy` directly. GitHub Actions is the only deploy actor: `ci.yml` gates merge, and `oxygen-deployment-<storefrontId>.yml` (auto-provisioned by Shopify) deploys. The kit does not ship its own deploy workflow. See `AGENTS.md §0` and `commands/deploy-setup.md`.
 
 ## Adding a new command
 

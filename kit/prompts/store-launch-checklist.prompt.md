@@ -96,10 +96,14 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 
 ### 8. Deploy and observability
 
-- [ ] `.github/workflows/deploy.yml` present and enabled (`gh workflow list`).
-- [ ] All required secrets set (`gh secret list` shows `OXYGEN_DEPLOYMENT_TOKEN`, `SHOPIFY_STOREFRONT_API_TOKEN`, `SHOPIFY_STOREFRONT_ID`, `PUBLIC_STOREFRONT_API_VERSION`).
+- [ ] `.github/workflows/ci.yml` present and enabled (`gh workflow list` shows `CI`), includes a `Validate architecture` step.
+- [ ] `.github/workflows/oxygen-deployment-<storefrontId>.yml` present and enabled (`gh workflow list` shows `Storefront <storefrontId>` — this is Shopify's auto-provisioned deployer).
+- [ ] No legacy kit-shipped `deploy.yml` still present (`test ! -f .github/workflows/deploy.yml` — races with Shopify's deployer on `push:main`; must have been removed at agents 0.3.4+).
+- [ ] `OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>` secret set (`gh secret list`), auto-managed by Shopify.
+- [ ] Runtime env pushed to Oxygen (`shopify hydrogen env list --env production`) — not stored in GitHub Actions secrets.
+- [ ] Branch protection on `main` requires `ci` (`gh api "repos/:owner/:repo/branches/main/protection" --jq '.required_status_checks.contexts'`).
 - [ ] `/deploy-check` passes locally.
-- [ ] Last `main` deploy succeeded (`gh run list --workflow deploy.yml`).
+- [ ] Last `main` deploy succeeded (`gh run list --workflow "Storefront <storefrontId>"`).
 - [ ] DNS / domain pointing at Oxygen confirmed.
 - [ ] Error monitoring wired (Sentry / Datadog / chosen tool); test event received.
 - [ ] Analytics wired and respecting consent.

@@ -25,7 +25,12 @@ When a Shopify recipe lands → port it via the `port-hydrogen-cookbook-recipe` 
 
 ### D2. Agent prepares, CI deploys
 
-GitHub Actions is the only deploy actor. The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, and `/release` — never `shopify hydrogen deploy` directly, never an Oxygen API poll, never a manual upload.
+GitHub Actions is the only deploy actor. Two workflows split the responsibility:
+
+- **Validation gate** — `ci.yml` runs on every PR and blocks merge via branch protection.
+- **Deployer** — `oxygen-deployment-<storefrontId>.yml` is **auto-provisioned by Shopify** when a Hydrogen storefront is linked to the repo. It deploys production on `push:main` and a preview URL on every other branch push. The kit does not ship a competing deploy workflow — accepting Shopify's auto-PR is part of `/deploy-setup`.
+
+The agent's role is wrapping `git push` with `/deploy-setup`, `/deploy-check`, and `/release` — never `shopify hydrogen deploy` directly, never an Oxygen API poll, never a manual upload.
 
 ### D3. Architecture rules are not advisory
 
