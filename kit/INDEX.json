@@ -1,7 +1,7 @@
 {
   "$schema": "./INDEX.schema.json",
   "name": "@commerce-atoms/agents",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Canonical AI manifest, rules, skills, prompts, slash commands, and personas for the commerce-atoms ecosystem.",
   "manifest": {
     "agentsMd": "AGENTS.md",
@@ -15,42 +15,67 @@
       "id": "core/architecture",
       "title": "Architecture boundaries and policies",
       "path": "rules/core/architecture.md",
-      "appliesTo": ["app/**/*.ts", "app/**/*.tsx"],
-      "generates": [".cursor/rules/30-architecture-boundaries.mdc"]
+      "appliesTo": [
+        "app/**/*.ts",
+        "app/**/*.tsx"
+      ],
+      "generates": [
+        ".cursor/rules/30-architecture-boundaries.mdc"
+      ]
     },
     {
       "id": "core/routing",
       "title": "Routing manifest rules",
       "path": "rules/core/routing.md",
-      "appliesTo": ["app/routes.ts"],
-      "generates": [".cursor/rules/20-routing.mdc"]
+      "appliesTo": [
+        "app/routes.ts"
+      ],
+      "generates": [
+        ".cursor/rules/20-routing.mdc"
+      ]
     },
     {
       "id": "core/imports",
       "title": "Import policy",
       "path": "rules/core/imports.md",
-      "appliesTo": ["app/**/*.ts", "app/**/*.tsx"],
-      "generates": [".cursor/rules/10-imports.mdc"]
+      "appliesTo": [
+        "app/**/*.ts",
+        "app/**/*.tsx"
+      ],
+      "generates": [
+        ".cursor/rules/10-imports.mdc"
+      ]
     },
     {
       "id": "core/styling",
       "title": "Styling and CSS",
       "path": "rules/core/styling.md",
-      "appliesTo": ["app/**/*.tsx", "app/**/*.module.css", "app/styles/**"],
-      "generates": [".cursor/rules/40-styling.mdc"]
+      "appliesTo": [
+        "app/**/*.tsx",
+        "app/**/*.module.css",
+        "app/styles/**"
+      ],
+      "generates": [
+        ".cursor/rules/40-styling.mdc"
+      ]
     },
     {
       "id": "packages",
       "title": "Rules for @commerce-atoms/* package authors",
       "path": "rules/packages.md",
-      "appliesTo": ["packages/*/src/**/*.ts", "packages/*/src/**/*.tsx"],
+      "appliesTo": [
+        "packages/*/src/**/*.ts",
+        "packages/*/src/**/*.tsx"
+      ],
       "audience": "shoppy"
     },
     {
       "id": "stores",
       "title": "Rules for store forks",
       "path": "rules/stores.md",
-      "appliesTo": ["app/**/*"],
+      "appliesTo": [
+        "app/**/*"
+      ],
       "audience": "store-fork"
     }
   ],

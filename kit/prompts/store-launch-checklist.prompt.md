@@ -9,7 +9,7 @@ trigger_phrases:
 inputs:
   - name: store_name
     required: true
-    description: 'e.g. `store-bonzoverse` or `store-doctor-undefined`.'
+    description: 'e.g. `store-example` or `store-acme`.'
   - name: launch_date
     required: false
     description: Target launch date (informational).
@@ -31,7 +31,7 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 
 ## Inputs
 
-- `{store_name}` — required, kebab-case (e.g. `store-bonzoverse`).
+- `{store_name}` — required, kebab-case (e.g. `store-example`).
 - `{launch_date}` — optional target date (informational).
 - `{skip}` — optional list of section IDs to skip, with rationale.
 

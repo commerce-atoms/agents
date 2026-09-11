@@ -194,7 +194,7 @@ Stores that fork `hydrogen-storefront-starter` follow the topology in [`rules/st
 
 - **Local**: stores live under `commerce-atoms/stores/<store>/` in the working tree.
 - **Remote**: each store is its own GitHub repo at `github.com/commerce-atoms/store-<name>`, **private** by default. Customer stores live under the customer's own org.
-- **Naming**: local directory matches the remote (`stores/store-bonzoverse/` ↔ `commerce-atoms/store-bonzoverse`).
+- **Naming**: local directory matches the remote (`stores/store-example/` ↔ `commerce-atoms/store-example`).
 
 ---
 

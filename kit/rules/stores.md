@@ -21,8 +21,8 @@ Local working tree convention:
 ├── hydrogen-storefront-starter/  # public — fork point for new stores
 ├── .github/                      # public — org profile + ops scripts
 └── stores/                       # local-only convention; not a single git repo
-    ├── store-bonzoverse/         → github.com/commerce-atoms/store-bonzoverse  (private)
-    ├── store-doctor-undefined/   → github.com/commerce-atoms/store-doctor-undefined  (private)
+    ├── store-example/  → github.com/commerce-atoms/store-example  (private)
+    ├── store-acme/     → github.com/commerce-atoms/store-acme     (private)
     └── …
 ```
 
@@ -31,7 +31,7 @@ Remote conventions:
 - Each store is its own independent GitHub repo, **private** by default.
 - Internal stores live at `github.com/commerce-atoms/store-<name>` — single org keeps secrets, billing, and Trusted Publishing config in one place. Public visitors only see public repos.
 - Customer stores live under the customer's own org (`github.com/<customer>/<repo>`); the customer owns the code.
-- Local directory name matches the remote (`stores/store-bonzoverse/` ↔ `commerce-atoms/store-bonzoverse`).
+- Local directory name matches the remote (`stores/store-example/` ↔ `commerce-atoms/store-example`).
 - Stores are **never** mixed at the top level of `commerce-atoms/` — only `stores/` is allowed there.
 
 ## Brand layer
