@@ -23,27 +23,27 @@ By convention, store forks live under `commerce-atoms/stores/<store-name>/` in y
 mkdir -p ~/Projects/commerce-atoms/stores
 cd ~/Projects/commerce-atoms/stores
 
-npx @commerce-atoms/agents init store-bonzoverse
+npx @commerce-atoms/agents init store-example
 ```
 
 The `init` command:
 
-1. Clones `hydrogen-storefront-starter` into `store-bonzoverse/`.
+1. Clones `hydrogen-storefront-starter` into `store-example/`.
 2. Removes the inherited git history.
-3. Renames `package.json#name` to `store-bonzoverse`, sets `private: true`.
+3. Renames `package.json#name` to `store-example`, sets `private: true`.
 4. Seeds `app/config/brand.ts` and `app/assets/brand/` with placeholders.
 5. Runs `commerce-atoms-agents sync` to materialise `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `.cursor/rules/*.mdc`.
 6. Pins the agents version in `agents.config.json`.
 7. Initialises a fresh git repo with one commit on `main`.
 
 ```bash
-cd store-bonzoverse
+cd store-example
 ```
 
 ## 2. Push to its own GitHub repo
 
 ```bash
-gh repo create commerce-atoms/store-bonzoverse --private --source=. --push
+gh repo create commerce-atoms/store-example --private --source=. --push
 ```
 
 The `commerce-atoms` org hosts both the public kit (`agents`, `shoppy`, `hydrogen-storefront-starter`, `.github`) and your private store forks. Public visitors only see public repos; your stores stay invisible.
@@ -56,9 +56,9 @@ Open `app/config/brand.ts` and fill in the real values:
 
 ```typescript
 export const brand: BrandConfig = {
-  name: 'Bonzoverse',
+  name: 'Example Store',
   slogan: 'A real slogan, not a placeholder',
-  contactEmail: 'hi@bonzoverse.com',
+  contactEmail: 'hello@example.com',
   defaultLocale: 'en-US',
   supportedLocales: ['en-US'],
   colours: { /* real hex values */ },

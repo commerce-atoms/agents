@@ -8,6 +8,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-09-11
+
+### Changed
+
+- Replaced project-specific store names in kit example text with neutral placeholders (`store-example`, `store-acme`, `Example Store`, `hello@example.com`). Affects `kit/QUICKSTART.md`, `kit/AGENTS.md`, `kit/rules/stores.md`, `kit/prompts/store-launch-checklist.prompt.md`. No behavioural change; consumers pick up on next `agents:sync`.
+
 ## [0.3.1] — 2026-09-11
 
 ### Fixed
