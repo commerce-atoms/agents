@@ -61,6 +61,16 @@ Automatic marker comments / hash checks on "core" files are **not** enforced yet
 - Pinned version recorded in `agents.config.json`.
 - Store-specific context (brand, locales, catalog quirks) lives in the overlay, not in the upstream.
 
+### Project-local additions — `AGENTS.local.md`
+
+The canonical `AGENTS.md` is synced from `@commerce-atoms/agents` and enforced by the drift gate — editing it directly fails CI. For per-repo additions (product briefs, deployment specifics, project-only conventions), create `AGENTS.local.md` at the repository root.
+
+The canonical `AGENTS.md` instructs every consuming agent to read `AGENTS.local.md` after it. Because `CLAUDE.md` and `.github/copilot-instructions.md` both start with "read AGENTS.md first", coverage is universal from a single consumer-owned file — no `CLAUDE.local.md` or `copilot-instructions.local.md` needed.
+
+**Sync-safe by construction.** `agents:sync` operates only on files listed in the kit inventory; `AGENTS.local.md` isn't in the inventory, so sync leaves it untouched and the drift gate stays green. Commit the file to the repo — it's project source, not a machine-generated artefact.
+
+**Cursor rules.** `.cursor/rules/*.mdc` don't need a `.local` variant: any `.mdc` file the consumer adds is loaded automatically by Cursor and ignored by sync (kit inventory tracks only the numbered rule files it ships). Use a project-local `.mdc` when you want a tool-specific, always-in-context overlay in addition to what `AGENTS.local.md` covers universally.
+
 ## Feature flags
 
 - Optional modules are gated by `app/config/features.ts` (`enableSearch`, `enableBlog`, `enableCollections`, etc.).
