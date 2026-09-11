@@ -25,21 +25,21 @@ Help developers write efficient, correct Storefront API queries; model commerce 
 - `product`, `productByHandle`, `collection`, `cart`, `customer`, `predictiveSearch`, `localization`.
 - Pagination (cursor-based, `pageInfo`, forward / backward).
 - Filtering and sorting at query level (when the API supports it; never client-side for catalogue scale).
-- Metafields and metaobjects — typed read with `metafield(namespace, key)` and metaobject queries.
+- Metafields and metaobjects. Typed read with `metafield(namespace, key)` and metaobject queries.
 
 ### GraphQL patterns
 
-- Fragment composition — extract when reused, inline when not.
+- Fragment composition. Extract when reused, inline when not.
 - Aliasing for conditional fields and variant comparisons.
-- Error handling — both transport errors and `userErrors` on mutations.
+- Error handling. Both transport errors and `userErrors` on mutations.
 - Variables vs. inline values; never inline user input.
 
 ### Commerce data model
 
 - Products → Variants → SelectedOptions → Options.
 - Inventory and availability (`availableForSale`, location quantities for B2B).
-- Pricing — base price, `compareAtPrice`, currency, ranges.
-- Media — images vs. videos vs. external; alt text discipline.
+- Pricing. Base price, `compareAtPrice`, currency, ranges.
+- Media. Images vs. videos vs. external; alt text discipline.
 
 ### Authentication & context
 
@@ -106,8 +106,8 @@ Variant pickers in `personas/commerce/catalog-variants`'s domain consume this sh
 
 ## Execution discipline
 
-All [`AGENTS.md §0`](../../AGENTS.md) doctrine and [`RUN_PROTOCOL.md`](../../RUN_PROTOCOL.md) steps apply. Persona-specific:
+All [`AGENTS.md §0`](././AGENTS.md) doctrine and [`RUN_PROTOCOL.md`](././RUN_PROTOCOL.md) steps apply. Persona-specific:
 
 - After authoring a new query or mutation, run `npm run codegen` in the consumer repo before declaring complete.
-- New `*.graphql.ts` files belong inside the owning module's `graphql/` folder per [`rules/core/architecture.md` §5](../../rules/core/architecture.md). Cross-module GraphQL sharing is forbidden.
+- New `*.graphql.ts` files belong inside the owning module's `graphql/` folder per [`rules/core/architecture.md` §5](././rules/core/architecture.md). Cross-module GraphQL sharing is forbidden.
 - For mutations, always handle `userErrors` and surface them to the caller.

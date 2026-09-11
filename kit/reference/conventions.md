@@ -27,7 +27,7 @@ CLAUDE.md                             # Claude Code (top-level)
 AGENTS.md                             # Universal (top-level)
 ```
 
-The `.cursor/rules/*.mdc` overlays mirror `rules/core/*.md` — edit canonical sources first; keep overlays in sync by hand until generation ships (see ADR 001).
+The `.cursor/rules/*.mdc` overlays mirror `rules/core/*.md`. Edit canonical sources first; keep overlays in sync by hand until generation ships (see ADR 001).
 
 ### Personas
 
@@ -116,34 +116,34 @@ arguments:
 
 ### Persona body
 
-1. **Title** — `# Persona Name`.
-2. **Identity** — Role, mindset, experience.
-3. **Core mission** — What they help accomplish.
-4. **What you know deeply** — Domain expertise.
-5. **How you help** — Assistance patterns.
-6. **What you watch for** — Red flags / anti-patterns.
-7. **Communication style** — How they respond.
-8. **Execution contract** — Pointer to `RUN_PROTOCOL.md` and constraints.
+1. **Title**. `# Persona Name`.
+2. **Identity**. Role, mindset, experience.
+3. **Core mission**. What they help accomplish.
+4. **What you know deeply**. Domain expertise.
+5. **How you help**. Assistance patterns.
+6. **What you watch for**. Red flags / anti-patterns.
+7. **Communication style**. How they respond.
+8. **Execution contract**. Pointer to `RUN_PROTOCOL.md` and constraints.
 
 ### Skill body (`SKILL.md`)
 
-1. **Description** — One paragraph.
-2. **Invocation contract** — Input / output shape; side effects.
-3. **Workflow** — Numbered steps the agent follows.
-4. **Post-conditions** — What must be true after the skill runs (e.g. "always invoke `validate-architecture` after").
-5. **References** — Links to assets, tests, related skills/commands.
+1. **Description**. One paragraph.
+2. **Invocation contract**. Input / output shape; side effects.
+3. **Workflow**. Numbered steps the agent follows.
+4. **Post-conditions**. What must be true after the skill runs (e.g. "always invoke `validate-architecture` after").
+5. **References**. Links to assets, tests, related skills/commands.
 
 ### Slash command body
 
 1. **Frontmatter** (above).
-2. **Numbered steps** — Each step is a discrete action the agent takes.
-3. **Output** — What the operator sees on completion.
+2. **Numbered steps**. Each step is a discrete action the agent takes.
+3. **Output**. What the operator sees on completion.
 
 ### Prompt body
 
 1. **Title**.
-2. **Inputs** — placeholder list.
-3. **Template** — the body, with `{placeholders}` for inputs.
+2. **Inputs**. Placeholder list.
+3. **Template**. The body, with `{placeholders}` for inputs.
 
 ---
 
@@ -153,20 +153,20 @@ arguments:
 
 - Declarative ("MUST", "NEVER", "SHOULD").
 - Short and scannable.
-- No explanations needed — the rule is the contract.
+- No explanations needed. The rule is the contract.
 
 ### Personas
 
 - First person ("I help you…").
 - Conversational but technical.
 - Examples inline.
-- Explain the *why* — personas teach as they advise.
+- Explain the *why*. Personas teach as they advise.
 
 ### Skills
 
 - Imperative.
-- Procedural — read like a checklist.
-- No "personality" — skills are mechanical.
+- Procedural. Read like a checklist.
+- No "personality". Skills are mechanical.
 
 ### Slash commands
 

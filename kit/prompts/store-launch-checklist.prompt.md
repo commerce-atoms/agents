@@ -24,16 +24,16 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 
 ## How to use
 
-1. Run each section in order. Don't skip ahead — order is dependency-driven.
+1. Run each section in order. Don't skip ahead. Order is dependency-driven.
 2. For each item: mark `[x]` (verified), `[ ]` (not yet), or `[!]` (blocker, must resolve).
-3. If `[!]` — name the file / setting / person blocking, not just "TODO".
+3. If `[!]`. Name the file / setting / person blocking, not just "TODO".
 4. Final summary at the bottom: GO, NO-GO, or NO-GO-WITH-CONDITIONS.
 
 ## Inputs
 
-- `{store_name}` — required, kebab-case (e.g. `store-example`).
-- `{launch_date}` — optional target date (informational).
-- `{skip}` — optional list of section IDs to skip, with rationale.
+- `{store_name}`. Required, kebab-case (e.g. `store-example`).
+- `{launch_date}`. Optional target date (informational).
+- `{skip}`. Optional list of section IDs to skip, with rationale.
 
 ## Sections
 
@@ -59,7 +59,7 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 - [ ] `agents.config.json` `agentsVersion` matches the `@commerce-atoms/agents` version you installed (`npm ls @commerce-atoms/agents`).
 - [ ] No barrel files (`find app -name 'index.ts' -o -name 'index.tsx'` returns empty).
 - [ ] No `app/lib`, `app/common`, `app/shared`, `app/ui` folders.
-- [ ] All rules from [`rules/stores.md`](../rules/stores.md) respected (brand layer, core/app split, deploy doctrine).
+- [ ] All rules from [`rules/stores.md`](./rules/stores.md) respected (brand layer, core/app split, deploy doctrine).
 
 ### 4. Build, type, lint, test
 
@@ -86,7 +86,7 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 - [ ] Lighthouse accessibility score ≥ 90 on home, PDP, PLP, cart.
 - [ ] Forms and interactive elements keyboard-navigable.
 
-### 7. Performance — Core Web Vitals (CWV)
+### 7. Performance. Core Web Vitals (CWV)
 
 - [ ] Lighthouse production-mode (or WebPageTest) LCP ≤ 2.5s on home + PDP.
 - [ ] INP ≤ 200ms p75 on PDP variant selection.
@@ -97,10 +97,10 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 ### 8. Deploy and observability
 
 - [ ] `.github/workflows/ci.yml` present and enabled (`gh workflow list` shows `CI`), includes a `Validate architecture` step.
-- [ ] `.github/workflows/oxygen-deployment-<storefrontId>.yml` present and enabled (`gh workflow list` shows `Storefront <storefrontId>` — this is Shopify's auto-provisioned deployer).
-- [ ] No legacy kit-shipped `deploy.yml` still present (`test ! -f .github/workflows/deploy.yml` — races with Shopify's deployer on `push:main`; must have been removed at agents 0.3.4+).
+- [ ] `.github/workflows/oxygen-deployment-<storefrontId>.yml` present and enabled (`gh workflow list` shows `Storefront <storefrontId>`. This is Shopify's auto-provisioned deployer).
+- [ ] No legacy kit-shipped `deploy.yml` still present (`test! -f.github/workflows/deploy.yml`. Races with Shopify's deployer on `push:main`; must have been removed at agents 0.3.4+).
 - [ ] `OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>` secret set (`gh secret list`), auto-managed by Shopify.
-- [ ] Runtime env pushed to Oxygen (`shopify hydrogen env list --env production`) — not stored in GitHub Actions secrets.
+- [ ] Runtime env pushed to Oxygen (`shopify hydrogen env list --env production`). Not stored in GitHub Actions secrets.
 - [ ] Branch protection on `main` requires `ci` (`gh api "repos/:owner/:repo/branches/main/protection" --jq '.required_status_checks.contexts'`).
 - [ ] `/deploy-check` passes locally.
 - [ ] Last `main` deploy succeeded (`gh run list --workflow "Storefront <storefrontId>"`).
@@ -137,4 +137,4 @@ Use this template to produce a pre-launch report for a `commerce-atoms` storefro
 
 ## Doctrine reminder
 
-Per [`AGENTS.md §0`](../AGENTS.md): the agent prepares and validates; the agent does **not** flip the launch switch. After this checklist passes, the operator runs `/release` (or pushes to `main` if no version bump is needed) and CI deploys. The agent never invokes `shopify hydrogen deploy` directly.
+Per [`AGENTS.md §0`](./AGENTS.md): the agent prepares and validates; the agent does **not** flip the launch switch. After this checklist passes, the operator runs `/release` (or pushes to `main` if no version bump is needed) and CI deploys. The agent never invokes `shopify hydrogen deploy` directly.

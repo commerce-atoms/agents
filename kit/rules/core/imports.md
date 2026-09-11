@@ -5,12 +5,12 @@ applies_to:
   - "app/**/*.tsx"
 canonical: true
 generates:
-  - .cursor/rules/10-imports.mdc
+  -.cursor/rules/10-imports.mdc
 ---
 
 # Import policy
 
-> Canonical source. Mirror edits into `.cursor/rules/10-imports.mdc` by hand until automated overlay generation lands ([ADR 001](../../docs/decisions/001-agents-distribution-mechanism.md)).
+> Canonical source. Mirror edits into `.cursor/rules/10-imports.mdc` by hand until automated overlay generation lands ([ADR 001](././docs/decisions/001-agents-distribution-mechanism.md)).
 
 ## React Router, not Remix
 
@@ -32,20 +32,20 @@ Storefronts using this kit use **React Router** packages, not Remix packages.
 
 ## Path aliases
 
-| Alias            | Resolves to        |
+| Alias | Resolves to |
 | ---------------- | ------------------ |
-| `@layout/*`      | `app/layout/`      |
-| `@modules/*`     | `app/modules/`     |
-| `@components/*`  | `app/components/`  |
-| `@platform/*`    | `app/platform/`    |
-| `@styles/*`      | `app/styles/`      |
-| `~/*`            | App root (escape hatch — use only when no bucket alias fits) |
+| `@layout/*` | `app/layout/` |
+| `@modules/*` | `app/modules/` |
+| `@components/*` | `app/components/` |
+| `@platform/*` | `app/platform/` |
+| `@styles/*` | `app/styles/` |
+| `~/*` | App root (escape hatch. Use only when no bucket alias fits) |
 
 ### Forbidden
 
 - `@/*` root alias.
 - Overlapping aliases.
-- Deep relative imports across boundaries (`../../../modules/...`).
+- Deep relative imports across boundaries (`./././modules/..`).
 
 ## Default practice
 
@@ -54,7 +54,7 @@ Match import patterns already present in adjacent files. Editor rules + ESLint e
 ## No barrel files
 
 - Never create or use barrel export files (`index.ts`, `index.js`, etc.).
-- Always use explicit imports: `import {Button} from '@components/Button'` — never `import {Button} from '@components'`.
+- Always use explicit imports: `import {Button} from '@components/Button'`. Never `import {Button} from '@components'`.
 - Barrel files hide dependencies and make imports less explicit.
 
 ## Prefer named exports

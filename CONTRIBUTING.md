@@ -1,6 +1,6 @@
 # Contributing to `@commerce-atoms/agents`
 
-This file is the kit-authoring manual. It governs how the **npm package itself** is developed. The content that ships to consumer repos lives under [`kit/`](kit/) and is governed by its own conventions ([`kit/AGENTS.md`](kit/AGENTS.md)) — those rules are about Hydrogen storefronts, not about this repo. Don't conflate the two.
+This file is the kit-authoring manual. It governs how the **npm package itself** is developed. The content that ships to consumer repos lives under [`kit/`](kit/) and is governed by its own conventions ([`kit/AGENTS.md`](kit/AGENTS.md)). Those rules are about Hydrogen storefronts, not about this repo. Don't conflate the two.
 
 ## Anatomy of this repo
 
@@ -45,7 +45,7 @@ npm run verify   # typecheck + INDEX.json validation + tests
 - All `.ts` source under `src/` and `bin/`. Strict mode (`strict: true`, `noUncheckedIndexedAccess: true`, `verbatimModuleSyntax: true`).
 - Imports use `node:` prefix for builtins. Use `.js` extensions in relative imports (NodeNext resolution).
 - Tests are co-located: `src/foo.ts` ↔ `src/foo.test.ts`. Use `node:test` and `node:assert/strict`.
-- Run `npm run verify` before pushing. Don't disable a check — fix the underlying issue.
+- Run `npm run verify` before pushing. Don't disable a check. Fix the underlying issue.
 - Run `npm run build` to produce `dist/`. The npm `prepack` runs this automatically before publish.
 
 ### Kit content (the five primitives)
@@ -54,11 +54,11 @@ When adding or modifying anything under `kit/`, follow the philosophy in [`kit/r
 
 Quick rules:
 
-1. Pick the right primitive — rule, persona, skill, command, or prompt. Misclassification is the single most common smell. Consult [`kit/reference/philosophy.md`](kit/reference/philosophy.md) before authoring a new artefact.
+1. Pick the right primitive. Rule, persona, skill, command, or prompt. Misclassification is the single most common smell. Consult [`kit/reference/philosophy.md`](kit/reference/philosophy.md) before authoring a new artefact.
 2. Frontmatter must match the format in [`kit/reference/conventions.md`](kit/reference/conventions.md). Don't invent new keys without updating the reference.
 3. Every artefact must be registered in [`kit/INDEX.json`](kit/INDEX.json). The CI step `npm run lint:json` rejects missing or broken paths.
 4. New rules under `kit/rules/core/` must mirror into the relevant per-tool overlays (`.cursor/rules/`, `copilot-instructions.md`, `CLAUDE.md`) by hand. Generation from canonical sources is a planned future step ([ADR 001](kit/docs/decisions/001-agents-distribution-mechanism.md)).
-5. Synced markdown gets its repo-relative links rewritten to absolute GitHub URLs at sync time. Author links naturally (e.g. `[ADR 003](docs/decisions/003-...md)`); the rewriter handles consumer-side resolution. See [`src/internal/rewrite-links.ts`](src/internal/rewrite-links.ts).
+5. Synced markdown gets its repo-relative links rewritten to absolute GitHub URLs at sync time. Author links naturally (e.g. `[ADR 003](docs/decisions/003-..md)`); the rewriter handles consumer-side resolution. See [`src/internal/rewrite-links.ts`](src/internal/rewrite-links.ts).
 
 ### Architectural decisions
 
@@ -70,13 +70,13 @@ Quick rules:
 The workflow lives in [`kit/commands/release.md`](kit/commands/release.md), but for the kit itself:
 
 1. Update `package.json#version` (SemVer; once consumers pin a version, breaking changes force a major bump).
-2. Update `CHANGELOG.md` — replace `[Unreleased]` with `[<version>] — <YYYY-MM-DD>`, add a fresh empty `[Unreleased]` above.
+2. Update `CHANGELOG.md`. Replace `[Unreleased]` with `[<version>] — <YYYY-MM-DD>`, add a fresh empty `[Unreleased]` above.
 3. Update `kit/INDEX.json#version` to match.
 4. Open a PR. Merge to `main`.
 5. Tag: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z`.
 6. CI (`.github/workflows/publish.yml`) publishes to npm via Trusted Publishing (OIDC).
 
-If the publish fails after the tag is pushed, fix forward and push a new tag — never re-tag. See [ADR 001](kit/docs/decisions/001-agents-distribution-mechanism.md) for distribution rationale.
+If the publish fails after the tag is pushed, fix forward and push a new tag. Never re-tag. See [ADR 001](kit/docs/decisions/001-agents-distribution-mechanism.md) for distribution rationale.
 
 ## What never goes in
 

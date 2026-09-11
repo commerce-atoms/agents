@@ -1,4 +1,4 @@
-# ADR 004 — Skill / Prompt / Slash Command format
+# ADR 004. Skill / Prompt / Slash Command format
 
 - **Status:** Accepted
 - **Date:** 2026-04-28
@@ -9,41 +9,41 @@
 
 `REVIEW.md §8.7` names three new primitives the kit needs:
 
-- **Skills** — reusable AI capabilities (`validate-architecture`, `port-hydrogen-cookbook-recipe`, `scaffold-module`).
-- **Slash Commands** — short, named workflows (`/init-store`, `/deploy-setup`, `/release`).
-- **Prompts** — versioned task templates (PR descriptions, release notes, retro after a launch).
+- **Skills**. Reusable AI capabilities (`validate-architecture`, `port-hydrogen-cookbook-recipe`, `scaffold-module`).
+- **Slash Commands**. Short, named workflows (`/init-store`, `/deploy-setup`, `/release`).
+- **Prompts**. Versioned task templates (PR descriptions, release notes, retro after a launch).
 
 Each modern AI tool has its own native format:
 
-- **GitHub Copilot Skills** — folder per skill, `SKILL.md` plus assets, well-documented schema.
-- **Claude Code Commands** — single `.md` file under `commands/<name>.md`, with optional frontmatter.
-- **Cursor Slash Commands / Project Rules** — `.cursor/rules/*.mdc` for rules; chat-pinned prompts for ad-hoc commands; first-class slash commands evolving.
+- **GitHub Copilot Skills**. Folder per skill, `SKILL.md` plus assets, well-documented schema.
+- **Claude Code Commands**. Single `.md` file under `commands/<name>.md`, with optional frontmatter.
+- **Cursor Slash Commands / Project Rules**. `.cursor/rules/*.mdc` for rules; chat-pinned prompts for ad-hoc commands; first-class slash commands evolving.
 
 The forcing question: **which format(s) do we author against, knowing the same content must work across Cursor, Copilot, Claude, and Codex?**
 
 The non-negotiable constraints:
 
-- One source of truth — the `sync` CLI ([ADR 001](./001-agents-distribution-mechanism.md)) regenerates per-tool overlays deterministically.
-- Source format is plain markdown — every tool reads markdown; binary or proprietary formats are off-limits.
-- Skills and Commands have different shapes — Skills are richer (multi-file, fixtures, tests); Commands are short workflows.
+- One source of truth. The `sync` CLI ([ADR 001](./001-agents-distribution-mechanism.md)) regenerates per-tool overlays deterministically.
+- Source format is plain markdown. Every tool reads markdown; binary or proprietary formats are off-limits.
+- Skills and Commands have different shapes. Skills are richer (multi-file, fixtures, tests); Commands are short workflows.
 
 ## Options considered
 
-### A — One format for everything
+### A. One format for everything
 
 Pick one (e.g. Copilot Skills layout) and force Skills, Commands, and Prompts into it.
 
 - **Pros:** Maximum simplicity; one mental model.
 - **Cons:** Skills wants a folder; Commands fits naturally in a single file; mashing them together makes the lightweight Commands feel heavy and discourages adding small ones.
 
-### B — Tool-native everything
+### B. Tool-native everything
 
 Author each artefact in its tool-native format. Maintain three copies of every Skill (Copilot folder, Claude `.md`, Cursor `.mdc`).
 
 - **Pros:** Each tool gets its ideal experience.
 - **Cons:** Direct duplication; drift is the default; the entire point of [ADR 001](./001-agents-distribution-mechanism.md) is to avoid this.
 
-### C — Hybrid, source-first, generated overlays
+### C. Hybrid, source-first, generated overlays
 
 Split by **artefact type**, not by tool:
 
@@ -61,11 +61,11 @@ The `sync` CLI then **generates** the per-tool consumption form from these canon
 Each authored once; each consumable in every supported tool.
 
 - **Pros:** Right-shaped per artefact type; one source of truth; deterministic per-tool generation; no per-tool duplication.
-- **Cons:** Two formats to learn (Copilot Skills for Skills, Claude Commands for everything else) — minor; both are markdown.
+- **Cons:** Two formats to learn (Copilot Skills for Skills, Claude Commands for everything else). Minor; both are markdown.
 
 ## Decision
 
-**Option C — Hybrid, source-first.**
+**Option C. Hybrid, source-first.**
 
 | Artefact | Source format | Source path | Generator targets |
 |---|---|---|---|
@@ -81,7 +81,7 @@ All sources are markdown. The `sync` CLI ([ADR 001](./001-agents-distribution-me
 
 - Each artefact is authored where it's structurally happiest. Skills get folders + tests; Commands stay as a single file.
 - The `sync` CLI's generator is mechanical: it reads canonical markdown and emits per-tool variants. No semantic translation.
-- New skills/commands are easy to add — clone an existing one as a template; the generator handles the rest.
+- New skills/commands are easy to add. Clone an existing one as a template; the generator handles the rest.
 - Encourages frequent, small additions (Commands stay cheap to author).
 
 ### Negative

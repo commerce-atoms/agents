@@ -13,12 +13,12 @@ Initialise a new Shopify Hydrogen storefront from the canonical starter, with th
 
 ## Convention
 
-By convention (see [`rules/stores.md`](../rules/stores.md)), run this command from `~/Projects/commerce-atoms/stores/`. The new store is created as a sibling under `stores/`, never at the top level of `commerce-atoms/`.
+By convention (see [`rules/stores.md`](./rules/stores.md)), run this command from `~/Projects/commerce-atoms/stores/`. The new store is created as a sibling under `stores/`, never at the top level of `commerce-atoms/`.
 
 ## Workflow
 
-1. **Validate the name.** Lowercase letters, digits, hyphens; starts with a letter; 2–50 chars. Reject anything else and surface the validation error.
-2. **Refuse to overwrite.** If `<cwd>/<store-name>` already exists, abort with a clear message — do not destroy work.
+1. **Validate the name.** Lowercase letters, digits, hyphens; starts with a letter; 2-50 chars. Reject anything else and surface the validation error.
+2. **Refuse to overwrite.** If `<cwd>/<store-name>` already exists, abort with a clear message. Do not destroy work.
 3. **Run the CLI:**
 
    ```bash
@@ -62,11 +62,11 @@ By convention (see [`rules/stores.md`](../rules/stores.md)), run this command fr
 |---|---|
 | `git: command not found` | Install git; the starter is git-cloned, not downloaded as a tarball. |
 | Network failure during clone | Retry. Optionally pass `--starter-repo <local-path>` to clone from a local mirror. |
-| Initial commit fails because `user.email` isn't configured | Non-fatal; the project is created without a commit. Configure git user, then `git add . && git commit -m "init"`. |
+| Initial commit fails because `user.email` isn't configured | Non-fatal; the project is created without a commit. Configure git user, then `git add. && git commit -m "init"`. |
 | `validate-architecture` fails immediately after init | Almost certainly a regression in the starter. Capture the report and open an issue at `commerce-atoms/hydrogen-storefront-starter`. |
 
 ## See also
 
-- [`commands/deploy-setup.md`](deploy-setup.md) — the next step after a fresh `init`.
-- [`AGENTS.md §0`](../AGENTS.md) — the doctrine the kit operates under.
-- [`QUICKSTART.md`](../QUICKSTART.md) — end-to-end path from `init` to first deploy.
+- [`commands/deploy-setup.md`](deploy-setup.md). The next step after a fresh `init`.
+- [`AGENTS.md §0`](./AGENTS.md). The doctrine the kit operates under.
+- [`QUICKSTART.md`](./QUICKSTART.md). End-to-end path from `init` to first deploy.

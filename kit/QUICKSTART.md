@@ -69,10 +69,10 @@ export const brand: BrandConfig = {
 
 Replace placeholder assets in `app/assets/brand/`:
 
-- `logo.svg` — primary logo.
-- `favicon.svg` — browser favicon.
-- `og-default.png` — default OpenGraph image (1200 × 630).
-- `tokens.css` — colour / spacing variables consumed by `app/styles/`.
+- `logo.svg`. Primary logo.
+- `favicon.svg`. Browser favicon.
+- `og-default.png`. Default OpenGraph image (1200 × 630).
+- `tokens.css`. Colour / spacing variables consumed by `app/styles/`.
 
 Per [`rules/stores.md`](rules/stores.md), **all** brand divergence lives here. No hardcoded brand strings outside `app/config/brand.ts` and `app/assets/brand/`.
 
@@ -80,8 +80,8 @@ Per [`rules/stores.md`](rules/stores.md), **all** brand divergence lives here. N
 
 The kit's deploy doctrine ([`AGENTS.md §0` D2](AGENTS.md)): **the agent prepares and validates; CI deploys.** Two workflows split the job:
 
-- **Validation gate** — `.github/workflows/ci.yml` (shipped by the starter). Runs on every PR; branch protection requires it green before merge.
-- **Deployer** — `.github/workflows/oxygen-deployment-<storefrontId>.yml`, **auto-provisioned by Shopify** when you link a Hydrogen storefront to this repo in Shopify Admin.
+- **Validation gate**. `.github/workflows/ci.yml` (shipped by the starter). Runs on every PR; branch protection requires it green before merge.
+- **Deployer**. `.github/workflows/oxygen-deployment-<storefrontId>.yml`, **auto-provisioned by Shopify** when you link a Hydrogen storefront to this repo in Shopify Admin.
 
 Wire it up with `/deploy-setup`. In one command:
 
@@ -96,7 +96,7 @@ gh workflow list          # should show "CI" + "Storefront <storefrontId>"
 gh secret list            # should show OXYGEN_DEPLOYMENT_TOKEN_<storefrontId>
 ```
 
-The kit does **not** ship its own `deploy.yml` — the Shopify auto-provisioned workflow is authoritative. Full step-by-step walkthrough: [`commands/deploy-setup.md`](commands/deploy-setup.md).
+The kit does **not** ship its own `deploy.yml`. The Shopify auto-provisioned workflow is authoritative. Full step-by-step walkthrough: [`commands/deploy-setup.md`](commands/deploy-setup.md).
 
 ## 5. Develop, validate, ship
 
@@ -172,7 +172,7 @@ The sidecar is auto-removed on the next sync once your file converges with canon
 
 Two non-negotiable rules. Re-read these whenever a shortcut feels appealing:
 
-> **D1. Don't reimplement Shopify.** Cart, checkout extensibility, B2B, Markets, subscriptions — these are Shopify's. The kit *ports* them; it does not write competing implementations.
+> **D1. Don't reimplement Shopify.** Cart, checkout extensibility, B2B, Markets, subscriptions. These are Shopify's. The kit *ports* them; it does not write competing implementations.
 >
 > **D2. The agent prepares and validates. CI deploys.** Never `shopify hydrogen deploy` directly. Use `/release`.
 

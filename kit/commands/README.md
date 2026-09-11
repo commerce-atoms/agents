@@ -1,6 +1,6 @@
 # Slash commands
 
-> Short, named workflows the agent triggers in one keystroke. Format: Claude Code commands layout (single `.md` file per command). See [ADR 004](../docs/decisions/004-skill-and-command-format.md).
+> Short, named workflows the agent triggers in one keystroke. Format: Claude Code commands layout (single `.md` file per command). See [ADR 004](./docs/decisions/004-skill-and-command-format.md).
 
 ## Structure
 
@@ -42,13 +42,13 @@ The body of the file is the workflow the agent follows when invoked.
 
 > **The agent prepares and validates. CI deploys.**
 
-`/release` pushes a tag — it never invokes `shopify hydrogen deploy` directly. GitHub Actions is the only deploy actor: `ci.yml` gates merge, and `oxygen-deployment-<storefrontId>.yml` (auto-provisioned by Shopify) deploys. The kit does not ship its own deploy workflow. See `AGENTS.md §0` and `commands/deploy-setup.md`.
+`/release` pushes a tag. It never invokes `shopify hydrogen deploy` directly. GitHub Actions is the only deploy actor: `ci.yml` gates merge, and `oxygen-deployment-<storefrontId>.yml` (auto-provisioned by Shopify) deploys. The kit does not ship its own deploy workflow. See `AGENTS.md §0` and `commands/deploy-setup.md`.
 
 ## Adding a new command
 
 1. Create `commands/<name>.md` with frontmatter.
-2. Add an entry to [`INDEX.json`](../INDEX.json).
-3. Reference from [`CLAUDE.md`](../CLAUDE.md) (Claude Code surface) and [`AGENTS.md`](../AGENTS.md) §8.
+2. Add an entry to [`INDEX.json`](./INDEX.json).
+3. Reference from [`CLAUDE.md`](./CLAUDE.md) (Claude Code surface) and [`AGENTS.md`](./AGENTS.md) §8.
 
 ## Tone
 

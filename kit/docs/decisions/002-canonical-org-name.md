@@ -1,4 +1,4 @@
-# ADR 002 — Canonical org name
+# ADR 002. Canonical org name
 
 - **Status:** Accepted
 - **Date:** 2026-04-28
@@ -9,8 +9,8 @@
 
 The codebase carries two parallel names:
 
-- **`@commerce-atoms`** — actual npm scope of the published packages and the GitHub org name.
-- **`@shoppy`** — informal historical name still surfaced in docs, comments, and a handful of agent personas.
+- **`@commerce-atoms`**. Actual npm scope of the published packages and the GitHub org name.
+- **`@shoppy`**. Informal historical name still surfaced in docs, comments, and a handful of agent personas.
 
 `REVIEW.md §4` enumerates ~17 files mixing the two. Some examples:
 
@@ -26,27 +26,27 @@ The forcing question: **which name is canonical, and what becomes of the other?*
 
 ## Options considered
 
-### A — Stay on `@commerce-atoms/*`
+### A. Stay on `@commerce-atoms/*`
 
 Keep the existing npm scope. Mop up remaining `@shoppy` references across docs, comments, and personas.
 
 - **Pros:** Already the npm scope; no republishing; no consumer breakage; matches the GitHub org name.
 - **Cons:** ~17 files need editing (mostly cosmetic, fast in practice).
 
-### B — Switch to `@shoppy/*`
+### B. Switch to `@shoppy/*`
 
 Republish all 10 `shoppy` packages under `@shoppy/*`. Update every `import` statement in `hydrogen-storefront-starter`. Update the GitHub org or accept the mismatch.
 
-- **Pros:** "shoppy" is shorter and arguably more memorable as a brand.
+- **Pros:** "shoppy" is shorter and more memorable as a brand.
 - **Cons:** 10 packages need republishing; every consumer's `package.json` changes; every import statement changes; version history forks; the GitHub org and the npm scope diverge.
 
 ## Decision
 
-**Option A — Stay on `@commerce-atoms/*`.**
+**Option A. Stay on `@commerce-atoms/*`.**
 
-`@commerce-atoms` is the canonical npm scope and the canonical mention everywhere — README, docs, agent personas, code comments, AGENTS.md, ESLint configs, anywhere it appears. `shoppy` is documentation-level drift that gets cleaned up.
+`@commerce-atoms` is the canonical npm scope and the canonical mention everywhere. README, docs, agent personas, code comments, AGENTS.md, ESLint configs, anywhere it appears. `shoppy` is documentation-level drift that gets cleaned up.
 
-`shoppy` survives **only** as the GitHub repo name (`commerce-atoms/shoppy`) — that's a directory label, not a brand. The published packages are `@commerce-atoms/*`.
+`shoppy` survives **only** as the GitHub repo name (`commerce-atoms/shoppy`). That's a directory label, not a brand. The published packages are `@commerce-atoms/*`.
 
 ## Consequences
 
@@ -56,7 +56,7 @@ Republish all 10 `shoppy` packages under `@shoppy/*`. Update every `import` stat
 - AI agents are not asked to reconcile two names while reasoning about imports.
 - The 17-file mop-up collapses to:
   - Most of it disappears as a side-effect of `PLAN.md` task `1.1` (the AGENTS.md migration writes the canonical name once into the new universal layer).
-  - Whatever remains is picked up by `PLAN.md` task `3.1` (mop-up) — a small follow-up PR.
+  - Whatever remains is picked up by `PLAN.md` task `3.1` (mop-up). A small follow-up PR.
 
 ### Negative
 

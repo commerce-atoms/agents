@@ -8,7 +8,21 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
-## [0.3.5] — 2026-09-11
+## [0.3.6] - 2026-09-11
+
+### Changed
+
+- Documentation language cleanup across all kit files. Mechanical pass:
+  - Em-dashes and en-dashes replaced with plain punctuation (period, hyphen).
+  - Common AI-slop hedge words removed (`essentially`, `notably`, `arguably`, `it is worth noting`, `keep in mind`, `to be clear`, `frankly`, `honestly`, `fundamentally`, `in essence`, `importantly`).
+- No behavioural change. No API change. Consumers pick up cleaned files on next `agents:sync`.
+
+### Migration for existing consumer stores
+
+1. Bump `@commerce-atoms/agents` to `^0.3.6` (`npm i -D @commerce-atoms/agents@latest`).
+2. Run `npx commerce-atoms-agents sync --force` to accept the cleaned kit files.
+
+## [0.3.5] - 2026-09-11
 
 ### Added
 

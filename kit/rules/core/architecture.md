@@ -5,12 +5,12 @@ applies_to:
   - "app/**/*.tsx"
 canonical: true
 generates:
-  - .cursor/rules/30-architecture-boundaries.mdc
+  -.cursor/rules/30-architecture-boundaries.mdc
 ---
 
 # Architecture boundaries and policies
 
-> Canonical source. Mirror edits into `.cursor/rules/30-architecture-boundaries.mdc` by hand until automated overlay generation lands ([ADR 001](../../docs/decisions/001-agents-distribution-mechanism.md)). Consumers pull kit updates with `npx commerce-atoms-agents sync`.
+> Canonical source. Mirror edits into `.cursor/rules/30-architecture-boundaries.mdc` by hand until automated overlay generation lands ([ADR 001](././docs/decisions/001-agents-distribution-mechanism.md)). Consumers pull kit updates with `npx commerce-atoms-agents sync`.
 
 ## 1. Module boundaries
 
@@ -26,12 +26,12 @@ generates:
 - `app/hooks/*` (generic UI hooks only).
 - `app/utils/*` (generic utilities only).
 - `app/platform/*` (infrastructure).
-- `app/layout/*` (app shell — can import from modules for shell integration).
+- `app/layout/*` (app shell. Can import from modules for shell integration).
 - `@commerce-atoms/*` (pure logic packages).
 
 ### Forbidden imports
 
-- `app/modules/<other>/*` — any cross-module import.
+- `app/modules/<other>/*`. Any cross-module import.
 - Platform code importing from modules.
 - Components, hooks, utils importing from modules.
 
@@ -39,10 +39,10 @@ generates:
 
 1. **Duplicate intentionally** for small, unstable pieces (< 50 lines).
 2. **Promote to `app/components/**`** for shared UI:
-   - `primitives/` — domain-agnostic building blocks.
-   - `catalog/` — filter / sort controls.
-   - `commerce/` — shared commerce UI (cart, product card).
-   - `pagination/` — pagination wrappers.
+   - `primitives/`. Domain-agnostic building blocks.
+   - `catalog/`. Filter / sort controls.
+   - `commerce/`. Shared commerce UI (cart, product card).
+   - `pagination/`. Pagination wrappers.
 3. **Promote to `app/hooks/*`** for generic UI hooks only.
 4. **Promote to `app/utils/*`** for generic utilities only.
 5. **Extract pure logic to `@commerce-atoms/*`** for reusable business logic.
@@ -50,26 +50,26 @@ generates:
 
 ## 2. Shared folders policy
 
-### `app/components/*` — shared UI components
+### `app/components/*`. Shared UI components
 
 #### Structure (subfolders for organisation)
 
 `app/components/` is organised into subfolders to prevent it from becoming a junk drawer:
 
-- `primitives/` — pure UI building blocks (domain-agnostic).
+- `primitives/`. Pure UI building blocks (domain-agnostic).
   - Examples: `Button`, `Input`, `Loading`, `Price`.
   - Must be truly generic; no domain concepts.
-- `catalog/` — catalog browsing controls (filter / sort UI only).
+- `catalog/`. Catalog browsing controls (filter / sort UI only).
   - Examples: `CheckboxGroup`, `RangeInput`, `SortSelect`.
   - Used by Search and Collections (and future catalog surfaces).
-  - **Not** "primitives" — encodes filter / sort intent.
-- `commerce/` — shared commerce UI (cart, product card).
+  - **Not** "primitives". Encodes filter / sort intent.
+- `commerce/`. Shared commerce UI (cart, product card).
   - Examples: `ProductCard`, `CartPanel`, `CartLineItem`, `CartSummary`.
   - Used across modules / layout.
   - Allowed to accept Shopify fragments (shared commerce surface).
-- `pagination/` — shared pagination wrappers.
+- `pagination/`. Shared pagination wrappers.
   - Examples: `PaginatedResourceSection`.
-  - Must remain purely presentational — no schema logic.
+  - Must remain purely presentational. No schema logic.
 
 #### Allowed
 
@@ -88,14 +88,14 @@ generates:
 
 Promote to `app/components/**` when a component is reused across 2+ modules or by layout, even if domain-specific. Use subfolders to keep primitives vs. domain-shared controls separate.
 
-### `app/hooks/*` — generic UI hooks
+### `app/hooks/*`. Generic UI hooks
 
 #### Structure
 
-All hooks organised in subfolders — no root-level hooks.
+All hooks organised in subfolders. No root-level hooks.
 
-- `app/hooks/primitives/**` — domain-agnostic hooks (truly cross-domain).
-- `app/hooks/catalog/**` — catalog-specific UI hooks (used by Search + Collections).
+- `app/hooks/primitives/**`. Domain-agnostic hooks (truly cross-domain).
+- `app/hooks/catalog/**`. Catalog-specific UI hooks (used by Search + Collections).
 - Future: `app/hooks/<domain>/**` for other domain-specific shared hooks.
 
 #### Allowed
@@ -118,9 +118,9 @@ All hooks organised in subfolders — no root-level hooks.
 
 #### Rule of thumb
 
-If it references domain concepts or Shopify types, keep it in the module — or use a domain subfolder if shared across modules.
+If it references domain concepts or Shopify types, keep it in the module. Or use a domain subfolder if shared across modules.
 
-### `app/utils/*` — generic utilities
+### `app/utils/*`. Generic utilities
 
 #### Allowed
 
@@ -130,7 +130,7 @@ If it references domain concepts or Shopify types, keep it in the module — or 
   - Non-Shopify-API (no Storefront API calls).
   - Used by 2+ modules.
 - Examples: date formatting, string helpers, type guards, filter helpers, sort options.
-- Must be < 150–200 LOC per file.
+- Must be < 150-200 LOC per file.
 
 #### Forbidden
 
@@ -149,10 +149,10 @@ If it references domain concepts or Shopify types, keep it in the module — or 
 ## 3. Keep shared folders flat
 
 - `app/hooks/*` uses subfolders (`primitives/`, `catalog/`, etc.).
-  - All hooks must be in subfolders — no root-level hooks.
+  - All hooks must be in subfolders. No root-level hooks.
   - `primitives/` for domain-agnostic hooks (matches `components/primitives/`).
   - `<domain>/` for domain-specific but shared hooks.
-- `app/utils/*` must be flat — no subfolders.
+- `app/utils/*` must be flat. No subfolders.
 - `app/components/*` uses subfolders (`primitives/`, `catalog/`, `commerce/`, `pagination/`).
   - CSS modules MUST be colocated with components (same subfolder).
   - Do **not** create additional subfolders within these subfolders.
@@ -174,7 +174,7 @@ If it references domain concepts or Shopify types, keep it in the module — or 
 - UI concerns.
 - Imports from `app/modules/*`.
 
-## 5. Module scaling — start flat
+## 5. Module scaling. Start flat
 
 ### Default
 
@@ -191,13 +191,13 @@ Modules start flat: route / view pairs in the module root.
 
 #### Start consolidated (default)
 
-- `graphql/queries.ts` — all queries.
-- `graphql/fragments.ts` — only if reusable fragments exist.
-- `graphql/mutations.ts` — only if mutations exist.
+- `graphql/queries.ts`. All queries.
+- `graphql/fragments.ts`. Only if reusable fragments exist.
+- `graphql/mutations.ts`. Only if mutations exist.
 
 #### Split into subfolders only when
 
-- `queries.ts` exceeds 250–400 LOC or is hard to scan.
+- `queries.ts` exceeds 250-400 LOC or is hard to scan.
 - Fragments proliferate and ownership becomes unclear.
 - Multiple routes need different subsets.
 
@@ -210,7 +210,7 @@ Modules start flat: route / view pairs in the module root.
 
 #### Critical rules
 
-- Don't over-normalise fragments — only extract if reused or query is huge.
+- Don't over-normalise fragments. Only extract if reused or query is huge.
 - Keep documents near the domain that owns them.
 - **No cross-module GraphQL sharing.**
 

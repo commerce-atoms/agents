@@ -1,4 +1,4 @@
-# AGENTS.md — `@commerce-atoms/agents` repo (kit authoring)
+# AGENTS.md. `@commerce-atoms/agents` repo (kit authoring)
 
 If an AI agent is reading this file, you are working on the **`@commerce-atoms/agents` npm package itself**, not a Hydrogen storefront. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before doing anything else.
 
@@ -19,7 +19,7 @@ The audiences and rules differ:
 2. **Strict TypeScript across `src/` and `bin/`.** No `.js` / `.mjs` source. No `any`. `npm run verify` must be green before push.
 3. **Every shipped artefact lives in [`kit/INDEX.json`](kit/INDEX.json).** Missing or broken paths fail `npm run lint:json` in CI.
 4. **Synced files have their relative links rewritten to absolute GitHub URLs at sync time.** Don't pre-rewrite links in source files; let [`src/internal/rewrite-links.ts`](src/internal/rewrite-links.ts) do it.
-5. **Releases go through `git tag` + `publish.yml` (OIDC Trusted Publishing).** Never `npm publish` from a workstation against this package — the CI path is the only audited surface.
+5. **Releases go through `git tag` + `publish.yml` (OIDC Trusted Publishing).** Never `npm publish` from a workstation against this package. The CI path is the only audited surface.
 
 ## Quick reference
 

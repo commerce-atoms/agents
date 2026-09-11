@@ -1,8 +1,8 @@
-# CLAUDE.md — `@commerce-atoms/agents` (kit authoring)
+# CLAUDE.md. `@commerce-atoms/agents` (kit authoring)
 
 You are working on the **npm package itself**, not a Hydrogen storefront. Read [`AGENTS.md`](AGENTS.md) and then [`CONTRIBUTING.md`](CONTRIBUTING.md) before doing anything else.
 
-The shipped product lives under [`kit/`](kit/) and has its own [`kit/CLAUDE.md`](kit/CLAUDE.md) — those rules are for AI agents in storefront repos and **do not govern this repo**.
+The shipped product lives under [`kit/`](kit/) and has its own [`kit/CLAUDE.md`](kit/CLAUDE.md). Those rules are for AI agents in storefront repos and **do not govern this repo**.
 
 ## Behavioural defaults for this repo
 
