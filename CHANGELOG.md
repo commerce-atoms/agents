@@ -8,6 +8,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-09-11
+
+### Fixed
+
+- `kit/INDEX.json#version` was `"0.2.0"` while `package.json#version` and the npm dist-tag were `"0.3.0"`. Aligns both to the release version. No behavioural change; drift-check runs against `agents.config.json#agentsVersion` in consumers, not `INDEX.json#version`.
+
 ## [0.3.0] — 2026-05-02
 
 ### Changed
