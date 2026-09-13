@@ -8,6 +8,20 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). Versio
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-09-13
+
+### Added
+
+- `kit/rules/stores.md` — new **Module placement** section. One test decides `app/platform/<feature>/` vs `app/modules/<owner>/<sub-feature>/`. Rule of three for graduation from `modules/` to `platform/`. Reference calls list current placements.
+- `kit/rules/stores.md` — new **Starter alignment** section replacing the softer "Cross-store learning loop". Names concrete expectations: single source of truth in `hydrogen-storefront-starter`, both-direction back-porting in the same session, one-concern PRs on public repos, rule of three for `@commerce-atoms/*` npm extraction, no "port later" TODOs. Flags that the `agents-drift.yml` gate covers AGENTS kit doctrine only; shared code alignment stays manual pending npm extraction.
+- `kit/rules/stores.md` — new **Commit conventions** section. Conventional Commits with optional compound prefixes (`feat(admin) + refactor(theming): ...`). PR titles must match the squashed commit subject.
+
+### Migration for existing consumer stores
+
+1. Bump `@commerce-atoms/agents` to `^0.3.7` (`npm i -D @commerce-atoms/agents@latest`).
+2. Run `npx commerce-atoms-agents sync`.
+3. Read the new sections in `.github/commerce-atoms/rules/commerce-atoms/stores.md` and apply the placement + alignment expectations to open work.
+
 ## [0.3.6] - 2026-09-11
 
 ### Changed

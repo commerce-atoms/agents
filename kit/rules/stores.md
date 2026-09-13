@@ -87,6 +87,30 @@ The canonical `AGENTS.md` instructs every consuming agent to read `AGENTS.local.
 - The kit does **not** ship a competing deploy workflow. Accepting Shopify's auto-provisioned PR is a step in `/deploy-setup`. Legacy kit-shipped `deploy.yml` files from versions ≤ 0.3.3 must be removed to avoid duplicating every prod deploy.
 - The `/deploy-setup`, `/deploy-check`, `/release` slash commands wrap CI. They prepare and validate, they never deploy.
 
+## Module placement
+
+Every new capability picks its home with one test.
+
+**`app/platform/<feature>/`** if any of these is true:
+
+- More than one module consumes it, or will consume it.
+- The domain spans multiple surfaces (compliance across PDP, cookie banner, footer).
+- The data attaches to a non-module entity (Shop, global Page).
+
+**`app/modules/<owner>/<sub-feature>/`** if all of these are true:
+
+- Exactly one module consumes it.
+- The data lives on that owner's entity.
+- Nothing outside that module would ever need it.
+
+Rule of three: when a `modules/` feature is imported by a second module, graduate it to `platform/`. The architecture validator forbids module-to-module imports, so this promotion is a hard failure, not silent coupling.
+
+Reference calls:
+
+- `platform/theming/`. Parser is owner-agnostic. Collection today, Product / Page / Shop tomorrow.
+- `platform/compliance/`. Legal spans PDP, cookie banner, footer.
+- `modules/products/specifications/`. Product-owner metafield, one route, no other consumer.
+
 ## Metafield-backed features
 
 Every new capability that stores custom data in Shopify (metaobjects, metafield definitions on Product / Collection / Shop / Customer / Order) follows the pattern in `hydrogen-storefront-starter/docs/reference/metaobjects.md`. Reference implementation: `app/platform/theming/`.
@@ -103,8 +127,21 @@ The kit does not ship a competing schema DSL. `shopify.app.toml`-style declarati
 
 For section-based CMS content following the Shopify Hydrogen cookbook ("Dynamic Content with Metaobjects"), adopt the cookbook's `parseSection` verbatim inside `app/platform/metaobjects/`. See the Compatibility section in `metaobjects.md`.
 
-## Cross-store learning loop
+## Starter alignment
 
-- When a fork develops a useful pattern that belongs upstream, open PRs against `hydrogen-storefront-starter` (core layers) or `@commerce-atoms/agents` (rules / personas).
-- A `/back-port` slash command is **backlog** (`commands/README.md`). Until then, back-port manually with `git diff` / cherry-pick.
-- Store-specific divergence stays in the fork.
+Concrete expectations, not aspiration.
+
+- **Source of truth.** `hydrogen-storefront-starter` owns shared plumbing (`scripts/shared/*.mjs`, `app/platform/*`, `docs/reference/{metaobjects,setup-scripts,collection-theming}.md`). Changes proven in a fork must land upstream in the same session, not "eventually".
+- **Both directions.** A new pattern or refined type developed in a fork travels back to the starter. The fork PR and the starter PR ship together, or bracket each other by hours.
+- **One concern per public-repo PR.** Starter, shoppy, and agents PRs each cover one coherent concern. Bundle only when concerns cohere; otherwise split.
+- **Rule of three for npm extraction.** When shared plumbing repeats across 3+ repos, publish it as an `@commerce-atoms/*` package. Consumers depend on it; drift becomes impossible by construction. `scripts/shared/admin-schema.mjs` is currently at 2. Watch for the third.
+- **No "port later" TODOs.** Backport in-session, or open a tracked issue immediately.
+- **Kit drift gate covers doctrine only.** The `agents-drift.yml` workflow enforces AGENTS kit alignment (rules, personas, doctrine docs). Shared **code** alignment stays manual pending npm extraction. Keep the discipline.
+- **Store-specific divergence stays in the fork.** Brand assets, private domain modules (per-store compliance data, per-store product features), and per-store overlays never travel upstream.
+- **A `/back-port` slash command is backlog** (`commands/README.md`). Until then, backport manually with `git diff` / cherry-pick.
+
+## Commit conventions
+
+- Conventional Commits: `type(scope): subject`. Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `build`, `ci`.
+- Compound prefixes are allowed when a PR carries two coherent concerns: `feat(admin) + refactor(theming): ...`.
+- PR titles match the squashed commit subject. The squash-merge commit message inherits the PR title on merge.
